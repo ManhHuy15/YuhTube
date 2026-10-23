@@ -118,7 +118,7 @@ yuhtube/
 └── README.md
 ```
 
-Ba HTTP Lambda sử dụng ASP.NET Core Controllers và Lambda hosting adapter. Hai Lambda xử lý sự kiện sử dụng handler trực tiếp. Xác thực do Cognito Authorizer tại API Gateway đảm nhiệm nên không có `AuthHandler` riêng.
+Ba HTTP Lambda sử dụng ASP.NET Core Controllers và Lambda hosting adapter. Hai Lambda xử lý sự kiện dùng class-library handler trực tiếp; handler tách biệt khỏi service nghiệp vụ và tái sử dụng AWS clients trong execution environment. Xác thực do Cognito Authorizer tại API Gateway đảm nhiệm nên không có `AuthHandler` riêng.
 
 ---
 

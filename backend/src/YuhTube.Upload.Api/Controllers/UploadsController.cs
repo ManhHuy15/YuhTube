@@ -78,6 +78,11 @@ public sealed class UploadsController : ControllerBase
 
         var videoId = Ksuid.NewKsuid();
         var objectKey = $"raw/{videoId}/source{extension}";
+        _logger.LogInformation(
+            "Initiating multipart upload to S3 bucket >{BucketName}< (length: {BucketNameLength})",
+            _storageOptions.RawBucketName,
+            _storageOptions.RawBucketName.Length);
+
         var result = await _s3.InitiateMultipartUploadAsync(new InitiateMultipartUploadRequest
         {
             BucketName = _storageOptions.RawBucketName,

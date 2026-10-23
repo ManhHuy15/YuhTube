@@ -16,6 +16,9 @@ public static class UploadSessionAttributes
     public const string CreatedAt = "CreatedAt";
     public const string CompletedAt = "CompletedAt";
     public const string ObjectETag = "ObjectETag";
+    public const string MediaConvertJobId = "MediaConvertJobId";
+    public const string TranscodeStatus = "TranscodeStatus";
+    public const string TranscodeSubmittedAt = "TranscodeSubmittedAt";
 }
 
 public static class UploadSessionKeys
@@ -30,4 +33,9 @@ public static class UploadSessionStatuses
 {
     public const string Initiated = "Initiated";
     public const string Completed = "Completed";
+}
+
+public static class TranscodeStatuses
+{
+    public const string Submitted = "Submitted";
 }
