@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/YuhTube.MediaConvertCoordinator/YuhTube.MediaConvertCoordinator.csproj" />
+    <Project Path="src/YuhTube.Social.Api/YuhTube.Social.Api.csproj" />
+    <Project Path="src/YuhTube.TranscodeStatusUpdater/YuhTube.TranscodeStatusUpdater.csproj" />
+    <Project Path="src/YuhTube.Upload.Api/YuhTube.Upload.Api.csproj" />
+    <Project Path="src/YuhTube.Video.Api/YuhTube.Video.Api.csproj" />
+  </Folder>
+</Solution>
