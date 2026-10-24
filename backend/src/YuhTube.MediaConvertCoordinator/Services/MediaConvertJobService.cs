@@ -61,6 +61,10 @@ public sealed class MediaConvertJobService
         {
             ClientRequestToken = videoId,
             Role = _mediaConvertOptions.RoleArn,
+            UserMetadata = new Dictionary<string, string>
+            {
+                ["videoId"] = videoId
+            },
             Settings = CreateHlsJobSettings(videoId, objectKey)
         }, cancellationToken);
 

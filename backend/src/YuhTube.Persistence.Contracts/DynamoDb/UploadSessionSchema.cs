@@ -19,6 +19,10 @@ public static class UploadSessionAttributes
     public const string MediaConvertJobId = "MediaConvertJobId";
     public const string TranscodeStatus = "TranscodeStatus";
     public const string TranscodeSubmittedAt = "TranscodeSubmittedAt";
+    public const string TranscodeCompletedAt = "TranscodeCompletedAt";
+    public const string TranscodeErrorMessage = "TranscodeErrorMessage";
+    public const string PlaybackUrl = "PlaybackUrl";
+    public const string DurationMs = "DurationMs";
 }
 
 public static class UploadSessionKeys
@@ -38,4 +42,7 @@ public static class UploadSessionStatuses
 public static class TranscodeStatuses
 {
     public const string Submitted = "Submitted";
+    public const string Progressing = "Progressing";
+    public const string Completed = "Completed";
+    public const string Error = "Error";
 }
