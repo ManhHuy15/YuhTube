@@ -1,0 +1,665 @@
+<!DOCTYPE html><html class="dark" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>YouTube Studio - Trang tổng quan kênh</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #161616;
+        color: #f1f1f1;
+        font-family: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1f1f1f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3f3f3f;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            yt: {
+              bg: '#161616',
+              surface: '#212121',
+              sidebar: '#1f1f1f',
+              card: '#212121',
+              hover: '#272727',
+              border: '#2e2e2e',
+              red: '#ff0000',
+              redLight: '#ff4e4e',
+              text: '#f1f1f1',
+              textMuted: '#aaaaaa',
+              blue: '#3ea6ff',
+              green: '#2ba640'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#161616] text-[#f1f1f1] flex flex-col h-screen overflow-hidden selection:bg-[#ff0000]/30 selection:text-white"><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>YouTube Studio - Trang tổng quan kênh</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #161616;
+        color: #f1f1f1;
+        font-family: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1f1f1f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3f3f3f;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            yt: {
+              bg: '#161616',
+              surface: '#212121',
+              sidebar: '#1f1f1f',
+              card: '#212121',
+              hover: '#272727',
+              border: '#2e2e2e',
+              red: '#ff0000',
+              redLight: '#ff4e4e',
+              text: '#f1f1f1',
+              textMuted: '#aaaaaa',
+              blue: '#3ea6ff',
+              green: '#2ba640'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+
+<!-- TOP HEADER -->
+<header class="h-14 bg-[#141416]/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-4 sm:px-6 fixed top-0 left-0 right-0 z-50 select-none shadow-lg shadow-black/40">
+<div class="flex items-center gap-4">
+<button aria-label="Menu" class="p-2 rounded-xl hover:bg-white/10 active:scale-95 transition-all text-[#f1f1f1] flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">menu</span>
+</button>
+<a class="flex items-center gap-2 focus:outline-none group" href="#">
+<div class="w-8 h-6 bg-gradient-to-tr from-[#e50914] to-[#ff4e4e] rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30 group-hover:scale-105 transition-transform">
+<svg class="w-4 h-4 fill-white translate-x-0.5" viewBox="0 0 24 24">
+<path d="M8 5v14l11-7z"></path>
+</svg>
+</div>
+<div class="flex items-baseline gap-1.5">
+<span class="font-bold tracking-tight text-white text-[17px] font-sans">Studio</span>
+<span class="text-[9px] px-1.5 py-0.2 bg-white/10 text-white/80 rounded font-semibold uppercase tracking-widest border border-white/10">VN</span>
+</div>
+</a>
+</div>
+
+<div class="flex-1 max-w-xl mx-6 hidden md:block">
+<div class="relative flex items-center">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/40">
+<span class="material-symbols-outlined text-[19px]">search</span>
+</div>
+<input class="w-full bg-white/[0.04] border border-white/10 focus:border-[#3ea6ff] focus:bg-white/[0.07] rounded-xl py-1.5 pl-10 pr-4 text-sm text-[#f1f1f1] placeholder-white/30 focus:outline-none transition-all shadow-inner" placeholder="Tìm kiếm trên kênh của bạn" type="text">
+</div>
+</div>
+
+<div class="flex items-center gap-2 sm:gap-3">
+<button class="p-2 rounded-xl hover:bg-white/10 text-white/60 hover:text-white transition-all" title="Trợ giúp">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+<button class="flex items-center gap-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white px-4 py-1.5 rounded-full font-medium text-xs sm:text-sm tracking-wide transition-all shadow-lg shadow-red-600/25 active:scale-95">
+<span class="material-symbols-outlined text-[18px]">video_call</span>
+<span class="font-semibold text-[13px] tracking-wide">TẠO</span>
+</button>
+<div class="relative ml-1 cursor-pointer group">
+<img alt="Avatar" class="w-8 h-8 rounded-full object-cover ring-2 ring-red-500/80 group-hover:ring-red-400 group-hover:scale-105 transition-all shadow-md shadow-red-500/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxYM5-T6NbQ6NVDHtC0CTKx7iEqZhF_raLim3LHhqOmpcS2k8jMZmlgDP7zFJf2zex4dGlg40gsPKxVQj6q-gRGJxZM3BzfDHYFN7QP3Ln0pB6DuD8JxGZJeBOJPKgh_EdH-mS82O9Dx2qxkaJATc8QVrOMkT6SAuVf3rfNi4141NeVL0jiyMglcEqrNaZHc_LdKij1c--19s0TDbmwAeLS4CWN6spjRzc05tEGc">
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#161616]"></span>
+</div>
+</div>
+</header>
+<div class="flex flex-1 pt-14 overflow-hidden">
+<!-- LEFT SIDEBAR -->
+<aside class="w-64 bg-[#141416]/70 backdrop-blur-xl border-r border-white/10 flex flex-col justify-between flex-shrink-0 select-none overflow-y-auto hidden lg:flex">
+<div>
+<div class="px-5 py-6 flex flex-col items-center text-center border-b border-white/[0.08]">
+<div class="relative mb-3 group cursor-pointer">
+<div class="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-rose-500 rounded-full blur opacity-40 group-hover:opacity-75 transition-opacity"></div>
+<img alt="Channel Logo" class="relative w-20 h-20 rounded-full object-cover ring-2 ring-white/20 shadow-xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxYM5-T6NbQ6NVDHtC0CTKx7iEqZhF_raLim3LHhqOmpcS2k8jMZmlgDP7zFJf2zex4dGlg40gsPKxVQj6q-gRGJxZM3BzfDHYFN7QP3Ln0pB6DuD8JxGZJeBOJPKgh_EdH-mS82O9Dx2qxkaJATc8QVrOMkT6SAuVf3rfNi4141NeVL0jiyMglcEqrNaZHc_LdKij1c--19s0TDbmwAeLS4CWN6spjRzc05tEGc">
+</div>
+<span class="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full border border-red-500/20 mb-1">Studio Master</span>
+<h2 class="text-[14px] font-semibold text-white tracking-tight">AWS Cloud Arch VN</h2>
+</div>
+
+<nav class="py-3 px-3 space-y-1">
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium rounded-xl bg-gradient-to-r from-red-500/20 to-red-500/5 text-white border border-red-500/30 shadow-sm shadow-red-500/10 relative" href="#">
+<span class="material-symbols-outlined text-[20px] text-red-400">dashboard</span>
+<span class="font-semibold">Trang tổng quan</span>
+<span class="absolute right-3 w-1.5 h-1.5 rounded-full bg-red-400 shadow-sm shadow-red-400"></span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">video_library</span>
+<span class="">Nội dung</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="">Số liệu phân tích</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">comment</span>
+<span class="">Bình luận</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">subtitles</span>
+<span class="">Phụ đề</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">copyright</span>
+<span class="">Bản quyền</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">monetization_on</span>
+<span class="">Kiếm tiền</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+<span class="">Tùy chỉnh</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2.5 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">library_music</span>
+<span class="">Thư viện âm thanh</span>
+</a>
+</nav>
+</div>
+
+<div class="p-3 border-t border-white/[0.08] space-y-1">
+<a class="flex items-center gap-4 px-4 py-2 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="">Cài đặt</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2 text-[14px] font-medium text-white/60 hover:text-white hover:bg-white/[0.06] rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">feedback</span>
+<span class="">Gửi phản hồi</span>
+</a>
+</div>
+</aside>
+<!-- MAIN CONTENT AREA -->
+<main class="flex-1 overflow-y-auto bg-[#161616] p-4 sm:p-6 lg:p-8">
+<div class="max-w-[1440px] mx-auto space-y-6">
+<!-- Page Title & Top Row -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"><div class="">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[11px] font-bold uppercase tracking-wider text-red-500">Bảng điều khiển Studio</span>
+<span class="text-white/20">•</span>
+<span class="text-xs text-white/50">v2.5 Pro Reimagined</span>
+</div>
+<h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Trang tổng quan của kênh</h1>
+<p class="text-xs text-white/60 mt-1">Tổng quan hiệu suất kênh và hoạt động phân phối video thời gian thực</p>
+</div>
+<div class="flex items-center gap-3">
+
+</div></div>
+<!-- 3-COLUMN DASHBOARD GRID -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"><!-- CARD 1: Hiệu suất video mới nhất -->
+<div class="relative group rounded-2xl bg-[#1e1e24]/70 backdrop-blur-xl border p-5 sm:p-6 flex flex-col justify-between shadow-xl transition-all hover:shadow-2xl hover:shadow-red-500/5 border-white/[0.08]">
+<div>
+<div class="flex items-center justify-between pb-3.5 border-b border-white/[0.08]">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500"></div>
+<h3 class="text-[15px] font-bold text-white tracking-tight">Hiệu suất video mới nhất</h3>
+</div>
+<button class="p-1 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-[19px]">more_vert</span>
+</button>
+</div>
+
+<!-- Video Preview -->
+<div class="mt-4 group/thumb cursor-pointer">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-black/60 border border-white/10 shadow-lg">
+<img alt="Latest video thumbnail" class="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWG75euDILAxt0iK0YrD6U1-Suv3GsDLCLs1DLbo8pH-9iipmOaSFpoGtW7_xSLZs6xVrqr_ouxgcx7S7hFrLmLEvzHZNuEoR5IJV0bnYN0zqQcsvo6hgauBfSJUr6mFK-MvGs1uF7xIoCze91Zuxee32FnrcTZWSqFZKwqQq6MT27hAh0eEwb4fWvarMtFcrrow21bYkLN417P9p92VjDmPOEsNJzR7MBPhh6Gso">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<span class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md text-white font-mono text-[11px] px-2 py-0.5 rounded-md font-semibold border border-white/10">18:42</span>
+<div class="absolute top-2.5 left-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full shadow-md shadow-red-600/40 border border-white/20">MỚI ĐĂNG</div>
+</div>
+<h4 class="text-[14px] font-semibold text-white line-clamp-2 mt-3 leading-snug group-hover/thumb:text-[#3ea6ff] transition-colors">
+  Tàn Tro Ánh Sáng: Kiến Trúc Serverless Transcoding &amp; Distributed Edge CDN 4K
+</h4>
+</div>
+
+<!-- Metrics List with Visual Pills -->
+<div class="mt-4 space-y-2.5 pt-3.5 border-t border-white/[0.08]">
+<div class="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
+<span class="text-white/60">Xếp hạng theo lượt xem:</span>
+<span class="font-medium text-white flex items-center gap-1.5">
+<span class="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">1/10</span>
+<span class="text-[11px] text-white/40">(24 giờ đầu)</span>
+</span>
+</div>
+
+<div class="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
+<span class="text-white/60">Lượt xem:</span>
+<div class="flex items-center gap-1.5 font-medium text-white">
+<span class="text-[14px] font-bold text-white tracking-tight">142.500</span>
+<span class="inline-flex items-center text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> +32%
+</span>
+</div>
+</div>
+
+<div class="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
+<span class="text-white/60">Tỷ lệ nhấp (CTR):</span>
+<div class="flex items-center gap-1.5 font-medium text-white">
+<span class="text-[14px] font-bold text-white">8.4%</span>
+<span class="inline-flex items-center text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> +1.8%
+</span>
+</div>
+</div>
+
+<div class="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
+<span class="text-white/60">Thời lượng xem trung bình:</span>
+<div class="flex items-center gap-1.5 font-medium text-white">
+<span class="text-[14px] font-bold text-white">6:18</span>
+<span class="inline-flex items-center text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Bottom link -->
+<div class="mt-5 pt-3 border-t border-white/[0.08]">
+<a class="inline-flex items-center justify-between w-full text-[#3ea6ff] hover:text-[#70beff] text-xs font-bold tracking-wider uppercase transition-colors group/btn" href="#">
+<span class="">CHUYỂN ĐẾN SỐ LIỆU PHÂN TÍCH VIDEO</span>
+<span class="material-symbols-outlined text-[18px] group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+
+<!-- CARD 2: Số liệu phân tích về kênh -->
+<div class="relative group rounded-2xl bg-[#1e1e24]/70 backdrop-blur-xl border p-5 sm:p-6 flex flex-col justify-between shadow-xl transition-all hover:shadow-2xl hover:shadow-blue-500/5 border-white/[0.08]">
+<div>
+<div class="flex items-center justify-between pb-3.5 border-b border-white/[0.08]">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-[#3ea6ff] shadow-sm shadow-blue-500"></div>
+<h3 class="text-[15px] font-bold text-white tracking-tight">Số liệu phân tích về kênh</h3>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/60 font-medium">28 ngày qua</span>
+</div>
+
+<!-- Subscribers Hero Section with Gradient Accent -->
+<div class="py-4 border-b border-white/[0.08]">
+<p class="text-xs text-white/50 font-medium">Số người đăng ký hiện tại</p>
+<div class="flex items-baseline gap-3 mt-1">
+<div class="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/70 tracking-tight">420.580</div>
+<div class="flex items-center gap-1 text-xs text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+<span class="">+12.4K</span>
+</div>
+</div>
+
+<!-- Simulated Sparkline SVG -->
+<div class="mt-3 h-8 w-full">
+<svg class="w-full h-full overflow-visible" viewBox="0 0 280 32">
+<defs>
+<linearGradient id="gradSub" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#2ba640" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#2ba640" stop-opacity="0.0"></stop>
+</linearGradient>
+</defs>
+<path d="M0,26 Q40,24 70,18 T140,15 T210,8 T280,3 L280,32 L0,32 Z" fill="url(#gradSub)"></path>
+<path d="M0,26 Q40,24 70,18 T140,15 T210,8 T280,3" fill="none" stroke="#2ba640" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+</div>
+</div>
+
+<!-- Summary Metrics -->
+<div class="py-3.5 border-b border-white/[0.08] space-y-2">
+<p class="text-[11px] font-bold uppercase tracking-wider text-white/40">Tóm tắt hiệu suất 28 ngày</p>
+<div class="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-white/[0.02]">
+<span class="text-white/60">Lượt xem:</span>
+<div class="flex items-center gap-1.5 font-medium text-white">
+<span class="font-bold text-sm text-white">1.84 Tr</span>
+<span class="material-symbols-outlined text-emerald-400 text-[14px]">arrow_upward</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-white/[0.02]">
+<span class="text-white/60">Thời gian xem (giờ):</span>
+<div class="flex items-center gap-1.5 font-medium text-white">
+<span class="font-bold text-sm text-white">94.2 N</span>
+<span class="material-symbols-outlined text-emerald-400 text-[14px]">arrow_upward</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-emerald-500/[0.05] border border-emerald-500/10">
+<span class="text-emerald-400 font-medium">Doanh thu ước tính:</span>
+<div class="flex items-center gap-1.5 font-medium text-white">
+<span class="font-bold text-sm text-emerald-400">$4,180.50</span>
+<span class="material-symbols-outlined text-emerald-400 text-[14px]">arrow_upward</span>
+</div>
+</div>
+</div>
+
+<!-- Top Videos in 48h -->
+<div class="pt-3">
+<p class="text-[11px] font-bold text-white/40 mb-2 uppercase tracking-wider">Video hàng đầu (48 giờ)</p>
+<div class="space-y-1.5">
+<div class="flex items-center justify-between text-xs hover:bg-white/[0.06] p-2 rounded-lg transition-colors cursor-pointer group/row">
+<span class="truncate max-w-[200px] text-white/90 group-hover/row:text-white font-medium">Đỉnh Gió Rỗng (Master Suite 4K)</span>
+<span class="font-mono font-bold text-white/60 group-hover/row:text-white">38.2K</span>
+</div>
+<div class="flex items-center justify-between text-xs hover:bg-white/[0.06] p-2 rounded-lg transition-colors cursor-pointer group/row">
+<span class="truncate max-w-[200px] text-white/90 group-hover/row:text-white font-medium">Hồi Ức Vô Tận (Director's Cut)</span>
+<span class="font-mono font-bold text-white/60 group-hover/row:text-white">24.8K</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mt-5 pt-3 border-t border-white/[0.08]">
+<a class="inline-flex items-center justify-between w-full text-[#3ea6ff] hover:text-[#70beff] text-xs font-bold tracking-wider uppercase transition-colors group/btn" href="#">
+<span class="">CHUYỂN ĐẾN SỐ LIỆU PHÂN TÍCH KÊNH</span>
+<span class="material-symbols-outlined text-[18px] group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+
+<!-- CARD 3: Bình luận & Tin tức sáng tạo -->
+<div class="space-y-6 flex flex-col justify-between">
+<!-- Bình luận mới nhất -->
+<div class="rounded-2xl bg-[#1e1e24]/70 backdrop-blur-xl border p-5 shadow-xl transition-all border-white/[0.08]">
+<div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-amber-400 shadow-sm shadow-amber-400"></div>
+<h3 class="text-[15px] font-bold text-white tracking-tight">Bình luận mới nhất</h3>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 font-medium">Chưa trả lời</span>
+</div>
+
+<div class="divide-y divide-white/[0.06]">
+<!-- Comment 1 -->
+<div class="py-3 group">
+<div class="flex items-start gap-3">
+<div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/20">
+  T
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold text-white truncate">Trần Hoàng Long</span>
+<span class="text-[11px] text-white/40 font-mono">12m trước</span>
+</div>
+<p class="text-xs text-white/80 mt-1 leading-relaxed">
+  Phần pipeline xử lý chunking 5MB chạy mượt thật sự anh ơi! Giải pháp AV1 SVT tiết kiệm được bao nhiêu chi phí S3 vậy ạ?
+</p>
+<div class="flex items-center gap-3 mt-2 text-white/50">
+<button class="hover:text-red-400 transition-colors flex items-center gap-1 text-[11px]">
+<span class="material-symbols-outlined text-[14px]">favorite</span> Thả tim
+</button>
+<button class="hover:text-[#3ea6ff] transition-colors flex items-center gap-1 text-[11px]">
+<span class="material-symbols-outlined text-[14px]">reply</span> Trả lời
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Comment 2 -->
+<div class="py-3 group">
+<div class="flex items-start gap-3">
+<div class="w-7 h-7 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-md shadow-emerald-500/20">
+  V
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold text-white truncate">Vũ Nguyễn Dev</span>
+<span class="text-[11px] text-white/40 font-mono">1h trước</span>
+</div>
+<p class="text-xs text-white/80 mt-1 leading-relaxed">
+  Chất lượng hình ảnh 4K HDR trên màn OLED xem sướng mắt kinh khủng!
+</p>
+<div class="flex items-center gap-3 mt-2 text-white/50">
+<button class="hover:text-red-400 transition-colors flex items-center gap-1 text-[11px]">
+<span class="material-symbols-outlined text-[14px]">favorite</span> Thả tim
+</button>
+<button class="hover:text-[#3ea6ff] transition-colors flex items-center gap-1 text-[11px]">
+<span class="material-symbols-outlined text-[14px]">reply</span> Trả lời
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="pt-3 border-t border-white/[0.08]">
+<a class="text-[#3ea6ff] hover:text-[#70beff] text-xs font-bold uppercase tracking-wider flex items-center gap-1" href="#">
+<span class="">XEM TẤT CẢ BÌNH LUẬN (184)</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</a>
+</div>
+</div>
+
+<!-- Tin tức & Ý tưởng cho nhà sáng tạo -->
+<div class="rounded-2xl bg-gradient-to-b from-[#241c22]/90 to-[#1e1e24]/70 backdrop-blur-xl border p-5 shadow-xl transition-all border-white/[0.08]">
+<div class="flex items-center gap-2 text-red-400 mb-2.5">
+<span class="material-symbols-outlined text-[18px]">campaign</span>
+<span class="text-[11px] font-bold uppercase tracking-wider text-red-300">Tin tức &amp; Ý tưởng cho nhà sáng tạo</span>
+</div>
+<h4 class="text-[14px] font-bold text-white leading-snug">
+  Bảo vệ kênh của bạn với xác thực 2 bước nâng cao và khóa bảo mật FIDO2
+</h4>
+<p class="text-xs text-white/60 mt-2 leading-relaxed">
+  Tìm hiểu các tiêu chuẩn bảo vệ tài nguyên video và phân quyền tài khoản quản trị Studio mới được YouTube cập nhật.
+</p>
+<div class="mt-3.5">
+<a class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg border border-white/15 transition-all" href="#">
+<span class="">TÌM HIỂU THÊM</span>
+<span class="material-symbols-outlined text-[14px]">launch</span>
+</a>
+</div>
+</div>
+</div></div>
+<!-- CARD 4: Video đã xuất bản gần đây (Full Width Table) -->
+<div class="rounded-2xl bg-[#1e1e24]/70 backdrop-blur-xl border overflow-hidden shadow-xl transition-all border-white/[0.08]">
+<div class="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08]">
+<div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-red-500"></div>
+<h3 class="text-[16px] font-bold text-white tracking-tight">Video đã xuất bản gần đây</h3>
+</div>
+<p class="text-xs text-white/50 mt-1">Danh sách các nội dung phát hành gần nhất trên kênh và chỉ số tương tác</p>
+</div>
+<div class="flex items-center gap-2">
+<a class="px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-[#3ea6ff] hover:bg-[#3ea6ff]/10 border border-[#3ea6ff]/20 hover:border-[#3ea6ff]/40 transition-all flex items-center gap-1" href="#">
+<span class="">XEM NỘI DUNG ĐẦY ĐỦ</span>
+<span class="material-symbols-outlined text-[15px]">open_in_new</span>
+</a>
+</div>
+</div>
+
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left text-xs border-collapse">
+<thead>
+<tr class="bg-white/[0.03] text-white/50 border-b border-white/[0.08] uppercase tracking-wider font-semibold text-[11px]">
+<th class="py-3.5 px-5 font-semibold">Video</th>
+<th class="py-3.5 px-5 font-semibold">Chế độ hiển thị</th>
+<th class="py-3.5 px-5 font-semibold">Giới hạn</th>
+<th class="py-3.5 px-5 font-semibold">Ngày đăng</th>
+<th class="py-3.5 px-5 font-semibold text-right">Lượt xem</th>
+<th class="py-3.5 px-5 font-semibold text-right">Bình luận</th>
+<th class="py-3.5 px-5 font-semibold text-right">Tỷ lệ thích</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/[0.05] text-[#f1f1f1]">
+<!-- Video Row 1 -->
+<tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer">
+<td class="py-3.5 px-5 flex items-center gap-3.5 min-w-[300px]">
+<div class="w-24 aspect-video rounded-lg overflow-hidden bg-black flex-shrink-0 relative border border-white/10 group-hover:scale-105 transition-transform">
+<img alt="Video 1" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWG75euDILAxt0iK0YrD6U1-Suv3GsDLCLs1DLbo8pH-9iipmOaSFpoGtW7_xSLZs6xVrqr_ouxgcx7S7hFrLmLEvzHZNuEoR5IJV0bnYN0zqQcsvo6hgauBfSJUr6mFK-MvGs1uF7xIoCze91Zuxee32FnrcTZWSqFZKwqQq6MT27hAh0eEwb4fWvarMtFcrrow21bYkLN417P9p92VjDmPOEsNJzR7MBPhh6Gso">
+<span class="absolute bottom-1 right-1 bg-black/85 text-white/90 text-[10px] px-1 font-mono rounded font-semibold">18:42</span>
+</div>
+<div>
+<p class="font-semibold text-white group-hover:text-[#3ea6ff] line-clamp-1 text-[13px] transition-colors">
+Tàn Tro Ánh Sáng (Cine-Cut 4K AV1)
+</p>
+<p class="text-[11px] text-white/40 mt-0.5">Thêm mô tả • 24 thg 10, 2025</p>
+</div>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+<span class="material-symbols-outlined text-[15px]">public</span>
+<span class="">Công khai</span>
+</span>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50">Không có</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50 font-mono">24 thg 10, 2025</td>
+<td class="py-3.5 px-5 text-right font-bold text-white font-mono text-[13px]">142.500</td>
+<td class="py-3.5 px-5 text-right text-white/70 font-mono">184</td>
+<td class="py-3.5 px-5 text-right font-bold text-emerald-400 font-mono">98.6%</td>
+</tr>
+
+<!-- Video Row 2 -->
+<tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer">
+<td class="py-3.5 px-5 flex items-center gap-3.5 min-w-[300px]">
+<div class="w-24 aspect-video rounded-lg overflow-hidden bg-black flex-shrink-0 relative border border-white/10 group-hover:scale-105 transition-transform">
+<img alt="Video 2" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvuM9iGsJey3uiA-Epp1K2pyUyT6nipl7dh1WlvNQpz-qCgXXE0k_nnil01ivWXufbkMfOiksz9ev-3UtPMRLQcqEgVzMP0ATbNBvr1Z_mDFwZbJHEGuklnJSEIZ38huUBsAib-M_U5tNkoVrOZu_SB-XrtxPFwDxamHdKXhvcGLrCrxU35HCu7EmIXsoH-oe3w0Bya-DfPpcZy0Q0iO_zY-__BPK3BUJAMuCZBQ0">
+<span class="absolute bottom-1 right-1 bg-black/85 text-white/90 text-[10px] px-1 font-mono rounded font-semibold">24:10</span>
+</div>
+<div>
+<p class="font-semibold text-white group-hover:text-[#3ea6ff] line-clamp-1 text-[13px] transition-colors">
+Đỉnh Gió Rỗng (Master Suite IMAX 65mm)
+</p>
+<p class="text-[11px] text-white/40 mt-0.5">HEVC Main10 • 20 thg 10, 2025</p>
+</div>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+<span class="material-symbols-outlined text-[15px]">public</span>
+<span class="">Công khai</span>
+</span>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50">Không có</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50 font-mono">20 thg 10, 2025</td>
+<td class="py-3.5 px-5 text-right font-bold text-white font-mono text-[13px]">89.420</td>
+<td class="py-3.5 px-5 text-right text-white/70 font-mono">96</td>
+<td class="py-3.5 px-5 text-right font-bold text-emerald-400 font-mono">99.1%</td>
+</tr>
+
+<!-- Video Row 3 -->
+<tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer">
+<td class="py-3.5 px-5 flex items-center gap-3.5 min-w-[300px]">
+<div class="w-24 aspect-video rounded-lg overflow-hidden bg-black flex-shrink-0 relative border border-white/10 group-hover:scale-105 transition-transform">
+<img alt="Video 3" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxYM5-T6NbQ6NVDHtC0CTKx7iEqZhF_raLim3LHhqOmpcS2k8jMZmlgDP7zFJf2zex4dGlg40gsPKxVQj6q-gRGJxZM3BzfDHYFN7QP3Ln0pB6DuD8JxGZJeBOJPKgh_EdH-mS82O9Dx2qxkaJATc8QVrOMkT6SAuVf3rfNi4141NeVL0jiyMglcEqrNaZHc_LdKij1c--19s0TDbmwAeLS4CWN6spjRzc05tEGc">
+<span class="absolute bottom-1 right-1 bg-black/85 text-white/90 text-[10px] px-1 font-mono rounded font-semibold">32:05</span>
+</div>
+<div>
+<p class="font-semibold text-white group-hover:text-[#3ea6ff] line-clamp-1 text-[13px] transition-colors">
+Hồi Ức Vô Tận (Director's Cut HLS Master)
+</p>
+<p class="text-[11px] text-white/40 mt-0.5">Surround 5.1 • 15 thg 10, 2025</p>
+</div>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+<span class="material-symbols-outlined text-[15px]">public</span>
+<span class="">Công khai</span>
+</span>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50">Không có</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50 font-mono">15 thg 10, 2025</td>
+<td class="py-3.5 px-5 text-right font-bold text-white font-mono text-[13px]">64.120</td>
+<td class="py-3.5 px-5 text-right text-white/70 font-mono">72</td>
+<td class="py-3.5 px-5 text-right font-bold text-emerald-400 font-mono">97.8%</td>
+</tr>
+
+<!-- Video Row 4 -->
+<tr class="hover:bg-white/[0.04] transition-colors group cursor-pointer">
+<td class="py-3.5 px-5 flex items-center gap-3.5 min-w-[300px]">
+<div class="w-24 aspect-video rounded-lg overflow-hidden bg-black flex-shrink-0 relative border border-white/10 group-hover:scale-105 transition-transform">
+<img alt="Video 4" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOtEygjo9pTOaLQl3bRCuq8UPHbiTYBR7MLDQA8046bvrTLz7_OAV3N0m9VGLBIgetTiHhvHdWs1pmi8p95-BVHz7nniAx6Fb4AlrEprTp1nByvBGuxNiT_arKKuI4crYfd_1yA11DcGyY5NDD9KPL63ZJtgNXNwrRyZ4RI6x2rfe8hCS78-xWgLZitnR_4KnQWCB1P7yjlRRHxSdLjJmQ4wNXJmWorWlXghlSG2c">
+<span class="absolute bottom-1 right-1 bg-black/85 text-white/90 text-[10px] px-1 font-mono rounded font-semibold">12:15</span>
+</div>
+<div>
+<p class="font-semibold text-white group-hover:text-[#3ea6ff] line-clamp-1 text-[13px] transition-colors">
+Âm Vang Đáy Biển (Documentary 4K HDR)
+</p>
+<p class="text-[11px] text-white/40 mt-0.5">AV1 Multi-bitrate • 08 thg 10, 2025</p>
+</div>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+<span class="material-symbols-outlined text-[15px]">public</span>
+<span class="">Công khai</span>
+</span>
+</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50">Không có</td>
+<td class="py-3.5 px-5 whitespace-nowrap text-white/50 font-mono">08 thg 10, 2025</td>
+<td class="py-3.5 px-5 text-right font-bold text-white font-mono text-[13px]">41.800</td>
+<td class="py-3.5 px-5 text-right text-white/70 font-mono">53</td>
+<td class="py-3.5 px-5 text-right font-bold text-emerald-400 font-mono">98.2%</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="px-5 sm:px-6 py-3.5 bg-white/[0.02] border-t border-white/[0.08] flex items-center justify-between text-xs text-white/50">
+<div class="">Hiển thị 1–4 trong tổng số 48 video</div>
+<div class="flex items-center gap-3">
+<button class="p-1.5 rounded-lg hover:bg-white/10 hover:text-white disabled:opacity-30 transition-all" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="font-mono font-medium text-white/70">Trang 1 / 12</span>
+<button class="p-1.5 rounded-lg hover:bg-white/10 hover:text-white transition-all">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>

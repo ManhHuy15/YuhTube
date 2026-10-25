@@ -45,3 +45,14 @@ export interface VideoUploadResult extends InitiateUploadResponse {
   parts: CompletedPart[]
   completion: CompleteUploadResponse
 }
+
+export type UploadStep = 1 | 2
+export type VisibilityMode = 'public' | 'unlisted' | 'private'
+
+export interface UploadThumbnailItem {
+  id: string
+  time: string
+  url: string
+  alt: string
+}
+

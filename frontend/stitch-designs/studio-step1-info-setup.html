@@ -1,0 +1,406 @@
+<!DOCTYPE html><html class="dark" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>YouTube Studio</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #131315;
+        color: #e5e1e4;
+        font-family: 'Inter', sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1c1b1d;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #353437;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #46464b;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "error-container": "#93000a",
+          "on-secondary-fixed": "#1a1b1f",
+          "secondary-container": "#46464b",
+          "tertiary-container": "#24a09d",
+          "surface-container-highest": "#353437",
+          "on-surface-variant": "#e4beba",
+          "error": "#ffb4ab",
+          "secondary-fixed-dim": "#c6c6cb",
+          "surface-container-lowest": "#0e0e10",
+          "on-background": "#e5e1e4",
+          "surface": "#131315",
+          "surface-tint": "#ffb3ad",
+          "on-surface": "#e5e1e4",
+          "secondary": "#c6c6cb",
+          "secondary-fixed": "#e3e2e7",
+          "on-tertiary-container": "#00302e",
+          "on-error-container": "#ffdad6",
+          "background": "#131315",
+          "on-primary-fixed": "#410004",
+          "on-secondary": "#2f3034",
+          "tertiary-fixed-dim": "#69d8d4",
+          "inverse-surface": "#e5e1e4",
+          "inverse-on-surface": "#313032",
+          "surface-variant": "#353437",
+          "tertiary-fixed": "#87f4f0",
+          "surface-bright": "#39393b",
+          "on-primary": "#68000a",
+          "primary-fixed-dim": "#ffb3ad",
+          "surface-dim": "#131315",
+          "primary-container": "#ff5451",
+          "outline": "#ab8986",
+          "surface-container-low": "#1c1b1d",
+          "primary-fixed": "#ffdad7",
+          "inverse-primary": "#b91a24",
+          "on-tertiary-fixed": "#00201f",
+          "surface-container-high": "#2a2a2c",
+          "tertiary": "#69d8d4",
+          "on-secondary-container": "#b5b4ba",
+          "outline-variant": "#5b403e",
+          "surface-container": "#201f21",
+          "on-error": "#690005",
+          "on-secondary-fixed-variant": "#46464b",
+          "on-primary-fixed-variant": "#930013",
+          "on-tertiary-fixed-variant": "#00504e",
+          "on-primary-container": "#5c0008",
+          "primary": "#ffb3ad",
+          "on-tertiary": "#003736"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        "spacing": {
+          "space-md": "1rem",
+          "gutter-desktop": "1.5rem",
+          "gutter": "1rem",
+          "space-lg": "1.5rem",
+          "margin-desktop": "2rem",
+          "space-xl": "2.5rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "margin": "1rem"
+        },
+        "fontFamily": {
+          "display-lg-mobile": ["Inter"],
+          "headline-lg": ["Inter"],
+          "headline-sm": ["Inter"],
+          "title-md": ["Inter"],
+          "body-lg": ["Inter"],
+          "display-lg": ["Inter"],
+          "label-code-md": ["JetBrains Mono"],
+          "label-code-sm": ["JetBrains Mono"],
+          "body-sm": ["Inter"],
+          "headline-lg-mobile": ["Inter"],
+          "body-md": ["Inter"]
+        },
+        "fontSize": {
+          "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+          "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+          "headline-sm": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+          "title-md": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "500"}],
+          "body-lg": ["15px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}],
+          "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "600"}],
+          "label-code-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400"}],
+          "label-code-sm": ["10px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "500"}],
+          "body-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+          "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+          "body-md": ["13px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}]
+        }
+      }
+    }
+  }
+</script>
+<meta content="web_dashboard" name="shell-type"></head>
+<body class="bg-background text-on-background selection:bg-primary-container selection:text-on-primary">
+<!-- TOP HEADER -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-low/95 backdrop-blur-md border-b border-outline-variant/30 select-none">
+<div class="h-14 flex items-center justify-between px-gutter">
+<div class="flex items-center gap-space-md">
+<button aria-label="Menu" class="p-space-xs rounded hover:bg-surface-container-highest transition-colors text-on-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">menu</span>
+</button>
+<a class="flex items-center gap-space-xs focus:outline-none group" data-path="dashboard" href="#">
+<div class="w-7 h-5 bg-primary-container rounded flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-[15px] text-on-primary-container">play_arrow</span>
+</div>
+<div class="flex items-baseline gap-space-xs">
+<span class="font-headline-sm text-title-md font-semibold tracking-tight text-on-surface">Studio</span>
+<span class="font-label-code-sm text-[10px] px-1 py-0.5 bg-surface-container text-secondary rounded border border-outline-variant/30">VN</span>
+</div>
+</a>
+</div>
+<div class="flex-1 max-w-xl mx-gutter-desktop hidden md:block">
+<div class="relative flex items-center">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-secondary">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</div>
+<input class="w-full bg-surface-container-lowest border border-outline-variant/40 focus:border-tertiary focus:bg-surface-container-low rounded py-1.5 pl-9 pr-space-md font-body-md text-on-surface placeholder:text-secondary-fixed-dim/50 focus:outline-none transition-all" placeholder="Tìm kiếm trên kênh của bạn" type="text">
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="p-space-xs rounded hover:bg-surface-container-highest text-secondary hover:text-on-surface transition-colors" title="Trợ giúp">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+<a class="flex items-center gap-space-xs bg-primary-container hover:bg-primary text-on-primary font-title-md text-body-md px-space-md py-1.5 rounded-full font-medium tracking-wide transition-all shadow-sm active:scale-95" data-path="upload-video" href="#" title="Tạo video">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span class="font-medium">TẠO</span>
+</a>
+<div class="relative ml-space-xs cursor-pointer group">
+<img alt="Avatar" class="w-8 h-8 rounded-full object-cover transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASxYM5-T6NbQ6NVDHtC0CTKx7iEqZhF_raLim3LHhqOmpcS2k8jMZmlgDP7zFJf2zex4dGlg40gsPKxVQj6q-gRGJxZM3BzfDHYFN7QP3Ln0pB6DuD8JxGZJeBOJPKgh_EdH-mS82O9Dx2qxkaJATc8QVrOMkT6SAuVf3rfNi4141NeVL0jiyMglcEqrNaZHc_LdKij1c--19s0TDbmwAeLS4CWN6spjRzc05tEGc">
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-tertiary-container rounded-full border-2 border-surface"></span>
+</div>
+</div>
+</div>
+</header>
+<!-- SIDEBAR -->
+
+<!-- MAIN CONTENT AREA -->
+<main class="pt-14 lg:pl-64 min-h-screen bg-background"><div class="flex flex-col w-full">
+<div class="relative w-full min-h-[calc(100vh-3.5rem)] p-space-md lg:p-gutter-desktop flex items-center justify-center">
+<!-- Backdrop Pattern Subtle Tech Grid -->
+<div class="absolute inset-0 bg-surface-container-lowest opacity-60 pointer-events-none"></div>
+<!-- Main Upload Window (Two-Step Clean Architecture) -->
+<div class="relative z-10 w-full max-w-6xl bg-surface-container-low rounded-xl shadow-xl flex flex-col overflow-hidden">
+<!-- Top Modal Header -->
+<header class="px-gutter md:px-gutter-desktop py-space-md bg-surface-container flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-lg flex-wrap">
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">
+          Tải video lên
+        </h1>
+<nav aria-label="Tiến trình tải lên" class="flex items-center gap-space-sm font-label-code-md text-label-code-md">
+<div class="flex items-center gap-space-xs text-on-surface font-medium">
+<span class="w-5 h-5 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-[11px]">
+              1
+            </span>
+<span class="text-on-surface font-semibold">1. Thông tin &amp; Thiết lập</span>
+</div>
+<span class="text-secondary/40 font-mono">/</span>
+<div class="flex items-center gap-space-xs text-secondary opacity-70">
+<span class="w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary font-bold text-[11px]">
+              2
+            </span>
+<span class="">2. Xem trước &amp; Xuất bản</span>
+</div>
+</nav>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="p-space-xs rounded text-secondary hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Thu nhỏ" type="button">
+<span class="material-symbols-outlined text-[20px]">minimize</span>
+</button>
+<button class="p-space-xs rounded text-secondary hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Đóng cửa sổ" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</header>
+<!-- Main Layout Body (2 Columns Asymmetric) -->
+<div class="p-gutter-desktop grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
+<!-- Left Column: Core Metadata & Form Details (7 Cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- Section 1: Title Input -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-code-sm uppercase tracking-wider text-secondary flex items-center gap-1" for="video-title">
+                Tiêu đề video <span class="text-primary font-bold">*</span>
+</label>
+<span class="font-label-code-sm text-secondary" id="title-char-counter">84/100</span>
+</div>
+<div class="relative bg-surface-container-lowest rounded-lg p-2.5 focus-within:bg-surface-container-high transition-colors">
+<input class="w-full bg-transparent font-title-md text-on-surface focus:outline-none placeholder:text-secondary-fixed-dim/40" id="video-title" maxlength="100" placeholder="Thêm tiêu đề mô tả ngắn gọn nội dung của bạn" type="text" value="Xây dựng Pipeline Video Streaming Serverless với AWS Lambda &amp; MediaConvert">
+</div>
+</div>
+<!-- Section 2: Technical Description -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-code-sm uppercase tracking-wider text-secondary" for="video-desc">Mô tả tóm tắt</label>
+<span class="font-label-code-sm text-secondary">Hỗ trợ Markdown &amp; Timestamps</span>
+</div>
+<div class="bg-surface-container-lowest rounded-lg flex flex-col overflow-hidden">
+<!-- Micro Markdown Toolbar -->
+<div class="flex items-center gap-space-xs px-space-sm py-1.5 bg-surface-container">
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="In đậm" type="button">
+<span class="material-symbols-outlined text-[16px]">format_bold</span>
+</button>
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="In nghiêng" type="button">
+<span class="material-symbols-outlined text-[16px]">format_italic</span>
+</button>
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Chèn liên kết" type="button">
+<span class="material-symbols-outlined text-[16px]">link</span>
+</button>
+<button class="p-1 rounded text-secondary hover:text-on-surface hover:bg-surface-container-highest transition-colors" title="Mã khối" type="button">
+<span class="material-symbols-outlined text-[16px]">code</span>
+</button>
+<div class="w-px h-3 bg-secondary-container mx-1"></div>
+<span class="font-label-code-sm text-[10px] text-secondary">#Serverless #AWS #HLS</span>
+</div>
+<textarea class="w-full bg-transparent p-3 font-body-md text-on-surface focus:outline-none resize-none placeholder:text-secondary-fixed-dim/40 leading-relaxed" id="video-desc" rows="5">Hướng dẫn chi tiết quy trình xử lý luồng phát video trực tuyến (HLS/DASH) sử dụng kiến trúc phi máy chủ hoàn toàn trên AWS. Phân tích tối ưu chi phí chuyển đổi mã (transcoding) qua AWS Elemental MediaConvert, kết hợp trigger từ S3 thông qua EventBridge và Lambda orchestrator.</textarea>
+</div>
+</div>
+<!-- Section 3: Thumbnail Selector (Custom & Auto 16:9 extracts) -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-label-code-sm uppercase tracking-wider text-secondary">Ảnh bìa (Thumbnail)</span>
+<p class="font-body-sm text-secondary">Chọn hoặc tải lên một hình ảnh thể hiện nội dung video</p>
+</div>
+<span class="font-label-code-sm text-tertiary">Chuẩn 1280x720</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-1">
+<!-- Custom Upload Slot -->
+<div class="aspect-video bg-surface-container rounded-lg p-2 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-surface-container-highest transition-colors group">
+<span class="material-symbols-outlined text-[20px] text-secondary group-hover:text-primary transition-colors">add_photo_alternate</span>
+<span class="font-label-code-sm text-on-surface mt-1">Tải ảnh lên</span>
+<span class="font-label-code-sm text-[9px] text-secondary">PNG, JPG ≤ 2MB</span>
+</div>
+<!-- Extracted Thumb 1 (Active Chosen) -->
+<div class="aspect-video relative rounded-lg overflow-hidden cursor-pointer group bg-surface-container-lowest ring-2 ring-primary-container">
+<img class="w-full h-full object-cover" data-alt="Dark aesthetic workstation screen exhibiting serverless cloud architecture diagrams with terminal displays and code lines in crimson and obsidian dark style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4E4jMqLlx55GZG4iIh4qCVgJ9j-EDWIzLI5l61BpEIxiYdFiPWwNoi9K9leWX5RkY3sGy9jFMv7dC5Yj9rl4imaJ44sy23cka5Tks9VcVOQ8TleH3wa1-GdRWE0GqODKW5ktX5J_sWkaaT41RQx9u62vneLaEDUpNoATIu4eUe6Hq_ekO3hWljlBQ9Fnd1dtTiiH-3tLIrt1pxsuTOsZHyT3lUphutF847QxSUQJc3QOtX4eGFszo">
+<div class="absolute inset-0 bg-primary-container/20 flex items-start justify-end p-1">
+<span class="w-4 h-4 rounded-full bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[12px] font-bold">check</span>
+</span>
+</div>
+<div class="absolute bottom-1 left-1.5 font-label-code-sm text-[9px] px-1 rounded bg-surface-container-lowest/80 text-on-surface">00:04:12</div>
+</div>
+<!-- Extracted Thumb 2 -->
+<div class="aspect-video relative rounded-lg overflow-hidden cursor-pointer group bg-surface-container-lowest opacity-70 hover:opacity-100 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="Technical code editor showing AWS Lambda Node.js function implementation for MediaConvert pipeline execution in dark obsidian theme" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdBaTLU-nEyB_VNb1WwGxckZmqbIyFgZw9C4EAipdjviH5i_x2IxK3GxPO6ziCxKn6W_FEPX-Lv7pVhil9Q1y5Muf1gb4ne2GDXpaW9rSKhq4Gc34e6k6NPzdGcq6-VK4NJTf6UeszHvKqTf0GaU6ccUOPUP5qndxrpMWp6lQDUQm_p2CmaNgC73aZHzA4TCc2a26F5gecvRkMP6naP2uwybnYnk1lc_q6FFEYkQtgJEyIEcH50YLA">
+<div class="absolute bottom-1 left-1.5 font-label-code-sm text-[9px] px-1 rounded bg-surface-container-lowest/80 text-on-surface">00:15:38</div>
+</div>
+<!-- Extracted Thumb 3 -->
+<div class="aspect-video relative rounded-lg overflow-hidden cursor-pointer group bg-surface-container-lowest opacity-70 hover:opacity-100 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="Cloud monitoring latency graph dashboard with bitrate graphs and video transcoding metrics under clean dark mode" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKZmes_4dX9Jaf4gk2ZnJuKVBivZRWR40sHxrO0lVajBsgAwDeIQW_lcfQlhEG3-qBkADv2guVkWyWkCbem-D88OmL1sSNv1rha_nd5bjHyHjYclt_ZTlRBgk5JKD0DEyFRpc1w-5iQKYzN-3M9FREcX37-B4Oe5ucetnTk7awF4bW7CL9BI1J7t2HCvRVQ6EnWfEvxX3s3L-0LeulQOMAcqth6Yy0M18OEiLqU4WenXiLnclZWe7K">
+<div class="absolute bottom-1 left-1.5 font-label-code-sm text-[9px] px-1 rounded bg-surface-container-lowest/80 text-on-surface">00:24:02</div>
+</div>
+</div>
+</div>
+<!-- Section 4: Fast Visibility Selector (Integrated into Step 1) -->
+
+</div>
+<!-- Right Column: Status File Pipeline & Compact Preview (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<!-- Sticky Visualizer Card -->
+<div class="bg-surface-container rounded-xl p-space-md flex flex-col gap-space-md">
+<!-- 16:9 Video Preview Tile -->
+<div class="w-full aspect-video rounded-lg overflow-hidden relative bg-surface-container-lowest group">
+<img class="w-full h-full object-cover" data-alt="High tech preview of an AWS serverless architecture video in crisp 4K HDR quality with dark monochrome visual style and subtle red telemetry" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdE0n_E9DHWRQhzm2GTrFJVFkaciFIdy8HzKLFK0QUIn_dYdjrpNm6PeECjK39FMpv2g453TtjTyIAA0wr7B3IkNxDVifB1rIXBGW3Ylghzu89yQgNcDSq0I1WtM5FThZGbhRex8dty7z8fQfeofITV19W0MmUE2aTXFzWkhkT3362vYsLzN7ngYAtr1VOpBXaB158CpY_8piwYrEQqqLFMNymVWFqYzwb6GsA24qz6LL9eQ-eBzo7">
+<!-- Floating Resolution Badges -->
+<div class="absolute top-2 left-2 flex items-center gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest/90 font-label-code-sm text-[10px] text-tertiary font-bold">4K HDR</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest/90 font-label-code-sm text-[10px] text-on-surface">60 FPS</span>
+</div>
+<div class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-surface-container-lowest/90 font-label-code-sm text-[11px] text-on-surface">
+                28:45
+              </div>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-surface-container-lowest/50 transition-opacity">
+<span class="material-symbols-outlined text-[36px] text-on-surface">play_circle</span>
+</div>
+</div>
+<!-- Video Destination Link Box -->
+<div class="bg-surface-container-lowest rounded-lg p-space-sm flex flex-col gap-1">
+<span class="font-label-code-sm uppercase tracking-wider text-secondary">Đường liên kết của video</span>
+<div class="flex items-center justify-between gap-space-sm">
+<a class="font-label-code-md text-tertiary hover:underline truncate select-all" href="#" id="video-link">https://yuhtube.vn/watch?v=s3-stream-99</a>
+<button class="p-1 rounded bg-surface-container hover:bg-surface-bright text-secondary hover:text-on-surface transition-colors" onclick="navigator.clipboard.writeText('https://yuhtube.vn/watch?v=s3-stream-99')" title="Sao chép liên kết" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<!-- File Metadata Specs -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-secondary font-label-code-sm">Tên tệp:</span>
+<span class="text-on-surface font-label-code-sm truncate max-w-[200px]">serverless_streaming_pipeline_final.mp4</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-secondary font-label-code-sm">Kích thước file:</span>
+<span class="text-on-surface font-label-code-sm">12.4 GB</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-secondary font-label-code-sm">Bộ mã hóa (Codec):</span>
+<span class="text-on-surface font-label-code-sm">AV1 / AAC-LC</span>
+</div>
+</div>
+<!-- Pipeline Status Bar -->
+<div class="bg-surface-container-lowest rounded-lg p-space-sm space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label-code-sm text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                  Đã tải lên 100%
+                </span>
+<span class="font-label-code-sm text-tertiary">MediaConvert Sẵn sàng</span>
+</div>
+<!-- Custom 2px Hairline Progress Bar -->
+<div class="w-full h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-full"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] font-label-code-sm text-secondary">
+<span class="">ABR 4K/1080p/720p</span>
+<span class="">0.00s trễ xử lý</span>
+</div>
+</div>
+<!-- Background Checks Micro Indicator (No bloat copyright tabs) -->
+<div class="flex items-center justify-between px-space-sm py-2 rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[18px]">verified</span>
+<span class="font-body-sm text-on-surface">Kiểm tra tự động ngầm: <span class="text-tertiary font-medium">Hoàn tất</span></span>
+</div>
+<span class="font-label-code-sm text-secondary text-[10px]">Hệ thống sẵn sàng</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Modal: Fast Save Status & Navigation Action -->
+<div class="px-gutter-desktop py-space-md bg-surface-container flex items-center justify-between">
+<!-- Auto-save Draft Status -->
+<div class="flex items-center gap-2 text-secondary">
+<span class="material-symbols-outlined text-[18px] text-tertiary">cloud_done</span>
+<span class="font-body-sm text-secondary">Tất cả thay đổi đã được tự động lưu vào bản nháp</span>
+</div>
+<!-- Control Buttons -->
+<div class="flex items-center gap-space-md">
+<button class="px-space-md py-2 rounded font-title-md text-body-md text-secondary hover:text-on-surface hover:bg-surface-container-highest transition-colors" type="button">
+            Hủy
+          </button>
+<!-- Primary CTA Button (Flat Red #ef4444 style, zero glow) -->
+<button class="px-space-lg py-2 rounded bg-primary-container hover:bg-inverse-primary text-on-primary font-title-md text-body-md font-medium tracking-wide flex items-center gap-space-xs transition-colors" type="button">
+<span class="">Tiếp tục sang Bước 2</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div></main>
+
+
+
+
+
+
+</body></html>

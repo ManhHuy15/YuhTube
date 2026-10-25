@@ -1,0 +1,607 @@
+<!DOCTYPE html><html class="dark" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Xây dựng Pipeline Video Streaming Serverless chuẩn công nghiệp từ S3 đến CloudFront - YuhTube</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            yt: {
+              black: "#0f0f0f",
+              dark: "#212121",
+              card: "#272727",
+              hover: "#383838",
+              border: "#303030",
+              red: "#ff0000",
+              light: "#f1f1f1",
+              muted: "#aaaaaa",
+              blue: "#3ea6ff"
+            }
+          },
+          fontFamily: {
+            sans: ['Roboto', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f0f0f;
+        color: #f1f1f1;
+        font-family: 'Roboto', sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #444;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f0f0f;
+    }
+  </style>
+</head>
+<body class="bg-yt-black text-yt-light min-h-screen">
+<!-- YOUTUBE TOP NAVIGATION BAR -->
+<header class="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f]/80 backdrop-blur-md z-50 flex items-center justify-between px-4 select-none border-b border-white/10">
+<!-- Left: Hamburger Menu & YuhTube Logo -->
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-white/10 rounded-full text-yt-light transition-colors" title="Trình đơn hướng dẫn">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<a class="flex items-center gap-1 group" href="#">
+<div class="flex items-center gap-1.5">
+<div class="w-7 h-5 bg-gradient-to-tr from-red-600 to-rose-500 rounded-[6px] flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px] fill-1" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<span class="font-bold text-[18px] tracking-tighter text-white">Yuh<span class="font-semibold text-yt-light">Tube</span></span>
+<span class="text-[10px] text-rose-400 font-semibold px-1 py-0.2 bg-rose-500/10 border border-rose-500/20 rounded font-mono ml-0.5">PRO</span>
+</div>
+</a>
+</div>
+<!-- Center: Search Bar & Mic -->
+<div class="flex items-center gap-3 w-full max-w-[680px] mx-4 justify-center">
+<div class="flex items-center w-full max-w-[540px]">
+<div class="flex items-center w-full h-10 px-4 bg-white/5 border border-white/10 rounded-l-full focus-within:border-sky-400/80 focus-within:ring-1 focus-within:ring-sky-400/50 backdrop-blur-sm transition-all">
+<span class="material-symbols-outlined text-yt-muted text-[20px] mr-3 hidden sm:block">search</span>
+<input class="w-full bg-transparent text-sm text-yt-light placeholder-yt-muted focus:outline-none border-none p-0" placeholder="Tìm kiếm" type="text" value="Xây dựng Pipeline Video Streaming Serverless">
+</div>
+<button class="h-10 px-6 bg-white/[0.08] hover:bg-white/[0.14] border border-l-0 border-white/10 rounded-r-full flex items-center justify-center transition-colors" title="Tìm kiếm">
+<span class="material-symbols-outlined text-yt-light text-[22px]">search</span>
+</button>
+</div>
+<button class="w-10 h-10 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/10 flex items-center justify-center shrink-0 transition-colors backdrop-blur-sm" title="Tìm kiếm bằng giọng nói">
+<span class="material-symbols-outlined text-yt-light text-[20px] fill-1" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<!-- Right: Create, Notification & Profile -->
+<div class="flex items-center gap-2">
+<button class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/10 text-sm font-medium transition-colors backdrop-blur-sm">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Tạo</span>
+</button>
+<button class="p-2 hover:bg-white/10 rounded-full text-yt-light relative transition-colors" title="Thông báo">
+<span class="material-symbols-outlined text-[24px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-[#0f0f0f]"></span>
+</button>
+<div class="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 via-rose-500 to-amber-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer ml-1">
+        YH
+      </div>
+</div>
+</header>
+<!-- MAIN WATCH PAGE CONTAINER (2 COLUMNS) -->
+<main class="pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-[1760px] mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- LEFT COLUMN: PRIMARY PLAYER & DETAILS (~70%) -->
+<section class="lg:col-span-8 flex flex-col">
+<!-- YOUTUBE VIDEO PLAYER 16:9 WITH CONTROLS -->
+<div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl group select-none" id="playerContainer"><div class="absolute top-3.5 right-3.5 z-20 flex items-center gap-2 pointer-events-none">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/5 text-white/90 text-[11px] font-mono tracking-tight font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+<span class="">4K HDR</span>
+<span class="text-white/40">•</span>
+<span class="">60fps</span>
+<span class="text-white/40">•</span>
+<span class="text-sky-300 font-semibold">AV1 HW</span>
+</div>
+</div>
+<!-- Video Frame / Background Still -->
+<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAnYTLsHj2qMDgVEMqKEHRQvihTUd7-bNdZ9Mwk9uhCFW0l4yRLG2PtXUlw3Ohfj8YUB4VsHs3B1cpHKRkIRsmUTC77faOwiilrxEAK-ebU0dLye6XvrZK3GebYYQuW_r6n5oqUSdTlsGxEt3AMrZcwPCzJSjnNKVSrcHOC8sjESu02VrXiysUa2ePFhRENZc0C6goQRjmvOy-13snDl0f5u3hxJZlmFhruDexvES0')">
+<div class="absolute inset-0 bg-black/25"></div>
+</div>
+<!-- Quick Pause/Play Center Click Animation Area -->
+<div class="absolute inset-0 flex items-center justify-center cursor-pointer" onclick="togglePlay()">
+<div class="w-16 h-16 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center transition-all duration-300 opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100" id="centerPlayRipple">
+<span class="material-symbols-outlined text-[40px] text-white" id="centerIcon">play_arrow</span>
+</div>
+</div>
+<!-- YouTube Player Controls Bottom Gradient Bar -->
+<div class="absolute bottom-0 left-0 right-0 pt-10 pb-2 px-3 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-end gap-1 transition-opacity duration-300 opacity-90 group-hover:opacity-100">
+<!-- Red Scrubber Progress Bar -->
+<div class="relative w-full h-3 flex items-center cursor-pointer group/scrub" onclick="seekVideo(event)">
+<div class="w-full h-1 group-hover/scrub:h-1.5 bg-white/20 rounded-none relative transition-all">
+<!-- Buffer Bar -->
+<div class="absolute left-0 top-0 h-full w-[62%] bg-white/40"></div>
+<!-- Played Bar (#ff0000) -->
+<div class="absolute left-0 top-0 h-full w-[37.4%] bg-red-600" id="scrubProgress"></div>
+</div>
+<!-- Scrubber Thumb Pill -->
+<div class="absolute left-[37.4%] -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-red-600 transition-transform duration-75 scale-0 group-hover/scrub:scale-100" id="scrubHead"></div>
+</div>
+<!-- YouTube Bottom Bar Buttons -->
+<div class="flex items-center justify-between text-white text-sm">
+<!-- Left controls -->
+<div class="flex items-center gap-3">
+<button class="p-1 hover:text-white/80 transition-colors" onclick="togglePlay()" title="Phát (k)">
+<span class="material-symbols-outlined text-[26px] fill-1" id="ctrlPlayIcon" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="p-1 hover:text-white/80 transition-colors" title="Video tiếp theo (SHIFT+n)">
+<span class="material-symbols-outlined text-[24px] fill-1" style="font-variation-settings: 'FILL' 1;">skip_next</span>
+</button>
+<div class="flex items-center gap-1.5 group/volume">
+<button class="p-1 hover:text-white/80 transition-colors" title="Tắt tiếng (m)">
+<span class="material-symbols-outlined text-[24px]">volume_up</span>
+</button>
+<div class="w-14 h-1 bg-white/30 rounded-full overflow-hidden">
+<div class="w-4/5 h-full bg-white"></div>
+</div>
+</div>
+<div class="text-xs text-yt-light/90 font-sans tracking-tight ml-2">
+<span id="playerCurrentTime" class="">14:28</span> / <span class="">38:50</span>
+</div>
+</div>
+<!-- Right controls -->
+<div class="flex items-center gap-1.5">
+<button class="p-1.5 hover:text-white/80 transition-colors" title="Phụ đề (c)">
+<span class="material-symbols-outlined text-[22px]">closed_caption</span>
+</button>
+<button class="p-1.5 hover:text-white/80 transition-colors" title="Cài đặt">
+<span class="material-symbols-outlined text-[22px]">settings</span>
+</button>
+<button class="p-1.5 hover:text-white/80 transition-colors" title="Trình phát thu nhỏ (i)">
+<span class="material-symbols-outlined text-[22px]">picture_in_picture_alt</span>
+</button>
+<button class="p-1.5 hover:text-white/80 transition-colors" title="Chế độ rạp chiếu phim (t)">
+<span class="material-symbols-outlined text-[22px]">crop_landscape</span>
+</button>
+<button class="p-1.5 hover:text-white/80 transition-colors" title="Toàn màn hình (f)">
+<span class="material-symbols-outlined text-[22px]">fullscreen</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- VIDEO TITLE -->
+<h1 class="text-xl sm:text-2xl font-bold text-white mt-3.5 leading-snug">
+          Xây dựng Pipeline Video Streaming Serverless chuẩn công nghiệp từ S3 đến CloudFront đa thiết bị
+        </h1>
+<!-- CHANNEL & ACTIONS ROW -->
+<div class="flex flex-wrap items-center justify-between gap-4 mt-3 pb-3 border-b border-yt-border/40"><!-- Channel Info Left -->
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full bg-gradient-to-tr from-sky-950 to-blue-900 border border-white/5 flex items-center justify-center font-bold text-sky-300 text-sm shrink-0">
+<span class="material-symbols-outlined text-[22px]">cloud_sync</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-medium text-white hover:text-sky-300 cursor-pointer text-sm sm:text-base transition-colors">AWS Cloud Arch VN</span>
+<span class="material-symbols-outlined text-sky-400 text-[16px] fill-1" style="font-variation-settings: 'FILL' 1;" title="Đã xác minh">verified</span>
+</div>
+<span class="text-xs text-yt-muted font-normal">420 N người đăng ký</span>
+</div>
+<button class="ml-2 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.15] border border-white/5 text-sm font-medium text-white transition-all backdrop-blur-sm">
+              Tham gia
+            </button>
+<button class="px-5 py-2 rounded-full bg-white hover:bg-neutral-200 text-black text-sm font-semibold transition-all hover:scale-[1.02]">
+              Đăng ký
+            </button>
+</div>
+<!-- YouTube Modern Frosted Pill Action Buttons Right -->
+<div class="flex items-center gap-2 overflow-x-auto max-w-full pb-1 scrollbar-none">
+<!-- Like / Dislike pill group -->
+<div class="flex items-center bg-white/[0.08] hover:bg-white/[0.12] border border-white/5 rounded-full overflow-hidden shrink-0 backdrop-blur-md transition-colors">
+<button class="flex items-center gap-1.5 px-3.5 py-2 hover:bg-white/10 transition-colors text-sm font-medium text-white">
+<span class="material-symbols-outlined text-[18px]">thumb_up</span>
+<span class="">14 N</span>
+</button>
+<div class="w-[1px] h-4 bg-white/10"></div>
+<button class="px-3 py-2 hover:bg-white/10 transition-colors text-white" title="Tôi không thích video này">
+<span class="material-symbols-outlined text-[18px]">thumb_down</span>
+</button>
+</div>
+<!-- Share Button -->
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/5 text-sm font-medium text-white transition-colors shrink-0 backdrop-blur-md">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span class="">Chia sẻ</span>
+</button>
+<!-- Download Button -->
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/5 text-sm font-medium text-white transition-colors shrink-0 backdrop-blur-md">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span class="">Tải xuống</span>
+</button>
+<!-- Thanks Button -->
+<button class="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/5 text-sm font-medium text-white transition-colors shrink-0 backdrop-blur-md">
+<span class="material-symbols-outlined text-[18px] text-rose-400">favorite</span>
+<span class="">Cảm ơn</span>
+</button>
+<!-- Clip Button -->
+<button class="hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/5 text-sm font-medium text-white transition-colors shrink-0 backdrop-blur-md">
+<span class="material-symbols-outlined text-[18px]">content_cut</span>
+<span class="">Tạo đoạn video</span>
+</button>
+<!-- Save Button -->
+<button class="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/5 text-sm font-medium text-white transition-colors shrink-0 backdrop-blur-md">
+<span class="material-symbols-outlined text-[18px]">playlist_add</span>
+<span class="">Lưu</span>
+</button>
+<!-- More 3 dots -->
+<button class="p-2 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/5 text-white transition-colors shrink-0 backdrop-blur-md" title="Thao tác khác">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</button>
+</div></div>
+<!-- YOUTUBE DESCRIPTION BOX -->
+<div class="mt-4 p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/5 backdrop-blur-md transition-all text-sm leading-relaxed cursor-pointer">
+<!-- Views and Date -->
+<div class="flex flex-wrap items-center gap-2 font-medium text-white mb-2">
+<span class="font-semibold text-white/95">142.500 lượt xem</span>
+<span class="text-white/30">•</span>
+<span class="text-white/80">Đã công chiếu ngày 24 thg 5, 2024</span>
+<div class="flex items-center gap-2 text-sky-400 font-medium ml-2">
+<a class="hover:text-sky-300 transition-colors px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-xs text-sky-300" href="#">#Serverless</a>
+<a class="hover:text-sky-300 transition-colors px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-xs text-sky-300" href="#">#AWS</a>
+<a class="hover:text-sky-300 transition-colors px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-xs text-sky-300" href="#">#HLS</a>
+</div>
+</div>
+<!-- Description Text Body -->
+<p class="text-yt-light/90 mb-3.5 leading-relaxed font-normal">
+            Hướng dẫn kỹ thuật chi tiết xây dựng hệ thống chuyển mã (transcoding) và phát trực tuyến thích ứng đa tốc độ (ABR) đạt tiêu chuẩn phát sóng 4K HDR Dolby Vision sử dụng hoàn toàn hạ tầng Serverless AWS: S3 Ingestion, Step Functions điều phối hàng nghìn phiên bản FFmpeg song song trên Lambda, tối ưu chi phí hạ tầng giảm hơn 68%.
+          </p>
+<!-- Interactive Chapters List -->
+<div class="space-y-2 pt-3 border-t border-white/5 text-xs sm:text-sm">
+<div class="font-semibold text-white/90 flex items-center gap-2 mb-1.5">
+<span class="material-symbols-outlined text-[18px] text-sky-400">format_list_bulleted</span>
+<span class="">Các mốc thời gian (Chapters):</span>
+</div>
+<div class="flex items-center gap-2.5 hover:bg-white/5 p-1.5 rounded-lg transition-colors cursor-pointer group" onclick="jumpChapter(0)">
+<span class="bg-white/5 text-sky-300 border border-white/5 px-2 py-0.5 rounded-md font-mono text-xs font-medium">00:00</span>
+<span class="text-yt-light group-hover:text-white transition-colors">Tổng quan &amp; Thách thức độ trễ phát trực tiếp</span>
+</div>
+<div class="flex items-center gap-2.5 hover:bg-white/5 p-1.5 rounded-lg transition-colors cursor-pointer group" onclick="jumpChapter(252)">
+<span class="bg-white/5 text-sky-300 border border-white/5 px-2 py-0.5 rounded-md font-mono text-xs font-medium">04:12</span>
+<span class="text-yt-light group-hover:text-white transition-colors">S3 Event Trigger &amp; Multipart Chunk Ingestion</span>
+</div>
+<div class="flex items-center gap-2.5 bg-white/5 border border-white/5 p-1.5 rounded-lg transition-colors cursor-pointer group" onclick="jumpChapter(868)">
+<span class="bg-white/10 text-sky-200 border border-white/5 px-2 py-0.5 rounded-md font-mono text-xs font-bold">14:28</span>
+<span class="text-sky-300 font-semibold flex items-center gap-2">
+  Lambda FFmpeg Matrix &amp; Đồng bộ PTS/DTS
+  <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 bg-red-500/20 text-red-400 border border-transparent rounded">Đang phát</span>
+</span>
+</div>
+<div class="flex items-center gap-2.5 hover:bg-white/5 p-1.5 rounded-lg transition-colors cursor-pointer group" onclick="jumpChapter(1600)">
+<span class="bg-white/5 text-sky-300 border border-white/5 px-2 py-0.5 rounded-md font-mono text-xs font-medium">26:40</span>
+<span class="text-yt-light group-hover:text-white transition-colors">CloudFront Edge Origin Shield &amp; Token Auth</span>
+</div>
+</div>
+<div class="mt-3 pt-1 text-xs text-yt-muted font-medium hover:text-white transition-colors flex items-center gap-1">
+<span class="">Hiển thị thêm cấu hình &amp; tài liệu đính kèm</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</div>
+</div>
+<!-- COMMENTS SECTION -->
+<div class="mt-6">
+<!-- Comments Header & Sort -->
+<div class="flex items-center gap-8 mb-6">
+<h3 class="text-xl font-bold text-white">1.280 bình luận</h3>
+<button class="flex items-center gap-2 font-medium text-sm text-yt-light hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">sort</span>
+<span>Sắp xếp theo</span>
+</button>
+</div>
+<!-- Add Comment Input Box -->
+<div class="flex items-start gap-4 mb-8">
+<div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-yt-red flex items-center justify-center text-xs font-bold text-white shrink-0">
+              YH
+            </div>
+<div class="flex-1 flex flex-col">
+<input class="w-full bg-transparent border-0 border-b border-yt-border pb-1 text-sm text-yt-light placeholder-yt-muted focus:border-white focus:ring-0 focus:outline-none transition-colors" placeholder="Viết bình luận..." type="text">
+<div class="flex items-center justify-between pt-2">
+<button class="p-1 text-yt-muted hover:text-white">
+<span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
+</button>
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 rounded-full hover:bg-yt-card text-sm font-medium text-yt-light transition-colors">Hủy</button>
+<button class="px-4 py-2 rounded-full bg-yt-card text-sm font-medium text-yt-muted cursor-not-allowed">Bình luận</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Comments List -->
+<div class="space-y-6">
+<!-- PINNED COMMENT -->
+<div class="space-y-2">
+<div class="flex items-center gap-1.5 text-xs text-yt-muted font-medium">
+<span class="material-symbols-outlined text-[14px]">keep</span>
+<span>Được ghim bởi AWS Cloud Arch VN</span>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-[#1b3a5b] flex items-center justify-center font-bold text-sky-300 text-sm shrink-0">
+<span class="material-symbols-outlined text-[18px]">cloud_sync</span>
+</div>
+<div class="flex-1 space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium bg-[#303030] px-2 py-0.5 rounded-full text-white flex items-center gap-1">
+                      @AWSCloudArchVN
+                      <span class="material-symbols-outlined text-[12px] fill-1" style="font-variation-settings: 'FILL' 1;">check</span>
+</span>
+<span class="text-xs text-yt-muted">3 ngày trước</span>
+</div>
+<p class="text-sm text-yt-light leading-relaxed">
+                    Source code Terraform module và cấu hình FFmpeg matrix đã được cập nhật đầy đủ tại GitHub repo. Anh em lưu ý cần tăng quota cho Lambda vCPU trong Region trước khi kích hoạt chạy test nhé!
+                  </p>
+<div class="flex items-center gap-3 pt-1 text-xs text-yt-muted">
+<button class="flex items-center gap-1 hover:text-white">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>358</span>
+</button>
+<button class="hover:text-white">
+<span class="material-symbols-outlined text-[16px]">thumb_down</span>
+</button>
+<button class="font-medium hover:text-white ml-2">Phản hồi</button>
+</div>
+</div>
+</div>
+</div>
+<!-- REGULAR COMMENT 1 -->
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center font-bold text-white text-xs shrink-0">
+                TH
+              </div>
+<div class="flex-1 space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-white">@tran-hai-nam-sre</span>
+<span class="text-xs text-yt-muted">1 ngày trước</span>
+</div>
+<p class="text-sm text-yt-light leading-relaxed">
+                  Ở phút 14:28 khi encode song song các chunk, giải pháp cờ -copyts kết hợp edit list atom cực kỳ chuẩn xác! Đội mình từng bị vỡ âm thanh khi chuyển cảnh trên iOS Safari nếu không có atom này. Cảm ơn tác giả chia sẻ sâu sắc!
+                </p>
+<div class="flex items-center gap-3 pt-1 text-xs text-yt-muted">
+<button class="flex items-center gap-1 hover:text-white">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>42</span>
+</button>
+<button class="hover:text-white">
+<span class="material-symbols-outlined text-[16px]">thumb_down</span>
+</button>
+<button class="font-medium hover:text-white ml-2">Phản hồi</button>
+</div>
+</div>
+</div>
+<!-- REGULAR COMMENT 2 -->
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-emerald-800 flex items-center justify-center font-bold text-emerald-200 text-xs shrink-0">
+                QB
+              </div>
+<div class="flex-1 space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-white">@quocbao-devops</span>
+<span class="text-xs text-yt-muted">18 giờ trước</span>
+</div>
+<p class="text-sm text-yt-light leading-relaxed">
+                  Cho mình hỏi thêm về chi phí lưu trữ tạm thời trên S3 Ingest khi người dùng tải lên đồng thời nhiều video hàng chục GB thì xử lý lifecycle rule như thế nào là tối ưu nhất anh?
+                </p>
+<div class="flex items-center gap-3 pt-1 text-xs text-yt-muted">
+<button class="flex items-center gap-1 hover:text-white">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>11</span>
+</button>
+<button class="hover:text-white">
+<span class="material-symbols-outlined text-[16px]">thumb_down</span>
+</button>
+<button class="font-medium hover:text-white ml-2">Phản hồi</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: RELATED & SUGGESTED VIDEOS (~30%) -->
+<aside class="lg:col-span-4 flex flex-col space-y-3">
+<!-- Filter Chips Carousel -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+<button class="px-3 py-1.5 rounded-lg bg-white text-black text-xs font-medium shrink-0">Tất cả</button>
+<button class="px-3 py-1.5 rounded-lg bg-yt-card hover:bg-yt-hover text-yt-light text-xs font-medium shrink-0 transition-colors">Của kênh này</button>
+<button class="px-3 py-1.5 rounded-lg bg-yt-card hover:bg-yt-hover text-yt-light text-xs font-medium shrink-0 transition-colors">Video liên quan</button>
+<button class="px-3 py-1.5 rounded-lg bg-yt-card hover:bg-yt-hover text-yt-light text-xs font-medium shrink-0 transition-colors">Mới tải lên</button>
+</div>
+<!-- Video Recommendations List (Horizontal Cards) -->
+<div class="space-y-3.5">
+<!-- Recommended Card 1 -->
+<div class="flex gap-2.5 p-1.5 rounded-xl hover:bg-white/[0.05] border border-transparent hover:border-white/5 transition-all group cursor-pointer">
+<div class="relative w-40 h-24 rounded-lg overflow-hidden shrink-0 bg-neutral-900 border border-white/5">
+<img alt="DynamoDB" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhaQzhTPLGcuG3GY9PVw_19J_qcZrGhL4ziA6SRvllGlxE84VD12vpLksHrZLf8YgRHsOzhJXWauHczL9WbPU5wExnykRz7CMvsY9JccYL-2UsNdwUjPCQjP1j2SgDV7I9Zxegrfvzsbr0RDenP8TheiE3ked3eLf0b1TbC-hiIA2_aMyEKvymchzyN_SgXYEEmQhsz_jVWLODP3iCZQZbbKdVCe6M9FWNxFV8gmk">
+<span class="absolute top-1 left-1 bg-black/60 backdrop-blur-sm border border-white/5 text-[9px] font-mono font-medium text-white/80 px-1.5 py-0.5 rounded">4K HDR</span>
+<span class="absolute bottom-1 right-1 bg-black/85 backdrop-blur-sm text-[10px] font-mono font-medium text-white px-1.5 py-0.5 rounded">42:10</span>
+</div>
+<div class="flex flex-col justify-start min-w-0 flex-1">
+<h4 class="text-sm font-medium text-white line-clamp-2 leading-tight group-hover:text-sky-300 transition-colors">
+                Thiết Kế CSDL Toàn Cầu với DynamoDB Global Tables &amp; Event Sourcing
+              </h4>
+<div class="flex items-center gap-1 text-xs text-yt-muted mt-1.5">
+<span>Đỗ Quốc Bảo</span>
+<span class="material-symbols-outlined text-[13px] text-sky-400 fill-1" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-xs text-yt-muted">
+                45 N lượt xem • 3 ngày trước
+              </div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-yt-muted hover:text-white transition-opacity self-start">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Recommended Card 2 -->
+<div class="flex gap-2.5 p-1.5 rounded-xl hover:bg-white/[0.05] border border-transparent hover:border-white/5 transition-all group cursor-pointer">
+<div class="relative w-40 h-24 rounded-lg overflow-hidden shrink-0 bg-neutral-900 border border-white/5">
+<img alt="Kubernetes" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkzO7qY5TSx_3u-Tf6wM7WjkKmmtnvabmgZodzQrE-GhK4MqFXg_Sk3gK8rElX8pPSR65isJdgZVZ1ZU-R15OF6Pgck-s4Qn_nHkoED4Hi_CqG2WSSSpuulKJfuZ2PJCNimqO_WSUR8gyZmbfDFcB4AIDXBp88e2s-h5JjwH5UZttC-c6zON9Z9OQpXy87sHaPI6v2XUEWJTH21FPKjn-Z70C-jUfyZ6e3qoq_fE--_-E6wBVSpYzj">
+<span class="absolute top-1 left-1 bg-black/60 backdrop-blur-sm border border-white/5 text-[9px] font-mono font-medium text-white/80 px-1.5 py-0.5 rounded">1080p60</span>
+<span class="absolute bottom-1 right-1 bg-black/85 backdrop-blur-sm text-[10px] font-mono font-medium text-white px-1.5 py-0.5 rounded">28:45</span>
+</div>
+<div class="flex flex-col justify-start min-w-0 flex-1">
+<h4 class="text-sm font-medium text-white line-clamp-2 leading-tight group-hover:text-sky-300 transition-colors">
+                Zero-Downtime EKS Blue/Green Deployment với Argo Rollouts và Envoy
+              </h4>
+<div class="flex items-center gap-1 text-xs text-yt-muted mt-1.5">
+<span>Cloud Native VN</span>
+<span class="material-symbols-outlined text-[13px] text-sky-400 fill-1" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-xs text-yt-muted">
+                28 N lượt xem • 1 tuần trước
+              </div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-yt-muted hover:text-white transition-opacity self-start">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Recommended Card 3 -->
+<div class="flex gap-2.5 p-1.5 rounded-xl hover:bg-white/[0.05] border border-transparent hover:border-white/5 transition-all group cursor-pointer">
+<div class="relative w-40 h-24 rounded-lg overflow-hidden shrink-0 bg-neutral-900 border border-white/5">
+<img alt="Edge Computing" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBvkY4xecvfr2Kj7Fve8gKSuHpilTIYfjhgU4pBs_BuHH4muBNtypjx04oZeiWItF4T77lmJpnp1m4VAHyBvOAQw6KFxwBpT-ioklqhB40rABz-6naSnECYi7NzcIEf_yNxWP5i1udTdNikeoxlCBG4rPAV_3rI9wJBgOU-z_Ok87LcRVvdZjsXa1bikpum6vFewhdU3k42VSl1yUDA7hXOVM4DkYjGj-N06smHvgjCJtrZ6GjNlYI">
+<span class="absolute top-1 left-1 bg-black/60 backdrop-blur-sm border border-white/5 text-[9px] font-mono font-medium text-white/80 px-1.5 py-0.5 rounded">4K HDR</span>
+<span class="absolute bottom-1 right-1 bg-black/85 backdrop-blur-sm text-[10px] font-mono font-medium text-white px-1.5 py-0.5 rounded">19:14</span>
+</div>
+<div class="flex flex-col justify-start min-w-0 flex-1">
+<h4 class="text-sm font-medium text-white line-clamp-2 leading-tight group-hover:text-sky-300 transition-colors">
+                Bảo vệ Luồng Streaming trước DDOS với CloudFront Security Shield
+              </h4>
+<div class="flex items-center gap-1 text-xs text-yt-muted mt-1.5">
+<span>AWS Cloud Arch VN</span>
+<span class="material-symbols-outlined text-[13px] text-sky-400 fill-1" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-xs text-yt-muted">
+                89 N lượt xem • 2 tuần trước
+              </div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-yt-muted hover:text-white transition-opacity self-start">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Recommended Card 4 -->
+<div class="flex gap-2.5 p-1.5 rounded-xl hover:bg-white/[0.05] border border-transparent hover:border-white/5 transition-all group cursor-pointer">
+<div class="relative w-40 h-24 rounded-lg overflow-hidden shrink-0 bg-neutral-900 border border-white/5">
+<img alt="WebAssembly" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXYLtHVN74X99kaEFBe9aWWSolzGmn0x10IoxlwwdTXYCyyG2WlVN7qRegtpg3czwanDhOLKrnbFee8WhS_MeY8vpGb9j9wIjek9lRhF14kv6kLj4bO_VRjt7JATDOkx1Y-aHKYlnVTkKv0X_bpd-Yxad6Xh2Tt34eTYfpHkdYTJHyOWovC60FtMR3Y-KfWh2pDZXiinjnDkaueVnY76hCYPlINRD32WlyTfiYyC1pAnJPVOULNX1S">
+<span class="absolute top-1 left-1 bg-black/60 backdrop-blur-sm border border-white/5 text-[9px] font-mono font-medium text-white/80 px-1.5 py-0.5 rounded">1080p60</span>
+<span class="absolute bottom-1 right-1 bg-black/85 backdrop-blur-sm text-[10px] font-mono font-medium text-white px-1.5 py-0.5 rounded">34:50</span>
+</div>
+<div class="flex flex-col justify-start min-w-0 flex-1">
+<h4 class="text-sm font-medium text-white line-clamp-2 leading-tight group-hover:text-sky-300 transition-colors">
+                Chạy FFmpeg trực tiếp trên Trình duyệt bằng WebAssembly (Wasm)
+              </h4>
+<div class="flex items-center gap-1 text-xs text-yt-muted mt-1.5">
+<span>Frontend Dev VN</span>
+</div>
+<div class="text-xs text-yt-muted">
+                12 N lượt xem • 1 tháng trước
+              </div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-yt-muted hover:text-white transition-opacity self-start">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Recommended Card 5 -->
+<div class="flex gap-2.5 p-1.5 rounded-xl hover:bg-white/[0.05] border border-transparent hover:border-white/5 transition-all group cursor-pointer">
+<div class="relative w-40 h-24 rounded-lg overflow-hidden shrink-0 bg-neutral-900 border border-white/5">
+<img alt="Cybersecurity" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4JxPi3NRjbQeqtqJAxR81pN0cmrMbPj8XVV81qRnreD8GlSg1d3NO2Vn05iYYz-QDX0uIw2vkaodnwSrAqxguuTL-TuKXtds_0aFeYHyy8wHxfcYMD1YL0e3B_bevrCuOs9EEsuE83m06y15o7eWjRTprOl00NfuHzXbD5ZqyLBXJSpdTXqDwjqBg3t9yNYA5ZC9cd6xuiSMBJM5-1mlC1qXWuIXOeH_5Nc_CRN4hnyYEmh57o3d9">
+<span class="absolute top-1 left-1 bg-black/60 backdrop-blur-sm border border-white/5 text-[9px] font-mono font-medium text-white/80 px-1.5 py-0.5 rounded">4K HDR</span>
+<span class="absolute bottom-1 right-1 bg-black/85 backdrop-blur-sm text-[10px] font-mono font-medium text-white px-1.5 py-0.5 rounded">22:05</span>
+</div>
+<div class="flex flex-col justify-start min-w-0 flex-1">
+<h4 class="text-sm font-medium text-white line-clamp-2 leading-tight group-hover:text-sky-300 transition-colors">
+                Ký số Token URL cho HLS Streams với AWS CloudFront &amp; KMS
+              </h4>
+<div class="flex items-center gap-1 text-xs text-yt-muted mt-1.5">
+<span>AWS Cloud Arch VN</span>
+<span class="material-symbols-outlined text-[13px] text-sky-400 fill-1" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-xs text-yt-muted">
+                53 N lượt xem • 1 tháng trước
+              </div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-yt-muted hover:text-white transition-opacity self-start">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Interactive YouTube Player Scripts -->
+<script>
+    let isPlaying = false;
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const centerIcon = document.getElementById('centerIcon');
+      const ctrlIcon = document.getElementById('ctrlPlayIcon');
+      const ripple = document.getElementById('centerPlayRipple');
+
+      if (isPlaying) {
+        centerIcon.textContent = 'pause';
+        ctrlIcon.textContent = 'pause';
+      } else {
+        centerIcon.textContent = 'play_arrow';
+        ctrlIcon.textContent = 'play_arrow';
+      }
+
+      // Flash feedback ripple
+      ripple.classList.remove('opacity-0', 'scale-90');
+      ripple.classList.add('opacity-100', 'scale-110');
+      setTimeout(() => {
+        ripple.classList.remove('opacity-100', 'scale-110');
+        ripple.classList.add('opacity-0', 'scale-90');
+      }, 400);
+    }
+
+    function jumpChapter(seconds) {
+      const totalSeconds = 38 * 60 + 50; // 38:50 = 2330s
+      const pct = Math.min(100, Math.max(0, (seconds / totalSeconds) * 100));
+
+      const scrubProgress = document.getElementById('scrubProgress');
+      const scrubHead = document.getElementById('scrubHead');
+      const currentTimeLabel = document.getElementById('playerCurrentTime');
+
+      scrubProgress.style.width = pct + '%';
+      scrubHead.style.left = pct + '%';
+
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      currentTimeLabel.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+      // Auto play when jumped
+      if (!isPlaying) togglePlay();
+    }
+
+    function seekVideo(event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const percentage = Math.min(100, Math.max(0, (clickX / rect.width) * 100));
+
+      const totalSeconds = 38 * 60 + 50;
+      const currentSec = Math.floor((percentage / 100) * totalSeconds);
+      jumpChapter(currentSec);
+    }
+  </script>
+
+
+</body></html>

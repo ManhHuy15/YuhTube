@@ -1,0 +1,545 @@
+<!DOCTYPE html><html class="dark" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>YuhTube - Trang chủ</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #0f0f0f;
+        color: #f1f1f1;
+        font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+    }
+    /* Custom thin scrollbar for YouTube navigation */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #717171;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a0a0a0;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            yt: {
+              black: "#0f0f0f",
+              surface: "#1f1f1f",
+              border: "#272727",
+              hover: "#272727",
+              lightHover: "#3f3f3f",
+              text: "#f1f1f1",
+              muted: "#aaaaaa",
+              red: "#ff0000"
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-yt-black text-yt-text min-h-screen flex flex-col">
+<!-- 1. TOP HEADER / NAVIGATION BAR -->
+<header class="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-yt-border/40 z-50 flex items-center justify-between px-4 select-none">
+<!-- Left Section: Hamburger & Brand -->
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover active:bg-yt-lightHover transition-colors cursor-pointer text-yt-text" title="Hướng dẫn">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+</button>
+<a class="flex items-center gap-2 group py-1" href="#" title="Trang chủ YuhTube">
+<div class="relative flex items-center">
+<div class="w-[32px] h-[22px] bg-gradient-to-tr from-[#93000a] to-[#ff5451] rounded-[7px] flex items-center justify-center shadow-md shadow-red-950/40">
+<svg class="w-2.5 h-2.5 text-white fill-current ml-0.5" viewBox="0 0 24 24">
+<path d="M8 5v14l11-7z"></path>
+</svg>
+</div>
+</div>
+<div class="relative flex items-center">
+<span class="font-bold text-[19px] tracking-tight text-white font-['Roboto'] leading-none">Yuh<span class="text-[#ff5451]">Tube</span></span>
+<span class="text-[9px] text-[#ffb3ad] bg-[#ff5451]/15 px-1 py-0.5 rounded font-semibold ml-1.5 leading-none uppercase tracking-wider">VN</span>
+</div>
+</a>
+</div>
+<!-- Center Section: Search Bar & Voice Search -->
+<div class="flex items-center justify-center flex-1 max-w-2xl px-4">
+<div class="flex items-center w-full max-w-xl group">
+<div class="flex items-center flex-1 h-10 rounded-l-full border border-yt-border bg-[#121212]/90 pl-4 pr-3 overflow-hidden transition-all">
+<span class="material-symbols-outlined text-[18px] text-yt-muted mr-2">search</span>
+<input class="w-full bg-transparent text-sm text-yt-text placeholder-yt-muted focus:outline-none border-none py-1" placeholder="Tìm kiếm video, công nghệ, kênh..." type="text">
+<span class="text-[10px] text-yt-muted/70 border border-yt-border px-1.5 py-0.5 rounded font-mono hidden sm:inline-block">/</span>
+</div>
+<button class="w-16 h-10 rounded-r-full border border-l-0 border-yt-border bg-yt-surface hover:bg-yt-hover flex items-center justify-center transition-colors cursor-pointer text-yt-muted hover:text-white" title="Tìm kiếm">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+</div>
+<button class="w-10 h-10 ml-3 rounded-full bg-yt-surface hover:bg-yt-hover border border-yt-border/30 flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 text-yt-muted hover:text-white" title="Tìm kiếm bằng giọng nói">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+</div>
+<!-- Right Section: Create, Notifications, Profile Avatar -->
+<div class="flex items-center gap-2.5">
+<button class="hidden sm:flex items-center gap-2 h-9 px-3.5 rounded-full bg-yt-surface hover:bg-yt-hover border border-yt-border/50 text-sm font-medium transition-colors cursor-pointer text-yt-text">
+<span class="material-symbols-outlined text-[20px] text-[#ff5451]">video_call</span>
+<span class="">Tạo</span>
+</button>
+<button class="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-yt-hover transition-colors cursor-pointer text-yt-text" title="Thông báo">
+<span class="material-symbols-outlined text-[22px]">notifications</span>
+<span class="absolute top-2 right-2 min-w-[16px] h-4 px-1 rounded-full bg-[#ff5451] text-white text-[10px] font-bold flex items-center justify-center border-2 border-yt-black">9+</span>
+</button>
+<button class="w-9 h-9 ml-1 rounded-full overflow-hidden border border-yt-border/60 transition-all focus:outline-none cursor-pointer ring-1 ring-white/10">
+<div class="w-full h-full bg-gradient-to-tr from-[#93000a] to-[#ff5451] flex items-center justify-center text-white font-bold text-sm">
+  Y
+</div>
+</button>
+</div>
+</header>
+<!-- BODY CONTENT AREA (SIDEBAR + MAIN FEED) -->
+<div class="flex pt-14 w-full">
+<!-- 2. LEFT SIDEBAR (FIXED WIDTH 240px) -->
+<aside class="w-60 h-[calc(100vh-56px)] fixed top-14 left-0 overflow-y-auto px-3 py-3 space-y-3 bg-yt-black/95 backdrop-blur-md border-r border-yt-border/40 select-none z-40 hidden md:block">
+<!-- Section 1: Main navigation (Trang chủ, Shorts, Subscriptions) -->
+<div class="space-y-1">
+<a class="flex items-center gap-5 px-3 py-2.5 rounded-lg bg-white/10 text-white font-medium text-sm transition-all pl-3.5" href="#">
+<span class="material-symbols-outlined text-[22px] text-[#ff5451]" style="font-variation-settings: 'FILL' 1;">home</span>
+<span>Trang chủ</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2.5 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px] text-yt-muted">bolt</span>
+<span>Shorts</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2.5 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[22px] text-yt-muted">subscriptions</span>
+<span>Kênh đăng ký</span>
+</a>
+</div>
+<div class="h-[1px] bg-yt-border/50"></div>
+<!-- Section 2: "Bạn >" (You) -->
+<div class="space-y-1">
+<a class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-yt-hover text-white font-semibold text-sm transition-colors group" href="#">
+<span>Bạn</span>
+<span class="material-symbols-outlined text-[18px] text-yt-muted group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">account_box</span>
+<span>Kênh của bạn</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">history</span>
+<span>Lịch sử</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">smart_display</span>
+<span>Video của bạn</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">schedule</span>
+<span>Xem sau</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">thumb_up</span>
+<span>Video đã thích</span>
+</a>
+</div>
+<div class="h-[1px] bg-yt-border/50"></div>
+<!-- Section 3: Subscribed Channels -->
+<div class="space-y-1">
+<h3 class="px-3 text-xs font-semibold uppercase tracking-wider text-yt-muted/80 pb-1">Kênh đăng ký</h3>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-yt-hover text-sm transition-colors" href="#">
+<div class="flex items-center gap-3.5">
+<div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">AWS</div>
+<span class="truncate max-w-[120px] text-yt-text">AWS Cloud TV</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-[#3ea6ff]"></span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-yt-hover text-sm transition-colors" href="#">
+<div class="flex items-center gap-3.5">
+<div class="w-6 h-6 rounded-full bg-[#ff5451] flex items-center justify-center text-[10px] font-bold text-white shadow-sm">YUH</div>
+<span class="truncate max-w-[120px] text-yt-text font-medium">YUH Cinema Lab</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-[#ff5451]"></span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-yt-hover text-sm transition-colors" href="#">
+<div class="flex items-center gap-3.5">
+<div class="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">LN</div>
+<span class="truncate max-w-[120px] text-yt-text">Lê Hoàng Nam Tech</span>
+</div>
+<span class="w-1.5 h-1.5 rounded-full bg-[#3ea6ff]"></span>
+</a>
+<a class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-yt-hover text-sm transition-colors" href="#">
+<div class="flex items-center gap-3.5">
+<div class="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">KV</div>
+<span class="truncate max-w-[120px] text-yt-text">Dr. Kim Vũ Video</span>
+</div>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-sm text-yt-muted hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+<span>Hiển thị thêm 42 kênh</span>
+</a>
+</div>
+<div class="h-[1px] bg-yt-border/50"></div>
+<!-- Section 4: Explore (Khám phá) -->
+<div class="space-y-1">
+<h3 class="px-3 text-xs font-semibold uppercase tracking-wider text-yt-muted/80 pb-1">Khám phá</h3>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">local_fire_department</span>
+<span>Thịnh hành</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">music_note</span>
+<span>Âm nhạc</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">sports_esports</span>
+<span>Trò chơi</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">newspaper</span>
+<span>Tin tức</span>
+</a>
+<a class="flex items-center gap-5 px-3 py-2 rounded-lg hover:bg-yt-hover text-yt-text text-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px] text-yt-muted">trophy</span>
+<span>Thể thao</span>
+</a>
+</div>
+<div class="h-[1px] bg-yt-border/50"></div>
+<!-- Section 5: Settings, Reports, Help -->
+<div class="px-3 pt-2 text-[11px] text-yt-muted space-y-2 leading-relaxed">
+<div class="flex flex-wrap gap-x-2">
+<a class="hover:underline" href="#">Giới thiệu</a>
+<a class="hover:underline" href="#">Báo chí</a>
+<a class="hover:underline" href="#">Bản quyền</a>
+<a class="hover:underline" href="#">Liên hệ</a>
+<a class="hover:underline" href="#">Điều khoản</a>
+<a class="hover:underline" href="#">Quyền riêng tư</a>
+</div>
+<p class="text-yt-muted/70 pt-1">© 2025 YuhTube LLC</p>
+</div>
+</aside>
+<!-- MAIN FEED WRAPPER (Offset by sidebar 240px on md+) -->
+<main class="flex-1 md:ml-60 min-w-0 bg-yt-black px-4 sm:px-6 py-3">
+<!-- 3. TOP TAGS / FILTER CHIPS (HORIZONTAL PILL ROW) -->
+<div class="sticky top-14 z-30 bg-yt-black/95 backdrop-blur-md py-3 -mx-4 sm:-mx-6 px-4 sm:px-6 border-b border-yt-border/40"><div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar scroll-smooth py-0.5">
+<!-- Active Frosted Pill -->
+<button class="h-8 px-4 rounded-full bg-white text-black font-semibold text-xs flex-shrink-0 transition-all hover:bg-white/95">
+Tất cả
+</button>
+<!-- Inactive Frosted Pills -->
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Trò chơi
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Âm nhạc
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Trực tiếp
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Khoa học máy tính
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Hạ tầng Cloud &amp; Serverless
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Lập trình
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Mới tải lên
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Đã xem
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Đề xuất mới
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Hoạt hình
+</button>
+<button class="h-8 px-3.5 rounded-full bg-yt-surface/80 hover:bg-yt-hover text-yt-text font-normal text-xs flex-shrink-0 border border-yt-border/40 hover:border-yt-border transition-all hover:text-white">
+Podcast
+</button>
+</div></div>
+<!-- 4. CLASSIC YOUTUBE VIDEO FEEDS GRID (Responsive 4 COLUMNS on large screens) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-8 pt-4"><!-- Video 1 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8uDP1XpYnVoglO8VyiOj7VIAAAL7XXMH8PxUoLgykZii_RkuA6YI9JiDld-XSmVdn1HrdbngBPl0bdAgo9QdozQqh1iUcjv7eMCRsTbW9fr80FQcQatB1PYfwB-Huaq6E6R3mn1xzcMG9ojtNLdxPeHnhhJqrIowOufm17Ltdp_fzXVBHsPDEqzst_8OWvKRKAVO5-y6bQhCV23gScG3mEFE_mhWIhl2dhe_yrB8">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-[#ff5451] tracking-wider border border-[#ff5451]/30">4K HDR</span>
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-medium text-white/90 border border-white/10">AV1</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+38:50
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-gradient-to-tr from-[#93000a] to-[#ff5451] flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+<span class="material-symbols-outlined text-[18px]">smart_display</span>
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-[#ffb3ad] transition-colors" title="Kiến Trúc Phân Tán Video: Giải Mã Hạ Tầng Triệu View Không Cần Server">
+Kiến Trúc Phân Tán Video: Giải Mã Hạ Tầng Triệu View Không Cần Server
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">YUH Cinema Lab</span>
+<span class="material-symbols-outlined text-[14px] text-[#ff5451]" style="font-variation-settings: 'FILL' 1;" title="Đã xác minh">check_circle</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+128 N lượt xem • 2 ngày trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Video 2 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXLlfc87Up73f0ZKGwD4SWM21eqaQuwWIdYHpdjEabDWTncV8TDNQlyecz9cmLsprKZ-Y56j-GgAGEoUYZ_At5Jo_UOTs3CeH2HlfRH9S5DhiaH32Ur5KX87IqlfGEBAUMW20KN--GhDTbZ_kHNCwpqWEV72Wy4ryuDz5Z2za-_XbwPe0UGZ_AQQDzOhFMiVOJrOimsNUuoaoEdhDAEQTVfOkYKq_5xOHLnsydVH0">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-[#3ea6ff] tracking-wider border border-[#3ea6ff]/30">60 FPS</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+14:28
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-blue-600 flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+LN
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-blue-300 transition-colors" title="Đường Truyền Cáp Quang Đáy Biển: Vận Chuyển 40 Terabits/s Hoạt Động Thế Nào?">
+Đường Truyền Cáp Quang Đáy Biển: Vận Chuyển 40 Terabits/s Hoạt Động Thế Nào?
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">Lê Hoàng Nam Tech</span>
+<span class="material-symbols-outlined text-[14px] text-yt-muted" style="font-variation-settings: 'FILL' 1;" title="Đã xác minh">check_circle</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+452 N lượt xem • 5 ngày trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Video 3 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN6aj5TxBu-PyuGiw2H-wUOaOVsCTXeaLwmeG3Mq1N3Yqdg350bE8LDJrZAF2y4fw2lYyT5MLvY4Uj9gHrRVehIxURLeUBtC36hiRPLS4m7UncJ1C_xubw-7WO3Ee5PK-kOArxsR1pIm47P_pdXJlXHz5QFhJ48lsaDKYl9wTdI0O4z6v-ivxYsOxKP9Qa4-4TcKXgQce3N74-u0-8tugWD0XXgP1BeAuOwaU9Yks">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-purple-400 tracking-wider border border-purple-500/30">AV1 BENCH</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+24:15
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-purple-700 flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+KV
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-purple-300 transition-colors" title="Chip Phần Cứng Mã Hóa AV1 Thế Hệ Mới: Benchmark Thực Nghiệm vs H.265">
+Chip Phần Cứng Mã Hóa AV1 Thế Hệ Mới: Benchmark Thực Nghiệm vs H.265
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">Dr. Kim Vũ Video Lead</span>
+<span class="material-symbols-outlined text-[14px] text-yt-muted" style="font-variation-settings: 'FILL' 1;" title="Đã xác minh">check_circle</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+1,4 Tr lượt xem • 1 tuần trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Video 4 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqcjVsq057ark3Wp8D5xEKPs-MFVWeVy7t2gruQ3ZT9a7GCx7s9vYtY0sboMnpAvqHOje3CMPUDM9ShF1JACV24-IbxMNhsfWeOPPDmsRwKroVXg7phqk7s76YA3ExoBuUsLGQh7VdfAW5c2NS3ni8WFVg4jjc284GYh6770A4e788DUuItMgoha8RhYjoIIpqmLjiZMk8uww0IJ6zd0ZDwP3ic9UVGN0Ujl4dqb8">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-emerald-400 tracking-wider border border-emerald-500/30">ATMOS</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+42:50
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-emerald-700 flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+M
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-emerald-300 transition-colors" title="Kỹ Thuật Phối Âm Dolby Atmos Không Gian Trong Phòng Thu Chuyên Nghiệp">
+Kỹ Thuật Phối Âm Dolby Atmos Không Gian Trong Phòng Thu Chuyên Nghiệp
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">Minh Đỗ Sound Studio</span>
+<span class="material-symbols-outlined text-[14px] text-yt-muted" style="font-variation-settings: 'FILL' 1;" title="Đã xác minh">check_circle</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+89 N lượt xem • 3 tuần trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Video 5 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN6aj5TxBu-PyuGiw2H-wUOaOVsCTXeaLwmeG3Mq1N3Yqdg350bE8LDJrZAF2y4fw2lYyT5MLvY4Uj9gHrRVehIxURLeUBtC36hiRPLS4m7UncJ1C_xubw-7WO3Ee5PK-kOArxsR1pIm47P_pdXJlXHz5QFhJ48lsaDKYl9wTdI0O4z6v-ivxYsOxKP9Qa4-4TcKXgQce3N74-u0-8tugWD0XXgP1BeAuOwaU9Yks">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-cyan-400 tracking-wider border border-cyan-500/30">LIVE LAB</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+18:04
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-cyan-700 flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+GO
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-cyan-300 transition-colors" title="Tự Xây Dựng Streaming Server Bằng Golang &amp; WebRTC Trong 20 Phút">
+Tự Xây Dựng Streaming Server Bằng Golang &amp; WebRTC Trong 20 Phút
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">DevOps &amp; Backend VN</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+210 N lượt xem • 1 tháng trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Video 6 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8uDP1XpYnVoglO8VyiOj7VIAAAL7XXMH8PxUoLgykZii_RkuA6YI9JiDld-XSmVdn1HrdbngBPl0bdAgo9QdozQqh1iUcjv7eMCRsTbW9fr80FQcQatB1PYfwB-Huaq6E6R3mn1xzcMG9ojtNLdxPeHnhhJqrIowOufm17Ltdp_fzXVBHsPDEqzst_8OWvKRKAVO5-y6bQhCV23gScG3mEFE_mhWIhl2dhe_yrB8">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-amber-400 tracking-wider border border-amber-500/30">ARCH</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+56:12
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-amber-600 flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+KTS
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-amber-300 transition-colors" title="Deep Dive Anycast DNS và Mạng CDN Biên Phân Phối Video Toàn Cầu">
+Deep Dive Anycast DNS và Mạng CDN Biên Phân Phối Video Toàn Cầu
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">Kiến Trúc Sư Hệ Thống</span>
+<span class="material-symbols-outlined text-[14px] text-yt-muted" style="font-variation-settings: 'FILL' 1;" title="Đã xác minh">check_circle</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+67 N lượt xem • 2 tháng trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Video 7 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqcjVsq057ark3Wp8D5xEKPs-MFVWeVy7t2gruQ3ZT9a7GCx7s9vYtY0sboMnpAvqHOje3CMPUDM9ShF1JACV24-IbxMNhsfWeOPPDmsRwKroVXg7phqk7s76YA3ExoBuUsLGQh7VdfAW5c2NS3ni8WFVg4jjc284GYh6770A4e788DUuItMgoha8RhYjoIIpqmLjiZMk8uww0IJ6zd0ZDwP3ic9UVGN0Ujl4dqb8">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-[#ff5451] tracking-wider border border-[#ff5451]/30">HLS vs DASH</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+11:30
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-rose-700 flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+<span class="material-symbols-outlined text-[18px]">graphic_eq</span>
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-[#ffb3ad] transition-colors" title="So Sánh Chi Tiết Codec HLSv7 vs MPEG-DASH: Chuẩn Nào Cho Năm 2025?">
+So Sánh Chi Tiết Codec HLSv7 vs MPEG-DASH: Chuẩn Nào Cho Năm 2025?
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">YUH Cinema Lab</span>
+<span class="material-symbols-outlined text-[14px] text-[#ff5451]" style="font-variation-settings: 'FILL' 1;" title="Đã xác minh">check_circle</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+310 N lượt xem • 3 tháng trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article>
+<!-- Video 8 -->
+<article class="flex flex-col cursor-pointer group">
+<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-yt-surface mb-3 ring-1 ring-white/5 transition-all duration-300 shadow-sm">
+<img alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXLlfc87Up73f0ZKGwD4SWM21eqaQuwWIdYHpdjEabDWTncV8TDNQlyecz9cmLsprKZ-Y56j-GgAGEoUYZ_At5Jo_UOTs3CeH2HlfRH9S5DhiaH32Ur5KX87IqlfGEBAUMW20KN--GhDTbZ_kHNCwpqWEV72Wy4ryuDz5Z2za-_XbwPe0UGZ_AQQDzOhFMiVOJrOimsNUuoaoEdhDAEQTVfOkYKq_5xOHLnsydVH0">
+<div class="absolute top-2 left-2 flex items-center gap-1.5">
+<span class="px-1.5 py-0.5 rounded bg-black/80 backdrop-blur-md text-[10px] font-bold text-indigo-400 tracking-wider border border-indigo-500/30">4K 60FPS</span>
+</div>
+<span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/85 backdrop-blur-sm text-[12px] font-medium text-white tracking-tight border border-white/10">
+29:45
+</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="w-9 h-9 rounded-full bg-indigo-600 flex-shrink-0 flex items-center justify-center font-bold text-white text-xs overflow-hidden shadow-sm ring-1 ring-white/10">
+VMAF
+</div>
+<div class="flex-1 min-w-0 pr-1">
+<h3 class="text-sm font-semibold text-white leading-snug line-clamp-2 group-hover:text-indigo-300 transition-colors" title="Tối Ưu Hóa Điểm VMAF 97.4/100 Khi Nén Video 4K Với Băng Thông Cực Thấp">
+Tối Ưu Hóa Điểm VMAF 97.4/100 Khi Nén Video 4K Với Băng Thông Cực Thấp
+</h3>
+<div class="mt-1 flex items-center gap-1 text-[13px] text-yt-muted hover:text-white transition-colors">
+<span class="">Video Streaming Engineering</span>
+</div>
+<p class="text-[12px] text-yt-muted mt-0.5">
+95 N lượt xem • 4 tháng trước
+</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 hover:bg-yt-hover rounded-full transition-opacity" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[20px] text-yt-text">more_vert</span>
+</button>
+</div>
+</article></div>
+</main>
+</div>
+
+
+</body></html>
