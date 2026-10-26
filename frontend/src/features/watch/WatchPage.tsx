@@ -10,24 +10,54 @@ export function WatchPage() {
   const { video, comments, isLoading, addComment } = useWatchVideo(videoId)
 
   const [isSubscribed, setIsSubscribed] = useState(false)
-  const [likesCount, setLikesCount] = useState(4820)
-  const [hasLiked, setHasLiked] = useState(false)
+  const [userLikedDelta, setUserLikedDelta] = useState(0)
   const [isDescExpanded, setIsDescExpanded] = useState(false)
 
+  const likesCount = (video?.likesCount ?? 0) + userLikedDelta
+  const hasLiked = userLikedDelta > 0
+
   function handleLike() {
-    if (hasLiked) {
-      setLikesCount((prev) => prev - 1)
-      setHasLiked(false)
-    } else {
-      setLikesCount((prev) => prev + 1)
-      setHasLiked(true)
-    }
+    setUserLikedDelta((prev) => (prev > 0 ? 0 : 1))
   }
 
-  if (isLoading || !video) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0f0f0f] text-white flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+
+  if (!video) {
+    return (
+      <div className="min-h-screen bg-[#0f0f0f] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
+        <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/10 z-50 flex items-center px-4 sm:px-6">
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-6 bg-gradient-to-tr from-red-600 to-rose-500 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30">
+              <span className="material-symbols-outlined text-[16px] text-white">play_arrow</span>
+            </div>
+            <span className="font-bold text-lg tracking-tight text-white">
+              Yuh<span className="text-red-500">Tube</span>
+            </span>
+          </Link>
+        </header>
+
+        <main className="flex-1 flex flex-col items-center justify-center px-4 text-center pt-14">
+          <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/40">
+            <span className="material-symbols-outlined text-4xl">video_library</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Video Not Found</h1>
+          <p className="text-white/60 max-w-md mb-8 text-sm leading-relaxed">
+            This video is not available or does not exist. It may have been removed or the link might be incorrect.
+          </p>
+          <Link
+            to="/"
+            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium text-sm rounded-full transition-colors inline-flex items-center gap-2 shadow-lg shadow-red-600/20"
+          >
+            <span className="material-symbols-outlined text-[18px]">home</span>
+            <span>Back to Home</span>
+          </Link>
+        </main>
       </div>
     )
   }

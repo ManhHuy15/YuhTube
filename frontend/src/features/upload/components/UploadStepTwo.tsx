@@ -9,14 +9,6 @@ interface UploadStepTwoProps {
   selectedThumbnail: string
   visibility: VisibilityMode
   setVisibility: (mode: VisibilityMode) => void
-  isPremiere: boolean
-  setIsPremiere: (value: boolean) => void
-  isScheduleOpen: boolean
-  setIsScheduleOpen: (value: boolean) => void
-  scheduleDate: string
-  setScheduleDate: (val: string) => void
-  scheduleTime: string
-  setScheduleTime: (val: string) => void
   videoShareUrl: string
   copyVideoLink: () => void
   isCopied: boolean
@@ -31,14 +23,6 @@ export function UploadStepTwo({
   selectedThumbnail,
   visibility,
   setVisibility,
-  isPremiere,
-  setIsPremiere,
-  isScheduleOpen,
-  setIsScheduleOpen,
-  scheduleDate,
-  setScheduleDate,
-  scheduleTime,
-  setScheduleTime,
   videoShareUrl,
   copyVideoLink,
   isCopied,
@@ -101,31 +85,7 @@ export function UploadStepTwo({
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-white">Riêng tư (Private)</span>
                 <span className="text-xs text-white/50 mt-0.5">
-                  Chỉ bạn và những người được bạn cấp quyền mới có thể xem video.
-                </span>
-              </div>
-            </label>
-
-            {/* Option: Unlisted */}
-            <label
-              className={`flex items-start gap-3 p-3.5 rounded-xl cursor-pointer transition-all border ${
-                visibility === 'unlisted'
-                  ? 'bg-[#2a2a2c] border-red-500/50'
-                  : 'bg-[#1c1b1d] border-white/5 hover:bg-[#2a2a2c]'
-              }`}
-            >
-              <input
-                type="radio"
-                name="visibility"
-                value="unlisted"
-                checked={visibility === 'unlisted'}
-                onChange={() => setVisibility('unlisted')}
-                className="mt-1 text-red-600 focus:ring-0 cursor-pointer"
-              />
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-white">Không công khai (Unlisted)</span>
-                <span className="text-xs text-white/50 mt-0.5">
-                  Bất kỳ ai có đường liên kết đến video đều có thể xem được.
+                  Chỉ bạn mới có thể xem video này. Video sẽ không xuất hiện trên bảng tin chung.
                 </span>
               </div>
             </label>
@@ -156,77 +116,8 @@ export function UploadStepTwo({
                 <span className="text-xs text-white/50 mt-0.5">
                   Mọi người đều có thể tìm kiếm và xem video của bạn trên YuhTube.
                 </span>
-
-                {/* Nested Premiere Checkbox */}
-                <div className="mt-3 pt-3 border-t border-white/10">
-                  <label className="flex items-start gap-2.5 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={isPremiere}
-                      onChange={(e) => setIsPremiere(e.target.checked)}
-                      className="mt-0.5 rounded text-red-600 focus:ring-0 cursor-pointer"
-                    />
-                    <div className="flex flex-col">
-                      <span className="text-xs font-semibold text-white">
-                        Đặt làm Video công chiếu ngay (Instant Premiere)
-                      </span>
-                      <span className="text-[11px] text-white/50">
-                        Người xem cùng theo dõi trực tiếp với phòng chat thời gian thực và đếm
-                        ngược 2 phút.
-                      </span>
-                    </div>
-                  </label>
-                </div>
               </div>
             </label>
-          </div>
-
-          {/* Schedule Accordion */}
-          <div className="pt-2 border-t border-white/10">
-            <button
-              type="button"
-              onClick={() => setIsScheduleOpen(!isScheduleOpen)}
-              className="flex items-center justify-between w-full p-3 rounded-xl bg-[#1c1b1d] hover:bg-[#2a2a2c] transition-colors text-left cursor-pointer"
-            >
-              <div className="flex items-center gap-2.5">
-                <span className="material-symbols-outlined text-white/60 text-[18px]">
-                  calendar_today
-                </span>
-                <span className="text-xs font-semibold text-white">Lên lịch phát hành sau</span>
-              </div>
-              <span
-                className={`material-symbols-outlined text-white/60 text-[18px] transition-transform ${
-                  isScheduleOpen ? 'rotate-180' : ''
-                }`}
-              >
-                expand_more
-              </span>
-            </button>
-
-            {isScheduleOpen && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 mt-2 bg-[#0e0e10] rounded-xl border border-white/10">
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-mono uppercase text-white/50">Ngày đăng</label>
-                  <input
-                    type="date"
-                    value={scheduleDate}
-                    onChange={(e) => setScheduleDate(e.target.value)}
-                    className="bg-[#201f21] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-[10px] font-mono uppercase text-white/50">
-                    Giờ phát sóng (GMT+7)
-                  </label>
-                  <input
-                    type="time"
-                    value={scheduleTime}
-                    onChange={(e) => setScheduleTime(e.target.value)}
-                    className="bg-[#201f21] border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none"
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -264,16 +155,21 @@ export function UploadStepTwo({
             {videoPreviewUrl ? (
               <video
                 src={videoPreviewUrl}
-                poster={selectedThumbnail}
+                poster={selectedThumbnail || undefined}
                 controls
                 className="w-full h-full object-cover"
               />
-            ) : (
+            ) : selectedThumbnail ? (
               <img
                 src={selectedThumbnail}
                 alt="Final Video Preview"
                 className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
               />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-white/30 text-xs gap-1.5">
+                <span className="material-symbols-outlined text-[32px] text-white/20">video_file</span>
+                <span>Chờ tải video</span>
+              </div>
             )}
             <div className="absolute top-3 left-3 flex items-center gap-1.5 pointer-events-none">
               <span className="px-2 py-0.5 rounded bg-black/80 text-white font-mono text-[10px] font-bold border border-white/15">

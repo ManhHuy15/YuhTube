@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, type ChangeEvent, type DragEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useVideoUpload } from './useVideoUpload'
-import { SAMPLE_THUMBNAILS } from '../constants/upload.constants'
+import { updateVideoMetadata, uploadThumbnail } from '../services/upload.service'
 import type { UploadStep, VisibilityMode } from '../types/upload.types'
 
 export function useUploadWorkstation() {
@@ -14,13 +14,10 @@ export function useUploadWorkstation() {
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [selectedThumbnail, setSelectedThumbnail] = useState<string>(SAMPLE_THUMBNAILS[0].url)
+  const [selectedThumbnail, setSelectedThumbnail] = useState<string>('')
   const [customThumbnail, setCustomThumbnail] = useState<string | null>(null)
+  const [customThumbFile, setCustomThumbFile] = useState<File | null>(null)
   const [visibility, setVisibility] = useState<VisibilityMode>('public')
-  const [isPremiere, setIsPremiere] = useState(false)
-  const [isScheduleOpen, setIsScheduleOpen] = useState(false)
-  const [scheduleDate, setScheduleDate] = useState('2026-10-25')
-  const [scheduleTime, setScheduleTime] = useState('20:00')
   const [isCopied, setIsCopied] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
@@ -68,6 +65,7 @@ export function useUploadWorkstation() {
   function onCustomThumbChange(event: ChangeEvent<HTMLInputElement>) {
     const selected = event.target.files?.[0]
     if (selected) {
+      setCustomThumbFile(selected)
       const url = URL.createObjectURL(selected)
       setCustomThumbnail(url)
       setSelectedThumbnail(url)
@@ -98,12 +96,33 @@ export function useUploadWorkstation() {
     setTimeout(() => setIsCopied(false), 2000)
   }
 
-  function handlePublish() {
+  async function handlePublish() {
     setIsPublishing(true)
-    setTimeout(() => {
+    try {
+      if (result?.videoId) {
+        let finalThumbnailUrl: string | undefined = undefined
+
+        if (customThumbFile) {
+          try {
+            finalThumbnailUrl = await uploadThumbnail(result.videoId, customThumbFile)
+          } catch (uploadErr) {
+            console.warn('Could not upload custom thumbnail to S3, fallback to default:', uploadErr)
+          }
+        }
+
+        await updateVideoMetadata(result.videoId, {
+          title: title || 'Untitled Video',
+          description,
+          thumbnailUrl: finalThumbnailUrl,
+          isPrivate: visibility === 'private',
+        })
+      }
+    } catch (err) {
+      console.warn('Could not save metadata to backend, proceeding with local view:', err)
+    } finally {
       setIsPublishing(false)
       navigate(`/watch/${videoId}`)
-    }, 1200)
+    }
   }
 
   function triggerFileSelect() {
@@ -133,18 +152,9 @@ export function useUploadWorkstation() {
     description,
     setDescription,
     selectedThumbnail,
-    setSelectedThumbnail,
     customThumbnail,
     visibility,
     setVisibility,
-    isPremiere,
-    setIsPremiere,
-    isScheduleOpen,
-    setIsScheduleOpen,
-    scheduleDate,
-    setScheduleDate,
-    scheduleTime,
-    setScheduleTime,
 
     // Upload & Network State
     error,

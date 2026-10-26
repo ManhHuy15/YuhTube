@@ -9,12 +9,19 @@ export function useHomeFeed(category: string) {
   useEffect(() => {
     let isCancelled = false
 
-    fetchHomeFeed(category).then((data) => {
-      if (!isCancelled) {
-        setVideos(data)
-        setIsLoading(false)
-      }
-    })
+    fetchHomeFeed(category)
+      .then((data) => {
+        if (!isCancelled) {
+          setVideos(data)
+          setIsLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setVideos([])
+          setIsLoading(false)
+        }
+      })
 
     return () => {
       isCancelled = true

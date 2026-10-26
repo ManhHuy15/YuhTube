@@ -169,6 +169,45 @@ public sealed class MediaConvertJobService
                         }
                     }
                 }
+            },
+            new()
+            {
+                Name = "File Group",
+                OutputGroupSettings = new OutputGroupSettings
+                {
+                    Type = OutputGroupType.FILE_GROUP_SETTINGS,
+                    FileGroupSettings = new FileGroupSettings
+                    {
+                        Destination = $"s3://{_storageOptions.ProcessedBucketName}/thumbnails/{videoId}/thumb"
+                    }
+                },
+                Outputs = new List<Output>
+                {
+                    new()
+                    {
+                        ContainerSettings = new ContainerSettings
+                        {
+                            Container = ContainerType.RAW
+                        },
+                        VideoDescription = new VideoDescription
+                        {
+                            Width = 1280,
+                            Height = 720,
+                            ScalingBehavior = ScalingBehavior.DEFAULT,
+                            CodecSettings = new VideoCodecSettings
+                            {
+                                Codec = VideoCodec.FRAME_CAPTURE,
+                                FrameCaptureSettings = new FrameCaptureSettings
+                                {
+                                    FramerateNumerator = 1,
+                                    FramerateDenominator = 2,
+                                    MaxCaptures = 1,
+                                    Quality = 80
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     };

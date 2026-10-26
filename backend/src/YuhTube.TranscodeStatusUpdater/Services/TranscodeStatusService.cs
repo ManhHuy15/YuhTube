@@ -80,6 +80,7 @@ public sealed partial class TranscodeStatusService
     {
         var durationMs = ExtractDurationMs(detail);
         var playbackUrl = BuildPlaybackUrl(videoId, detail);
+        var defaultThumbnailUrl = BuildThumbnailUrl(videoId);
         var now = DateTimeOffset.UtcNow.ToString("O");
 
         // 1. Update UploadSession in DynamoDB
@@ -119,7 +120,7 @@ public sealed partial class TranscodeStatusService
                 [DynamoAttributes.PartitionKey] = new() { S = VideoKeys.PartitionKey(videoId) },
                 [DynamoAttributes.SortKey] = new() { S = VideoKeys.SortKey(videoId) }
             },
-            UpdateExpression = "SET #videoId = :videoId, #status = :ready, #playbackUrl = :playbackUrl, #durationMs = :durationMs, #updatedAt = :now, #createdAt = if_not_exists(#createdAt, :now), #title = if_not_exists(#title, :defaultTitle)",
+            UpdateExpression = "SET #videoId = :videoId, #status = :ready, #playbackUrl = :playbackUrl, #durationMs = :durationMs, #updatedAt = :now, #createdAt = if_not_exists(#createdAt, :now), #title = if_not_exists(#title, :defaultTitle), #thumbnailUrl = if_not_exists(#thumbnailUrl, :defaultThumbnailUrl), #gsi2Pk = if_not_exists(#gsi2Pk, :gsi2Pk), #gsi2Sk = if_not_exists(#gsi2Sk, :now)",
             ExpressionAttributeNames = new Dictionary<string, string>
             {
                 ["#videoId"] = VideoAttributes.VideoId,
@@ -128,7 +129,10 @@ public sealed partial class TranscodeStatusService
                 ["#durationMs"] = VideoAttributes.DurationMs,
                 ["#updatedAt"] = VideoAttributes.UpdatedAt,
                 ["#createdAt"] = VideoAttributes.CreatedAt,
-                ["#title"] = VideoAttributes.Title
+                ["#title"] = VideoAttributes.Title,
+                ["#thumbnailUrl"] = VideoAttributes.ThumbnailUrl,
+                ["#gsi2Pk"] = VideoAttributes.Gsi2PartitionKey,
+                ["#gsi2Sk"] = VideoAttributes.Gsi2SortKey
             },
             ExpressionAttributeValues = new Dictionary<string, AttributeValue>
             {
@@ -137,7 +141,9 @@ public sealed partial class TranscodeStatusService
                 [":playbackUrl"] = new() { S = playbackUrl },
                 [":durationMs"] = new() { N = durationMs.ToString() },
                 [":now"] = new() { S = now },
-                [":defaultTitle"] = new() { S = $"Video {videoId}" }
+                [":defaultTitle"] = new() { S = $"Video {videoId}" },
+                [":defaultThumbnailUrl"] = new() { S = defaultThumbnailUrl },
+                [":gsi2Pk"] = new() { S = VideoAttributes.FeedPartitionTag }
             }
         };
 
@@ -309,6 +315,23 @@ public sealed partial class TranscodeStatusService
     private string BuildPlaybackUrl(string videoId, JsonElement detail)
     {
         var relativePath = $"hls/{videoId}/index.m3u8";
+
+        if (!string.IsNullOrWhiteSpace(_storageOptions.CdnBaseUrl))
+        {
+            return $"{_storageOptions.CdnBaseUrl.TrimEnd('/')}/{relativePath}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(_storageOptions.ProcessedBucketName))
+        {
+            return $"https://{_storageOptions.ProcessedBucketName}.s3.amazonaws.com/{relativePath}";
+        }
+
+        return $"/{relativePath}";
+    }
+
+    private string BuildThumbnailUrl(string videoId)
+    {
+        var relativePath = $"thumbnails/{videoId}/thumb.0000000.jpg";
 
         if (!string.IsNullOrWhiteSpace(_storageOptions.CdnBaseUrl))
         {

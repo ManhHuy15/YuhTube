@@ -55,3 +55,42 @@ export async function completeUpload(
   )
   return data
 }
+
+interface ThumbnailUploadUrlResponse {
+  uploadUrl: string
+  publicUrl: string
+  expiresAt: string
+}
+
+export async function uploadThumbnail(videoId: string, file: File): Promise<string> {
+  const { data } = await apiClient.post<ThumbnailUploadUrlResponse>(
+    `/uploads/${videoId}/thumbnail`,
+    {
+      fileName: file.name,
+      contentType: file.type,
+    },
+  )
+
+  await axios.put(data.uploadUrl, file, {
+    headers: {
+      'Content-Type': file.type,
+    },
+  })
+
+  return data.publicUrl
+}
+
+export interface UpdateVideoMetadataPayload {
+  title: string
+  description?: string
+  thumbnailUrl?: string
+  isPrivate?: boolean
+}
+
+export async function updateVideoMetadata(
+  videoId: string,
+  payload: UpdateVideoMetadataPayload,
+) {
+  const { data } = await apiClient.put(`/videos/${videoId}`, payload)
+  return data
+}

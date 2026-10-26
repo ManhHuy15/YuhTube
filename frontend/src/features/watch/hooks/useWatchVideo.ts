@@ -10,15 +10,21 @@ export function useWatchVideo(videoId: string) {
   useEffect(() => {
     let isCancelled = false
 
-    Promise.all([fetchVideoDetail(videoId), fetchVideoComments(videoId)]).then(
-      ([videoData, commentData]) => {
+    Promise.all([fetchVideoDetail(videoId), fetchVideoComments(videoId)])
+      .then(([videoData, commentData]) => {
         if (!isCancelled) {
           setVideo(videoData)
           setComments(commentData)
           setIsLoading(false)
         }
-      },
-    )
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setVideo(null)
+          setComments([])
+          setIsLoading(false)
+        }
+      })
 
     return () => {
       isCancelled = true
@@ -28,11 +34,11 @@ export function useWatchVideo(videoId: string) {
   function addComment(content: string) {
     const newComment: WatchComment = {
       id: `c_${Date.now()}`,
-      authorName: 'Bạn (Creator)',
+      authorName: 'You (Creator)',
       authorAvatar:
         'https://lh3.googleusercontent.com/aida-public/AB6AXuASxYM5-T6NbQ6NVDHtC0CTKx7iEqZhF_raLim3LHhqOmpcS2k8jMZmlgDP7zFJf2zex4dGlg40gsPKxVQj6q-gRGJxZM3BzfDHYFN7QP3Ln0pB6DuD8JxGZJeBOJPKgh_EdH-mS82O9Dx2qxkaJATc8QVrOMkT6SAuVf3rfNi4141NeVL0jiyMglcEqrNaZHc_LdKij1c--19s0TDbmwAeLS4CWN6spjRzc05tEGc',
       content,
-      createdAt: 'Vừa xong',
+      createdAt: 'Just now',
       likes: 0,
     }
     setComments((prev) => [newComment, ...prev])

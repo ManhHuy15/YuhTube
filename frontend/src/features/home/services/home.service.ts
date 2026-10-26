@@ -1,15 +1,55 @@
 import { apiClient } from '../../../common/api/apiClient'
-import { DEFAULT_FEED_VIDEOS } from '../constants/home.constants'
 import type { VideoFeedItem } from '../types/home.types'
 
-export async function fetchHomeFeed(category?: string): Promise<VideoFeedItem[]> {
+interface PagedVideoFeedResponse {
+  items: VideoFeedItem[]
+  nextCursor?: string | null
+}
+
+function mapRawFeedItem(item: any): VideoFeedItem {
+  const durationMs = item.durationMs || 0
+  const durationMinutes = Math.floor(durationMs / 60000)
+  const durationSeconds = Math.floor((durationMs % 60000) / 1000)
+  const durationFormatted = durationMs > 0
+    ? `${durationMinutes}:${String(durationSeconds).padStart(2, '0')}`
+    : item.duration || '0:00'
+
+  return {
+    id: item.id,
+    title: item.title || 'Untitled Video',
+    thumbnailUrl: item.thumbnailUrl || '',
+    duration: durationFormatted,
+    views: item.views || '0 views',
+    createdAt: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US') : 'Just now',
+    badge: item.badge,
+    uploader: {
+      id: item.uploader?.id || 'channel-default',
+      name: item.uploader?.name || 'Creator',
+      avatar: item.uploader?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
+      isVerified: item.uploader?.isVerified ?? false,
+    },
+  }
+}
+
+export async function fetchHomeFeed(
+  category?: string,
+  cursor?: string,
+): Promise<VideoFeedItem[]> {
   try {
-    const { data } = await apiClient.get<VideoFeedItem[]>('/videos', {
-      params: category && category !== 'Tất cả' ? { category } : undefined,
+    const { data } = await apiClient.get<PagedVideoFeedResponse | any[]>('/videos', {
+      params: {
+        category: category && category !== 'Tất cả' && category !== 'All' ? category : undefined,
+        cursor: cursor || undefined,
+      },
     })
-    return data && data.length > 0 ? data : DEFAULT_FEED_VIDEOS
+
+    const rawList = Array.isArray(data) ? data : data?.items
+    if (Array.isArray(rawList)) {
+      return rawList.map(mapRawFeedItem)
+    }
+
+    return []
   } catch {
-    // Graceful fallback to rich Stitch design videos when backend feed is pending
-    return DEFAULT_FEED_VIDEOS
+    return []
   }
 }

@@ -1,5 +1,5 @@
 import type { RefObject, ChangeEvent } from 'react'
-import { SAMPLE_THUMBNAILS, formatFileSize } from '../constants/upload.constants'
+import { formatFileSize } from '../constants/upload.constants'
 import type { VideoUploadResult } from '../types/upload.types'
 
 interface UploadStepOneProps {
@@ -10,7 +10,6 @@ interface UploadStepOneProps {
   description: string
   setDescription: (desc: string) => void
   selectedThumbnail: string
-  setSelectedThumbnail: (url: string) => void
   customThumbnail: string | null
   thumbInputRef: RefObject<HTMLInputElement | null>
   onCustomThumbChange: (e: ChangeEvent<HTMLInputElement>) => void
@@ -30,7 +29,6 @@ export function UploadStepOne({
   description,
   setDescription,
   selectedThumbnail,
-  setSelectedThumbnail,
   customThumbnail,
   thumbInputRef,
   onCustomThumbChange,
@@ -121,7 +119,7 @@ export function UploadStepOne({
           </div>
         </div>
 
-        {/* Section 3: Thumbnail Selector */}
+        {/* Section 3: Thumbnail Selector (Custom Upload) */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div>
@@ -129,14 +127,14 @@ export function UploadStepOne({
                 Ảnh bìa (Thumbnail)
               </span>
               <p className="text-xs text-white/40 mt-0.5">
-                Chọn hoặc tải lên một hình ảnh thể hiện nội dung video
+                Tải lên một hình ảnh thể hiện nội dung video
               </p>
             </div>
             <span className="text-xs text-[#69d8d4] font-mono">Chuẩn 1280x720</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-            {/* Slot 1: Custom Upload */}
+          <div className="pt-1">
+            {/* Slot: Custom Upload */}
             <input
               ref={thumbInputRef}
               type="file"
@@ -146,26 +144,30 @@ export function UploadStepOne({
             />
             <div
               onClick={() => thumbInputRef.current?.click()}
-              className={`aspect-video rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all border ${
-                customThumbnail && selectedThumbnail === customThumbnail
+              className={`w-full max-w-[240px] aspect-video rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all border ${
+                customThumbnail
                   ? 'ring-2 ring-red-500 bg-[#201f21] border-transparent'
                   : 'bg-[#201f21] hover:bg-[#2a2a2c] border-dashed border-white/20'
               }`}
             >
               {customThumbnail ? (
-                <div className="relative w-full h-full rounded-lg overflow-hidden">
+                <div className="relative w-full h-full rounded-lg overflow-hidden group">
                   <img
                     src={customThumbnail}
                     alt="Custom Thumbnail"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-1 right-1 w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs gap-1">
+                    <span className="material-symbols-outlined text-[20px]">edit</span>
+                    <span>Đổi ảnh bìa</span>
+                  </div>
+                  <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center shadow">
                     <span className="material-symbols-outlined text-[11px]">check</span>
                   </div>
                 </div>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[22px] text-white/60 group-hover:text-red-400">
+                  <span className="material-symbols-outlined text-[24px] text-white/60">
                     add_photo_alternate
                   </span>
                   <span className="text-xs text-white font-medium mt-1">Tải ảnh lên</span>
@@ -173,38 +175,6 @@ export function UploadStepOne({
                 </>
               )}
             </div>
-
-            {/* Extracted Auto Thumbs */}
-            {SAMPLE_THUMBNAILS.map((thumb) => {
-              const isSelected = selectedThumbnail === thumb.url
-              return (
-                <div
-                  key={thumb.id}
-                  onClick={() => setSelectedThumbnail(thumb.url)}
-                  className={`aspect-video relative rounded-xl overflow-hidden cursor-pointer group bg-[#0e0e10] transition-all border ${
-                    isSelected
-                      ? 'ring-2 ring-red-500 border-transparent shadow-lg shadow-red-600/20'
-                      : 'opacity-70 hover:opacity-100 border-white/10'
-                  }`}
-                >
-                  <img
-                    src={thumb.url}
-                    alt={thumb.alt}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                  />
-                  {isSelected && (
-                    <div className="absolute inset-0 bg-red-600/20 flex items-start justify-end p-1.5">
-                      <span className="w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center shadow">
-                        <span className="material-symbols-outlined text-[12px] font-bold">check</span>
-                      </span>
-                    </div>
-                  )}
-                  <div className="absolute bottom-1.5 left-1.5 text-[9px] font-mono px-1.5 py-0.5 rounded bg-black/80 text-white backdrop-blur-sm">
-                    {thumb.time}
-                  </div>
-                </div>
-              )
-            })}
           </div>
         </div>
       </div>
@@ -217,16 +187,21 @@ export function UploadStepOne({
             {videoPreviewUrl ? (
               <video
                 src={videoPreviewUrl}
-                poster={selectedThumbnail}
+                poster={selectedThumbnail || undefined}
                 controls
                 className="w-full h-full object-cover"
               />
-            ) : (
+            ) : selectedThumbnail ? (
               <img
                 src={selectedThumbnail}
                 alt="Video Preview"
                 className="w-full h-full object-cover"
               />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center text-white/30 text-xs gap-1.5">
+                <span className="material-symbols-outlined text-[32px] text-white/20">video_file</span>
+                <span>Chờ tải video</span>
+              </div>
             )}
             <div className="absolute top-2 left-2 flex items-center gap-1.5 pointer-events-none">
               <span className="px-2 py-0.5 rounded bg-black/80 font-mono text-[10px] text-[#69d8d4] font-bold border border-[#69d8d4]/30">

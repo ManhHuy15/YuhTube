@@ -20,18 +20,9 @@ export function UploadPage() {
     description,
     setDescription,
     selectedThumbnail,
-    setSelectedThumbnail,
     customThumbnail,
     visibility,
     setVisibility,
-    isPremiere,
-    setIsPremiere,
-    isScheduleOpen,
-    setIsScheduleOpen,
-    scheduleDate,
-    setScheduleDate,
-    scheduleTime,
-    setScheduleTime,
     error,
     isUploading,
     progress,
@@ -117,7 +108,6 @@ export function UploadPage() {
                   description={description}
                   setDescription={setDescription}
                   selectedThumbnail={selectedThumbnail}
-                  setSelectedThumbnail={setSelectedThumbnail}
                   customThumbnail={customThumbnail}
                   thumbInputRef={thumbInputRef}
                   onCustomThumbChange={onCustomThumbChange}
@@ -137,14 +127,6 @@ export function UploadPage() {
                   selectedThumbnail={selectedThumbnail}
                   visibility={visibility}
                   setVisibility={setVisibility}
-                  isPremiere={isPremiere}
-                  setIsPremiere={setIsPremiere}
-                  isScheduleOpen={isScheduleOpen}
-                  setIsScheduleOpen={setIsScheduleOpen}
-                  scheduleDate={scheduleDate}
-                  setScheduleDate={setScheduleDate}
-                  scheduleTime={scheduleTime}
-                  setScheduleTime={setScheduleTime}
                   videoShareUrl={videoShareUrl}
                   copyVideoLink={copyVideoLink}
                   isCopied={isCopied}

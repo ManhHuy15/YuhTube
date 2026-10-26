@@ -267,6 +267,64 @@ public sealed class UploadsController : ControllerBase
         return Ok(new CompleteUploadResponse(videoId, objectKey, result.ETag));
     }
 
+    [HttpPost("{videoId}/thumbnail")]
+    [ProducesResponseType<CreateThumbnailUploadUrlResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CreateThumbnailUploadUrlResponse>> CreateThumbnailUploadUrl(
+        string videoId,
+        CreateThumbnailUploadUrlRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.ContentType) ||
+            (!request.ContentType.Equals("image/jpeg", StringComparison.OrdinalIgnoreCase) &&
+             !request.ContentType.Equals("image/png", StringComparison.OrdinalIgnoreCase) &&
+             !request.ContentType.Equals("image/webp", StringComparison.OrdinalIgnoreCase)))
+        {
+            ModelState.AddModelError(nameof(request.ContentType), "ContentType must be image/jpeg, image/png, or image/webp.");
+            return ValidationProblem(ModelState);
+        }
+
+        var sessionResult = await GetUploadSession(videoId, cancellationToken);
+        if (sessionResult.Item.Count == 0)
+        {
+            return NotFound();
+        }
+
+        var ext = Path.GetExtension(request.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext))
+        {
+            ext = request.ContentType switch
+            {
+                "image/png" => ".png",
+                "image/webp" => ".webp",
+                _ => ".jpg"
+            };
+        }
+
+        var targetBucket = !string.IsNullOrWhiteSpace(_storageOptions.ProcessedBucketName)
+            ? _storageOptions.ProcessedBucketName
+            : _storageOptions.RawBucketName;
+
+        var objectKey = $"thumbnails/{videoId}/custom{ext}";
+        var expiresAt = DateTime.UtcNow.AddMinutes(15);
+
+        var uploadUrl = await _s3.GetPreSignedURLAsync(new GetPreSignedUrlRequest
+        {
+            BucketName = targetBucket,
+            Key = objectKey,
+            Verb = HttpVerb.PUT,
+            ContentType = request.ContentType,
+            Expires = expiresAt
+        });
+
+        var publicUrl = !string.IsNullOrWhiteSpace(_storageOptions.CdnBaseUrl)
+            ? $"{_storageOptions.CdnBaseUrl.TrimEnd('/')}/{objectKey}"
+            : $"https://{targetBucket}.s3.amazonaws.com/{objectKey}";
+
+        return Ok(new CreateThumbnailUploadUrlResponse(uploadUrl, publicUrl, expiresAt));
+    }
+
     private Task<GetItemResponse> GetUploadSession(string videoId, CancellationToken cancellationToken)
     {
         return _dynamoDb.GetItemAsync(new GetItemRequest
