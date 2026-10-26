@@ -2,5 +2,11 @@
 **/obj/
 /backend/publish/
 
+# AWS SAM build artifacts
+.aws-sam/
+**/.aws-sam/
 
+# Environment files
 .env
+*.env.local
+

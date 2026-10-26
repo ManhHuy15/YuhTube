@@ -1,0 +1,24 @@
+version = 0.1
+
+[default]
+[default.global.parameters]
+stack_name = "yuhtube-stacks"
+region = "ap-southeast-1"
+
+[default.build.parameters]
+cached = true
+parallel = false
+
+[default.validate.parameters]
+lint = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+resolve_s3 = true
+s3_prefix = "yuhtube-stacks"
+parameter_overrides = "DynamoDbTableName=\"YuhTubeDB\" RawBucketName=\"yuhtube-s3-raw\" ProcessedBucketName=\"yuhtube-s3-processed\" MediaConvertRoleArn=\"arn:aws:iam::946385207272:role/MediaConvertRole\" CdnBaseUrl=\"\" CorsAllowOrigin=\"https://main.d22mhrksnsvwnc.amplifyapp.com\""
+image_repositories = []
+
+[default.sync.parameters]
+watch = true

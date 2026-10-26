@@ -1,0 +1,326 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM template focusing on YuhTube Lambda Functions and API Gateway
+
+Parameters:
+  DynamoDbTableName:
+    Type: String
+    Default: YuhTubeDB
+    Description: Existing DynamoDB Table Name
+
+  RawBucketName:
+    Type: String
+    Default: yuhtube-s3-raw
+    Description: Existing S3 Raw Videos Bucket Name
+
+  ProcessedBucketName:
+    Type: String
+    Default: yuhtube-s3-processed
+    Description: Existing S3 Processed HLS/Thumbnails Bucket Name
+
+  MediaConvertRoleArn:
+    Type: String
+    Default: arn:aws:iam::946385207272:role/MediaConvertRole
+    Description: Existing IAM Role ARN for AWS Elemental MediaConvert
+
+  CdnBaseUrl:
+    Type: String
+    Default: ""
+    Description: Optional CloudFront CDN base URL (e.g. https://d12345.cloudfront.net)
+
+  CorsAllowOrigin:
+    Type: String
+    Default: "https://main.d22mhrksnsvwnc.amplifyapp.com"
+    Description: Allowed origin for API Gateway CORS
+
+Globals:
+  Function:
+    Runtime: dotnet10
+    Architectures:
+      - x86_64
+    MemorySize: 512
+    Timeout: 30
+    Environment:
+      Variables:
+        DOTNET_ENVIRONMENT: "Production"
+        AWS_LAMBDA_HANDLER_LOG_FORMAT: "Json"
+        # Fallback environment variables if SSM parameters are not yet populated
+        DynamoDb__TableName: !Ref DynamoDbTableName
+        Storage__RawBucketName: !Ref RawBucketName
+        Storage__ProcessedBucketName: !Ref ProcessedBucketName
+        Storage__CdnBaseUrl: !Ref CdnBaseUrl
+        MediaConvert__RoleArn: !Ref MediaConvertRoleArn
+
+Resources:
+  # ============================================================================
+  # 1. API GATEWAY: HTTP API (v2) with CORS
+  # ============================================================================
+  YuhTubeHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Provides the public HTTP API entry point for uploads, video reads, and API-driven workflow orchestration with CORS enabled for browser clients."
+        trust:
+          src: infer
+          conf: low
+          note: "rationale not documented"
+    Properties:
+      Name: YuhTubeAPI
+      CorsConfiguration:
+        AllowOrigins:
+          - "http://localhost:3000"
+          - !Ref CorsAllowOrigin
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - "*"
+        MaxAge: 3600
+
+  # ============================================================================
+  # 2. LAMBDA FUNCTIONS
+  # ============================================================================
+
+  # --- 2.1. Upload API Lambda ---
+  UploadApiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Handles signed upload initiation, multipart progress, completion, and thumbnail updates for video ingestion into the raw and processed storage flow."
+        trust:
+          src: infer
+          conf: low
+          note: "rationale not documented"
+    Properties:
+      FunctionName: YuhTube-Upload-Lambda
+      CodeUri: ../backend/src/YuhTube.Upload.Api/
+      Handler: YuhTube.Upload.Api
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Query
+              Resource:
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}"
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}/index/*"
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+                - s3:AbortMultipartUpload
+                - s3:ListMultipartUploadParts
+              Resource:
+                - !Sub "arn:aws:s3:::${RawBucketName}/*"
+                - !Sub "arn:aws:s3:::${ProcessedBucketName}/*"
+            - Effect: Allow
+              Action:
+                - ssm:GetParametersByPath
+                - ssm:GetParameter
+                - ssm:GetParameters
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
+      Events:
+        Initiate:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /uploads
+            Method: post
+        GetParts:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /uploads/{videoId}/parts
+            Method: post
+        Complete:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /uploads/{videoId}/complete
+            Method: post
+        Thumbnail:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /uploads/{videoId}/thumbnail
+            Method: post
+
+  # --- 2.2. Video API Lambda (Feed, Details, Metadata Update) ---
+  VideoApiFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Exposes read and metadata update endpoints for video feed, video details, and content metadata operations."
+        trust:
+          src: infer
+          conf: low
+          note: "rationale not documented"
+    Properties:
+      FunctionName: YuhTube-Video-Lambda
+      CodeUri: ../backend/src/YuhTube.Video.Api/
+      Handler: YuhTube.Video.Api
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:Query
+                - dynamodb:Scan
+              Resource:
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}"
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}/index/*"
+            - Effect: Allow
+              Action:
+                - ssm:GetParametersByPath
+                - ssm:GetParameter
+                - ssm:GetParameters
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
+      Events:
+        GetFeed:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos
+            Method: get
+        GetVideo:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{id}
+            Method: get
+        UpdateVideo:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{id}
+            Method: put
+
+  # --- 2.3. MediaConvert Coordinator Lambda ---
+  MediaConvertCoordinatorFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Starts AWS Elemental MediaConvert jobs for newly uploaded raw video assets and manages the ingest-to-transcode handoff."
+        trust:
+          src: infer
+          conf: low
+          note: "rationale not documented"
+    Properties:
+      FunctionName: YuhTube-MediaConvert-Lambda
+      CodeUri: ../backend/src/YuhTube.MediaConvertCoordinator/
+      Handler: YuhTube.MediaConvertCoordinator::YuhTube.MediaConvertCoordinator.Function::FunctionHandler
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+              Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}"
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:ListBucket
+              Resource:
+                - !Sub "arn:aws:s3:::${RawBucketName}"
+                - !Sub "arn:aws:s3:::${RawBucketName}/*"
+            - Effect: Allow
+              Action:
+                - mediaconvert:CreateJob
+                - mediaconvert:GetJob
+                - mediaconvert:DescribeEndpoints
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - iam:PassRole
+              Resource: !Ref MediaConvertRoleArn
+            - Effect: Allow
+              Action:
+                - ssm:GetParametersByPath
+                - ssm:GetParameter
+                - ssm:GetParameters
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
+
+  # Permission for existing S3 Bucket (yuhtube-s3-raw) to invoke MediaConvert Coordinator
+  MediaConvertCoordinatorS3Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref MediaConvertCoordinatorFunction
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub "arn:aws:s3:::${RawBucketName}"
+      SourceAccount: !Sub "${AWS::AccountId}"
+
+  # --- 2.4. Transcode Status Updater Lambda ---
+  TranscodeStatusUpdaterFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: "Monitors MediaConvert job state changes and updates the application record to reflect transcode completion or failure."
+        trust:
+          src: infer
+          conf: low
+          note: "rationale not documented"
+    Properties:
+      FunctionName: YuhTube-TranscodeStatusUpdater-Lambda
+      CodeUri: ../backend/src/YuhTube.TranscodeStatusUpdater/
+      Handler: YuhTube.TranscodeStatusUpdater::YuhTube.TranscodeStatusUpdater.Function::FunctionHandler
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+              Resource:
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}"
+                - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDbTableName}/index/*"
+            - Effect: Allow
+              Action:
+                - ssm:GetParametersByPath
+                - ssm:GetParameter
+                - ssm:GetParameters
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
+      Events:
+        MediaConvertStatus:
+          Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source:
+                - "aws.mediaconvert"
+              detail-type:
+                - "MediaConvert Job State Change"
+              detail:
+                status:
+                  - "COMPLETE"
+                  - "ERROR"
+
+# ==============================================================================
+# 3. OUTPUTS
+# ==============================================================================
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API Gateway Base Endpoint
+    Value: !Sub "https://${YuhTubeHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+
+  UploadApiFunctionArn:
+    Description: Upload API Lambda Function ARN
+    Value: !GetAtt UploadApiFunction.Arn
+
+  VideoApiFunctionArn:
+    Description: Video API Lambda Function ARN
+    Value: !GetAtt VideoApiFunction.Arn
+
+  MediaConvertCoordinatorArn:
+    Description: MediaConvert Coordinator Lambda Function ARN
+    Value: !GetAtt MediaConvertCoordinatorFunction.Arn
+
+  TranscodeStatusUpdaterArn:
+    Description: Transcode Status Updater Lambda Function ARN
+    Value: !GetAtt TranscodeStatusUpdaterFunction.Arn
+
