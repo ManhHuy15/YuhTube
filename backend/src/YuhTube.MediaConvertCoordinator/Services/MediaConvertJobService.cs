@@ -10,7 +10,7 @@ namespace YuhTube.MediaConvertCoordinator.Services;
 public sealed class MediaConvertJobService
 {
     private readonly IAmazonDynamoDB _dynamoDb;
-    private readonly IAmazonMediaConvert _mediaConvert;
+    private readonly Func<Task<IAmazonMediaConvert>> _mediaConvertFactory;
     private readonly DynamoDbOptions _dynamoDbOptions;
     private readonly StorageOptions _storageOptions;
     private readonly MediaConvertOptions _mediaConvertOptions;
@@ -21,9 +21,19 @@ public sealed class MediaConvertJobService
         DynamoDbOptions dynamoDbOptions,
         StorageOptions storageOptions,
         MediaConvertOptions mediaConvertOptions)
+        : this(dynamoDb, () => Task.FromResult(mediaConvert), dynamoDbOptions, storageOptions, mediaConvertOptions)
+    {
+    }
+
+    public MediaConvertJobService(
+        IAmazonDynamoDB dynamoDb,
+        Func<Task<IAmazonMediaConvert>> mediaConvertFactory,
+        DynamoDbOptions dynamoDbOptions,
+        StorageOptions storageOptions,
+        MediaConvertOptions mediaConvertOptions)
     {
         _dynamoDb = dynamoDb;
-        _mediaConvert = mediaConvert;
+        _mediaConvertFactory = mediaConvertFactory;
         _dynamoDbOptions = dynamoDbOptions;
         _storageOptions = storageOptions;
         _mediaConvertOptions = mediaConvertOptions;
@@ -57,7 +67,8 @@ public sealed class MediaConvertJobService
             return CreateJobResult.AlreadySubmitted;
         }
 
-        var job = await _mediaConvert.CreateJobAsync(new CreateJobRequest
+        var mediaConvert = await _mediaConvertFactory();
+        var job = await mediaConvert.CreateJobAsync(new CreateJobRequest
         {
             ClientRequestToken = videoId,
             Role = _mediaConvertOptions.RoleArn,

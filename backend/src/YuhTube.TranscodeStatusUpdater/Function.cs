@@ -20,7 +20,7 @@ public sealed class Function
     public Function()
     {
         var configuration = new ConfigurationBuilder()
-            .AddSystemsManager("/yuhtube/")
+            .AddSystemsManager("/yuhtube/", optional: true)
             .AddEnvironmentVariables()
             .Build();
 

@@ -4,6 +4,7 @@ using Amazon.Extensions.Configuration.SystemsManager;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.S3Events;
 using Amazon.MediaConvert;
+using Amazon.MediaConvert.Model;
 using Microsoft.Extensions.Configuration;
 using YuhTube.MediaConvertCoordinator.Configuration;
 using YuhTube.MediaConvertCoordinator.Services;
@@ -22,8 +23,10 @@ public sealed class Function
     public Function()
     {
         var configuration = new ConfigurationBuilder()
-            .AddSystemsManager("/yuhtube/")
+            .AddSystemsManager("/yuhtube/", optional: true)
+            .AddEnvironmentVariables()
             .Build();
+
         var dynamoDbOptions = new DynamoDbOptions
         {
             TableName = Required(configuration, "DynamoDb:TableName")

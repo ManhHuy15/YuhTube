@@ -36,7 +36,7 @@ export function useWatchVideo(videoId: string) {
       id: `c_${Date.now()}`,
       authorName: 'You (Creator)',
       authorAvatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuASxYM5-T6NbQ6NVDHtC0CTKx7iEqZhF_raLim3LHhqOmpcS2k8jMZmlgDP7zFJf2zex4dGlg40gsPKxVQj6q-gRGJxZM3BzfDHYFN7QP3Ln0pB6DuD8JxGZJeBOJPKgh_EdH-mS82O9Dx2qxkaJATc8QVrOMkT6SAuVf3rfNi4141NeVL0jiyMglcEqrNaZHc_LdKij1c--19s0TDbmwAeLS4CWN6spjRzc05tEGc',
+        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
       content,
       createdAt: 'Just now',
       likes: 0,

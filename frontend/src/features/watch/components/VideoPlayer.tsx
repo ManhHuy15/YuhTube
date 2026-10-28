@@ -13,6 +13,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [bufferedPercent, setBufferedPercent] = useState(0)
   const [volume, setVolume] = useState(1)
   const [isMuted, setIsMuted] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -24,7 +25,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
 
     let hls: Hls | null = null
 
-    if (playbackUrl && playbackUrl.endsWith('.m3u8')) {
+    if (playbackUrl && playbackUrl.includes('.m3u8')) {
       if (Hls.isSupported()) {
         hls = new Hls({
           enableWorker: true,
@@ -34,6 +35,21 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
         hls.attachMedia(video)
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           // Ready to play
+        })
+        hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (data.fatal) {
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                hls?.startLoad()
+                break
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                hls?.recoverMediaError()
+                break
+              default:
+                hls?.destroy()
+                break
+            }
+          }
         })
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = playbackUrl
@@ -66,7 +82,13 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
     const video = videoRef.current
     if (!video) return
     setCurrentTime(video.currentTime)
-    if (video.duration) setDuration(video.duration)
+    if (video.duration) {
+      setDuration(video.duration)
+      if (video.buffered.length > 0) {
+        const bufferedEnd = video.buffered.end(video.buffered.length - 1)
+        setBufferedPercent(Math.min(100, (bufferedEnd / video.duration) * 100))
+      }
+    }
   }
 
   function handleSeek(event: React.MouseEvent<HTMLDivElement>) {
@@ -114,7 +136,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`
   }
 
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 35
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
 
   return (
     <div
@@ -139,9 +161,11 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
       <video
         ref={videoRef}
         aria-label={title || 'Trình phát video YuhTube'}
-        poster={posterUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAnYTLsHj2qMDgVEMqKEHRQvihTUd7-bNdZ9Mwk9uhCFW0l4yRLG2PtXUlw3Ohfj8YUB4VsHs3B1cpHKRkIRsmUTC77faOwiilrxEAK-ebU0dLye6XvrZK3GebYYQuW_r6n5oqUSdTlsGxEt3AMrZcwPCzJSjnNKVSrcHOC8sjESu02VrXiysUa2ePFhRENZc0C6goQRjmvOy-13snDl0f5u3hxJZlmFhruDexvES0'}
+        poster={posterUrl || undefined}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleTimeUpdate}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         onClick={togglePlay}
         className="w-full h-full object-contain cursor-pointer"
         playsInline
@@ -171,7 +195,10 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
           className="relative w-full h-3 flex items-center cursor-pointer group/scrub"
         >
           <div className="w-full h-1 group-hover/scrub:h-1.5 bg-white/20 rounded-full overflow-hidden relative transition-all">
-            <div className="absolute left-0 top-0 h-full w-[70%] bg-white/30"></div>
+            <div
+              className="absolute left-0 top-0 h-full bg-white/30 transition-all"
+              style={{ width: `${bufferedPercent}%` }}
+            ></div>
             <div
               className="absolute left-0 top-0 h-full bg-red-600 transition-all"
               style={{ width: `${progressPercent}%` }}
@@ -217,7 +244,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
             <div className="text-xs text-white/80 font-mono">
               <span>{formatTime(currentTime)}</span>
               <span className="mx-1 text-white/40">/</span>
-              <span>{duration > 0 ? formatTime(duration) : '18:42'}</span>
+              <span>{duration > 0 ? formatTime(duration) : '0:00'}</span>
             </div>
           </div>
 

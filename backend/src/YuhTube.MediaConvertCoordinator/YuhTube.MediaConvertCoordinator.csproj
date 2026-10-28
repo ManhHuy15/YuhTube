@@ -17,6 +17,7 @@
     <PackageReference Include="Amazon.Lambda.Core" Version="2.8.1" />
     <PackageReference Include="Amazon.Lambda.S3Events" Version="4.0.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../YuhTube.Persistence.Contracts/YuhTube.Persistence.Contracts.csproj" />

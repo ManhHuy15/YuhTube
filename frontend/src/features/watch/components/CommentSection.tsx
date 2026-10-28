@@ -19,7 +19,7 @@ export function CommentSection({ comments, onAddComment }: CommentSectionProps) 
   return (
     <section className="pt-6 space-y-5">
       <div className="flex items-center gap-4">
-        <h3 className="text-lg font-bold text-white">{comments.length + 181} bình luận</h3>
+        <h3 className="text-lg font-bold text-white">{comments.length} bình luận</h3>
         <button className="flex items-center gap-1 text-xs text-white/70 hover:text-white cursor-pointer">
           <span className="material-symbols-outlined text-[18px]">sort</span>
           <span>Sắp xếp theo</span>
