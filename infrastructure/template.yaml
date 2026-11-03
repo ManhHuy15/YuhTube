@@ -134,6 +134,9 @@ Resources:
         SSEEnabled: true
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: TTL
+        Enabled: true
       AttributeDefinitions:
         - { AttributeName: PK, AttributeType: S }
         - { AttributeName: SK, AttributeType: S }
@@ -182,6 +185,15 @@ Resources:
             AllowedOrigins: ["http://localhost:3000", !Ref CorsAllowOrigin]
             ExposedHeaders: ["ETag", "x-amz-server-side-encryption", "x-amz-request-id", "x-amz-id-2"]
             MaxAge: 3600
+      LifecycleConfiguration:
+        Rules:
+          - Id: AbortIncompleteMultipartUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 2
+          - Id: ExpireRawSourceVideos
+            Status: Enabled
+            ExpirationInDays: 7
 
   RawBucketPolicy:
     Type: AWS::S3::BucketPolicy

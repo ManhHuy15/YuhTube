@@ -26,6 +26,7 @@ public static class UploadSessionAttributes
     public const string UploaderId = "UploaderId";
     public const string UploaderName = "UploaderName";
     public const string UploaderAvatar = "UploaderAvatar";
+    public const string Ttl = "TTL";
 }
 
 public static class UploadSessionKeys

@@ -125,7 +125,8 @@ public sealed class UploadsController : ControllerBase
                     [UploadSessionAttributes.CreatedAt] = new() { S = DateTimeOffset.UtcNow.ToString("O") },
                     [UploadSessionAttributes.UploaderId] = new() { S = uploaderId },
                     [UploadSessionAttributes.UploaderName] = new() { S = uploaderName },
-                    [UploadSessionAttributes.UploaderAvatar] = new() { S = uploaderAvatar }
+                    [UploadSessionAttributes.UploaderAvatar] = new() { S = uploaderAvatar },
+                    [UploadSessionAttributes.Ttl] = new() { N = DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeSeconds().ToString() }
                 }
             }, cancellationToken);
 
