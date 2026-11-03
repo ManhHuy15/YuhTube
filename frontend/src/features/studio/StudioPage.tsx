@@ -6,10 +6,19 @@ import { ChannelAnalyticsCard } from './components/ChannelAnalyticsCard'
 import { RecentCommentsCard } from './components/RecentCommentsCard'
 import { RecentVideosTable } from './components/RecentVideosTable'
 import { useStudioDashboard } from './hooks/useStudioDashboard'
+import type { StudioVideoRow } from './types/studio.types'
 
 export function StudioPage() {
   const navigate = useNavigate()
-  const { videos, latestVideo, analytics, isLoading } = useStudioDashboard()
+  const { videos, setVideos, latestVideo, analytics, isLoading } = useStudioDashboard()
+
+  function handleVideoDeleted(id: string) {
+    setVideos((prev) => prev.filter((v) => v.id !== id))
+  }
+
+  function handleVideoUpdated(updated: StudioVideoRow) {
+    setVideos((prev) => prev.map((v) => (v.id === updated.id ? updated : v)))
+  }
 
   if (isLoading || !latestVideo || !analytics) {
     return (
@@ -71,7 +80,11 @@ export function StudioPage() {
             </div>
 
             {/* Card 4: Recent Published Videos Table */}
-            <RecentVideosTable videos={videos} />
+            <RecentVideosTable
+              videos={videos}
+              onVideoDeleted={handleVideoDeleted}
+              onVideoUpdated={handleVideoUpdated}
+            />
           </div>
         </main>
       </div>

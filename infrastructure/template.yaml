@@ -43,11 +43,82 @@ Globals:
         Storage__RawBucketName: !Ref RawBucketName
         Storage__ProcessedBucketName: !Ref ProcessedBucketName
         Storage__CdnBaseUrl: !Sub "https://${ProcessedVideoCdnDistribution.DomainName}"
+        Cognito__UserPoolId: !Ref CognitoUserPool
+        Cognito__ClientId: !Ref CognitoUserPoolClient
 
 # ==============================================================================
 # RESOURCES
 # ==============================================================================
 Resources:
+
+  # ----------------------------------------------------------------------------
+  # 0. AUTHENTICATION: Amazon Cognito User Pool & Web Client
+  # ----------------------------------------------------------------------------
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub "YuhTube-UserPool-${AWS::StackName}"
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+          RequireUppercase: true
+          TemporaryPasswordValidityDays: 7
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Required: true
+          Mutable: true
+        - Name: name
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+        - Name: picture
+          AttributeDataType: String
+          Required: false
+          Mutable: true
+      VerificationMessageTemplate:
+        DefaultEmailOption: CONFIRM_WITH_CODE
+        EmailSubject: "[YuhTube] Mã xác thực tài khoản của bạn"
+        EmailMessage: "Chào mừng bạn đến với YuhTube! Mã xác minh của bạn là {####}."
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub "YuhTube-WebClient-${AWS::StackName}"
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+      PreventUserExistenceErrors: ENABLED
+      AccessTokenValidity: 1
+      IdTokenValidity: 1
+      RefreshTokenValidity: 30
+      TokenValidityUnits:
+        AccessToken: hours
+        IdToken: hours
+        RefreshToken: days
+      ReadAttributes:
+        - email
+        - email_verified
+        - name
+        - picture
+      WriteAttributes:
+        - email
+        - name
+        - picture
 
   # ----------------------------------------------------------------------------
   # 1. DATABASE: DynamoDB Single-Table
@@ -259,7 +330,7 @@ Resources:
           ResponseHeadersPolicyId: !Ref CdnCorsResponseHeadersPolicy
 
   # ----------------------------------------------------------------------------
-  # 5. API GATEWAY: HTTP API (v2) with CORS
+  # 5. API GATEWAY: HTTP API (v2) with CORS & Cognito Authorizer
   # ----------------------------------------------------------------------------
   YuhTubeHttpApi:
     Type: AWS::Serverless::HttpApi
@@ -269,9 +340,17 @@ Resources:
         AllowOrigins:
           - "http://localhost:3000"
           - !Ref CorsAllowOrigin
-        AllowMethods: [GET, POST, PUT, DELETE, OPTIONS]
+        AllowMethods: [GET, POST, PUT, DELETE, OPTIONS, PATCH]
         AllowHeaders: ["*"]
         MaxAge: 3600
+      Auth:
+        Authorizers:
+          CognitoAuthorizer:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/${CognitoUserPool}"
+              audience:
+                - !Ref CognitoUserPoolClient
 
   # ----------------------------------------------------------------------------
   # 6. LAMBDA FUNCTIONS
@@ -306,24 +385,32 @@ Resources:
             ApiId: !Ref YuhTubeHttpApi
             Path: /uploads
             Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
         CreateParts:
           Type: HttpApi
           Properties:
             ApiId: !Ref YuhTubeHttpApi
             Path: /uploads/{videoId}/parts
             Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
         Complete:
           Type: HttpApi
           Properties:
             ApiId: !Ref YuhTubeHttpApi
             Path: /uploads/{videoId}/complete
             Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
         Thumbnail:
           Type: HttpApi
           Properties:
             ApiId: !Ref YuhTubeHttpApi
             Path: /uploads/{videoId}/thumbnail
             Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
 
   # --- 6.2. Video API Lambda ---
   VideoApiFunction:
@@ -335,10 +422,17 @@ Resources:
       Policies:
         - Statement:
             - Effect: Allow
-              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query, dynamodb:Scan]
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query, dynamodb:Scan, dynamodb:DeleteItem]
               Resource:
                 - !GetAtt DynamoDbTable.Arn
                 - !Sub "${DynamoDbTable.Arn}/index/*"
+            - Effect: Allow
+              Action: [s3:DeleteObject, s3:ListBucket]
+              Resource:
+                - !Sub "arn:aws:s3:::${RawBucketName}"
+                - !Sub "arn:aws:s3:::${RawBucketName}/*"
+                - !Sub "arn:aws:s3:::${ProcessedBucketName}"
+                - !Sub "arn:aws:s3:::${ProcessedBucketName}/*"
             - Effect: Allow
               Action: [ssm:GetParametersByPath, ssm:GetParameter, ssm:GetParameters]
               Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
@@ -361,8 +455,61 @@ Resources:
             ApiId: !Ref YuhTubeHttpApi
             Path: /videos/{id}
             Method: put
+            Auth:
+              Authorizer: CognitoAuthorizer
+        PatchVideo:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{id}
+            Method: patch
+            Auth:
+              Authorizer: CognitoAuthorizer
+        DeleteVideo:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{id}
+            Method: delete
+            Auth:
+              Authorizer: CognitoAuthorizer
 
-  # --- 6.3. MediaConvert Coordinator Lambda ---
+  # --- 6.3. Profile API Lambda ---
+  ProfileApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: YuhTube-Profile-Lambda
+      CodeUri: ../backend/src/YuhTube.Profile.Api/
+      Handler: YuhTube.Profile.Api
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem]
+              Resource:
+                - !GetAtt DynamoDbTable.Arn
+                - !Sub "${DynamoDbTable.Arn}/index/*"
+            - Effect: Allow
+              Action: [ssm:GetParametersByPath, ssm:GetParameter, ssm:GetParameters]
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
+      Events:
+        GetProfile:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /profile
+            Method: get
+            Auth:
+              Authorizer: CognitoAuthorizer
+        UpdateProfile:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /profile
+            Method: put
+            Auth:
+              Authorizer: CognitoAuthorizer
+
+  # --- 6.4. MediaConvert Coordinator Lambda ---
   MediaConvertCoordinatorFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -461,3 +608,15 @@ Outputs:
   MediaConvertRoleArn:
     Description: Managed IAM Role ARN for MediaConvert
     Value: !GetAtt MediaConvertRole.Arn
+
+  CognitoUserPoolId:
+    Description: Managed Cognito User Pool ID
+    Value: !Ref CognitoUserPool
+
+  CognitoUserPoolClientId:
+    Description: Managed Cognito User Pool Web Client ID
+    Value: !Ref CognitoUserPoolClient
+
+  CognitoUserPoolArn:
+    Description: Managed Cognito User Pool ARN
+    Value: !GetAtt CognitoUserPool.Arn

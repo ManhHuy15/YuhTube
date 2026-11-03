@@ -37,7 +37,8 @@ export async function uploadPart(
     headers: { 'Content-Type': contentType },
     onUploadProgress: ({ loaded }) => onProgress(loaded),
   })
-  const rawETag = response.headers?.etag || response.headers?.['etag'] || response.headers?.['ETag'] || (typeof response.headers?.get === 'function' ? response.headers.get('etag') : undefined)
+  const headers = response.headers as Record<string, any> | undefined
+  const rawETag = headers?.etag || headers?.ETag || (typeof headers?.get === 'function' ? headers.get('etag') : undefined)
   const eTag = typeof rawETag === 'string' ? rawETag : undefined
   if (!eTag) {
     throw new Error('S3 did not expose the ETag response header.')

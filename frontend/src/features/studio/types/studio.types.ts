@@ -45,3 +45,10 @@ export interface UploadFormData {
   isScheduled: boolean
   scheduleDate?: string
 }
+
+export interface UpdateVideoMetadataPayload {
+  title: string
+  description?: string
+  thumbnailUrl?: string
+  isPrivate?: boolean
+}

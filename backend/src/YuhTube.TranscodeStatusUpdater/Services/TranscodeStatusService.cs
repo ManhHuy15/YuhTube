@@ -106,12 +106,70 @@ public sealed partial class TranscodeStatusService
                 [":completedAt"] = new() { S = now },
                 [":playbackUrl"] = new() { S = playbackUrl },
                 [":durationMs"] = new() { N = durationMs.ToString() }
-            }
+            },
+            ReturnValues = ReturnValue.ALL_NEW
         };
 
-        await _dynamoDb.UpdateItemAsync(updateSessionRequest, cancellationToken);
+        var sessionResponse = await _dynamoDb.UpdateItemAsync(updateSessionRequest, cancellationToken);
+        var uploaderId = sessionResponse.Attributes != null && sessionResponse.Attributes.TryGetValue(UploadSessionAttributes.UploaderId, out var uidVal)
+            ? uidVal.S
+            : null;
+        var uploaderName = sessionResponse.Attributes != null && sessionResponse.Attributes.TryGetValue(UploadSessionAttributes.UploaderName, out var unameVal)
+            ? unameVal.S
+            : null;
+        var uploaderAvatar = sessionResponse.Attributes != null && sessionResponse.Attributes.TryGetValue(UploadSessionAttributes.UploaderAvatar, out var uavVal)
+            ? uavVal.S
+            : null;
+
+        if (string.IsNullOrWhiteSpace(uploaderAvatar) && !string.IsNullOrWhiteSpace(uploaderName))
+        {
+            uploaderAvatar = $"https://api.dicebear.com/7.x/initials/svg?seed={Uri.EscapeDataString(uploaderName)}";
+        }
 
         // 2. Update / Initialize Video metadata in DynamoDB Single-Table
+        var videoUpdateExpr = "SET #videoId = :videoId, #status = :ready, #playbackUrl = :playbackUrl, #durationMs = :durationMs, #updatedAt = :now, #createdAt = if_not_exists(#createdAt, :now), #title = if_not_exists(#title, :defaultTitle), #thumbnailUrl = if_not_exists(#thumbnailUrl, :defaultThumbnailUrl), #gsi2Pk = if_not_exists(#gsi2Pk, :gsi2Pk), #gsi2Sk = if_not_exists(#gsi2Sk, :now)";
+
+        var videoAttrNames = new Dictionary<string, string>
+        {
+            ["#videoId"] = VideoAttributes.VideoId,
+            ["#status"] = VideoAttributes.Status,
+            ["#playbackUrl"] = VideoAttributes.PlaybackUrl,
+            ["#durationMs"] = VideoAttributes.DurationMs,
+            ["#updatedAt"] = VideoAttributes.UpdatedAt,
+            ["#createdAt"] = VideoAttributes.CreatedAt,
+            ["#title"] = VideoAttributes.Title,
+            ["#thumbnailUrl"] = VideoAttributes.ThumbnailUrl,
+            ["#gsi2Pk"] = VideoAttributes.Gsi2PartitionKey,
+            ["#gsi2Sk"] = VideoAttributes.Gsi2SortKey
+        };
+
+        var videoAttrValues = new Dictionary<string, AttributeValue>
+        {
+            [":videoId"] = new() { S = videoId },
+            [":ready"] = new() { S = VideoStatuses.Ready },
+            [":playbackUrl"] = new() { S = playbackUrl },
+            [":durationMs"] = new() { N = durationMs.ToString() },
+            [":now"] = new() { S = now },
+            [":defaultTitle"] = new() { S = $"Video {videoId}" },
+            [":defaultThumbnailUrl"] = new() { S = defaultThumbnailUrl },
+            [":gsi2Pk"] = new() { S = VideoAttributes.FeedPartitionTag }
+        };
+
+        if (!string.IsNullOrWhiteSpace(uploaderId))
+        {
+            videoUpdateExpr += ", #uploaderId = if_not_exists(#uploaderId, :uploaderId), #uploaderName = if_not_exists(#uploaderName, :uploaderName), #uploaderAvatar = if_not_exists(#uploaderAvatar, :uploaderAvatar), #gsi1Pk = if_not_exists(#gsi1Pk, :gsi1Pk), #gsi1Sk = if_not_exists(#gsi1Sk, :now)";
+            videoAttrNames["#uploaderId"] = VideoAttributes.UploaderId;
+            videoAttrNames["#uploaderName"] = VideoAttributes.UploaderName;
+            videoAttrNames["#uploaderAvatar"] = VideoAttributes.UploaderAvatar;
+            videoAttrNames["#gsi1Pk"] = VideoAttributes.Gsi1PartitionKey;
+            videoAttrNames["#gsi1Sk"] = VideoAttributes.Gsi1SortKey;
+
+            videoAttrValues[":uploaderId"] = new() { S = uploaderId };
+            videoAttrValues[":uploaderName"] = new() { S = uploaderName ?? "Creator" };
+            videoAttrValues[":uploaderAvatar"] = new() { S = uploaderAvatar ?? $"https://api.dicebear.com/7.x/initials/svg?seed={Uri.EscapeDataString(uploaderName ?? "Creator")}" };
+            videoAttrValues[":gsi1Pk"] = new() { S = uploaderId };
+        }
+
         var updateVideoRequest = new UpdateItemRequest
         {
             TableName = _dynamoDbOptions.TableName,
@@ -120,31 +178,9 @@ public sealed partial class TranscodeStatusService
                 [DynamoAttributes.PartitionKey] = new() { S = VideoKeys.PartitionKey(videoId) },
                 [DynamoAttributes.SortKey] = new() { S = VideoKeys.SortKey(videoId) }
             },
-            UpdateExpression = "SET #videoId = :videoId, #status = :ready, #playbackUrl = :playbackUrl, #durationMs = :durationMs, #updatedAt = :now, #createdAt = if_not_exists(#createdAt, :now), #title = if_not_exists(#title, :defaultTitle), #thumbnailUrl = if_not_exists(#thumbnailUrl, :defaultThumbnailUrl), #gsi2Pk = if_not_exists(#gsi2Pk, :gsi2Pk), #gsi2Sk = if_not_exists(#gsi2Sk, :now)",
-            ExpressionAttributeNames = new Dictionary<string, string>
-            {
-                ["#videoId"] = VideoAttributes.VideoId,
-                ["#status"] = VideoAttributes.Status,
-                ["#playbackUrl"] = VideoAttributes.PlaybackUrl,
-                ["#durationMs"] = VideoAttributes.DurationMs,
-                ["#updatedAt"] = VideoAttributes.UpdatedAt,
-                ["#createdAt"] = VideoAttributes.CreatedAt,
-                ["#title"] = VideoAttributes.Title,
-                ["#thumbnailUrl"] = VideoAttributes.ThumbnailUrl,
-                ["#gsi2Pk"] = VideoAttributes.Gsi2PartitionKey,
-                ["#gsi2Sk"] = VideoAttributes.Gsi2SortKey
-            },
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-            {
-                [":videoId"] = new() { S = videoId },
-                [":ready"] = new() { S = VideoStatuses.Ready },
-                [":playbackUrl"] = new() { S = playbackUrl },
-                [":durationMs"] = new() { N = durationMs.ToString() },
-                [":now"] = new() { S = now },
-                [":defaultTitle"] = new() { S = $"Video {videoId}" },
-                [":defaultThumbnailUrl"] = new() { S = defaultThumbnailUrl },
-                [":gsi2Pk"] = new() { S = VideoAttributes.FeedPartitionTag }
-            }
+            UpdateExpression = videoUpdateExpr,
+            ExpressionAttributeNames = videoAttrNames,
+            ExpressionAttributeValues = videoAttrValues
         };
 
         await _dynamoDb.UpdateItemAsync(updateVideoRequest, cancellationToken);

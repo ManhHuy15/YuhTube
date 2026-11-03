@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.S3;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Options;
 using YuhTube.Persistence.Contracts.DynamoDb;
 using YuhTube.Upload.Api.Configuration;
 using YuhTube.Upload.Api.Dtos;
+using YuhTube.Upload.Api.Helpers;
 
 namespace YuhTube.Upload.Api.Controllers;
 
@@ -83,6 +85,21 @@ public sealed class UploadsController : ControllerBase
             _storageOptions.RawBucketName,
             _storageOptions.RawBucketName.Length);
 
+        var identity = CognitoAuthHelper.ExtractUser(HttpContext);
+        if (identity == null)
+        {
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Unauthorized",
+                Detail = "Authentication required to initiate video upload.",
+                Status = StatusCodes.Status401Unauthorized
+            });
+        }
+
+        var uploaderId = identity.UserId;
+        var uploaderName = identity.UserName;
+        var uploaderAvatar = identity.UserAvatar ?? string.Empty;
+
         var result = await _s3.InitiateMultipartUploadAsync(new InitiateMultipartUploadRequest
         {
             BucketName = _storageOptions.RawBucketName,
@@ -105,7 +122,35 @@ public sealed class UploadsController : ControllerBase
                     [UploadSessionAttributes.PartSizeBytes] = new() { N = partSizeBytes.ToString() },
                     [UploadSessionAttributes.PartCount] = new() { N = partCount.ToString() },
                     [UploadSessionAttributes.Status] = new() { S = UploadSessionStatuses.Initiated },
-                    [UploadSessionAttributes.CreatedAt] = new() { S = DateTimeOffset.UtcNow.ToString("O") }
+                    [UploadSessionAttributes.CreatedAt] = new() { S = DateTimeOffset.UtcNow.ToString("O") },
+                    [UploadSessionAttributes.UploaderId] = new() { S = uploaderId },
+                    [UploadSessionAttributes.UploaderName] = new() { S = uploaderName },
+                    [UploadSessionAttributes.UploaderAvatar] = new() { S = uploaderAvatar }
+                }
+            }, cancellationToken);
+
+            var now = DateTimeOffset.UtcNow.ToString("O");
+            await _dynamoDb.UpdateItemAsync(new UpdateItemRequest
+            {
+                TableName = _dynamoDbOptions.TableName,
+                Key = new Dictionary<string, AttributeValue>
+                {
+                    [DynamoAttributes.PartitionKey] = new() { S = UserKeys.PartitionKey(uploaderId) },
+                    [DynamoAttributes.SortKey] = new() { S = UserKeys.SortKey(uploaderId) }
+                },
+                UpdateExpression = "SET #name = :name, #avatar = if_not_exists(#avatar, :avatar), #updatedAt = :now, #createdAt = if_not_exists(#createdAt, :now)",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    ["#name"] = UserAttributes.ChannelName,
+                    ["#avatar"] = UserAttributes.AvatarUrl,
+                    ["#updatedAt"] = UserAttributes.UpdatedAt,
+                    ["#createdAt"] = UserAttributes.CreatedAt
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    [":name"] = new() { S = uploaderName },
+                    [":avatar"] = new() { S = uploaderAvatar },
+                    [":now"] = new() { S = now }
                 }
             }, cancellationToken);
         }
@@ -285,30 +330,104 @@ public sealed class UploadsController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
-        var sessionResult = await GetUploadSession(videoId, cancellationToken);
-        if (sessionResult.Item.Count == 0)
-        {
-            return NotFound();
-        }
+        string objectKey;
 
-        var ext = Path.GetExtension(request.FileName).ToLowerInvariant();
-        if (string.IsNullOrEmpty(ext))
+        if (string.Equals(videoId, "avatar", StringComparison.OrdinalIgnoreCase))
         {
-            ext = request.ContentType switch
+            var identity = CognitoAuthHelper.ExtractUser(HttpContext);
+            if (identity == null)
             {
-                "image/png" => ".png",
-                "image/webp" => ".webp",
-                _ => ".jpg"
-            };
+                return Unauthorized(new ProblemDetails
+                {
+                    Title = "Unauthorized",
+                    Detail = "Authentication required to upload user avatar.",
+                    Status = StatusCodes.Status401Unauthorized
+                });
+            }
+
+            var ext = Path.GetExtension(request.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext))
+            {
+                ext = request.ContentType switch
+                {
+                    "image/png" => ".png",
+                    "image/webp" => ".webp",
+                    _ => ".jpg"
+                };
+            }
+
+            objectKey = $"avatars/{identity.UserId}/avatar{ext}";
+        }
+        else
+        {
+            var sessionResult = await GetUploadSession(videoId, cancellationToken);
+            if (sessionResult.Item.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var ext = Path.GetExtension(request.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext))
+            {
+                ext = request.ContentType switch
+                {
+                    "image/png" => ".png",
+                    "image/webp" => ".webp",
+                    _ => ".jpg"
+                };
+            }
+
+            objectKey = $"thumbnails/{videoId}/custom{ext}";
         }
 
         var targetBucket = !string.IsNullOrWhiteSpace(_storageOptions.ProcessedBucketName)
             ? _storageOptions.ProcessedBucketName
             : _storageOptions.RawBucketName;
 
-        var objectKey = $"thumbnails/{videoId}/custom{ext}";
-        var expiresAt = DateTime.UtcNow.AddMinutes(15);
+        var publicUrl = !string.IsNullOrWhiteSpace(_storageOptions.CdnBaseUrl)
+            ? $"{_storageOptions.CdnBaseUrl.TrimEnd('/')}/{objectKey}"
+            : $"https://{targetBucket}.s3.amazonaws.com/{objectKey}";
 
+        if (string.Equals(videoId, "avatar", StringComparison.OrdinalIgnoreCase))
+        {
+            var identity = CognitoAuthHelper.ExtractUser(HttpContext);
+            if (identity != null)
+            {
+                try
+                {
+                    var now = DateTimeOffset.UtcNow.ToString("O");
+                    await _dynamoDb.UpdateItemAsync(new UpdateItemRequest
+                    {
+                        TableName = _dynamoDbOptions.TableName,
+                        Key = new Dictionary<string, AttributeValue>
+                        {
+                            [DynamoAttributes.PartitionKey] = new() { S = UserKeys.PartitionKey(identity.UserId) },
+                            [DynamoAttributes.SortKey] = new() { S = UserKeys.SortKey(identity.UserId) }
+                        },
+                        UpdateExpression = "SET #avatar = :avatar, #name = if_not_exists(#name, :name), #updatedAt = :now, #createdAt = if_not_exists(#createdAt, :now)",
+                        ExpressionAttributeNames = new Dictionary<string, string>
+                        {
+                            ["#avatar"] = UserAttributes.AvatarUrl,
+                            ["#name"] = UserAttributes.ChannelName,
+                            ["#updatedAt"] = UserAttributes.UpdatedAt,
+                            ["#createdAt"] = UserAttributes.CreatedAt
+                        },
+                        ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                        {
+                            [":avatar"] = new() { S = publicUrl },
+                            [":name"] = new() { S = identity.UserName },
+                            [":now"] = new() { S = now }
+                        }
+                    }, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to update user profile avatar in DynamoDB for {UserId}", identity.UserId);
+                }
+            }
+        }
+
+        var expiresAt = DateTime.UtcNow.AddMinutes(15);
         var uploadUrl = await _s3.GetPreSignedURLAsync(new GetPreSignedUrlRequest
         {
             BucketName = targetBucket,
@@ -317,10 +436,6 @@ public sealed class UploadsController : ControllerBase
             ContentType = request.ContentType,
             Expires = expiresAt
         });
-
-        var publicUrl = !string.IsNullOrWhiteSpace(_storageOptions.CdnBaseUrl)
-            ? $"{_storageOptions.CdnBaseUrl.TrimEnd('/')}/{objectKey}"
-            : $"https://{targetBucket}.s3.amazonaws.com/{objectKey}";
 
         return Ok(new CreateThumbnailUploadUrlResponse(uploadUrl, publicUrl, expiresAt));
     }

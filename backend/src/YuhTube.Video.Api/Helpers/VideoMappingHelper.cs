@@ -6,7 +6,9 @@ namespace YuhTube.Video.Api.Helpers;
 
 public static class VideoMappingHelper
 {
-    public static VideoFeedItemDto MapFeedItem(Dictionary<string, AttributeValue> item)
+    public static VideoFeedItemDto MapFeedItem(
+        Dictionary<string, AttributeValue> item,
+        (string Name, string? Avatar)? profile = null)
     {
         var videoId = GetString(item, VideoAttributes.VideoId, string.Empty);
         var title = GetString(item, VideoAttributes.Title, string.Empty);
@@ -16,9 +18,22 @@ public static class VideoMappingHelper
         var status = GetString(item, VideoAttributes.Status, VideoStatuses.Processing);
         var createdAt = GetString(item, VideoAttributes.CreatedAt, string.Empty);
 
-        var uploaderId = GetString(item, VideoAttributes.UploaderId, string.Empty);
-        var uploaderName = GetString(item, VideoAttributes.UploaderName, string.Empty);
-        var uploaderAvatar = GetNullableString(item, VideoAttributes.UploaderAvatar);
+        var uploaderId = GetString(item, VideoAttributes.UploaderId, "channel-default");
+        var rawUploaderName = profile?.Name;
+        if (string.IsNullOrWhiteSpace(rawUploaderName))
+        {
+            rawUploaderName = GetString(item, VideoAttributes.UploaderName, string.Empty);
+        }
+        var uploaderName = !string.IsNullOrWhiteSpace(rawUploaderName) ? rawUploaderName : "Creator";
+
+        var rawAvatar = profile?.Avatar;
+        if (string.IsNullOrWhiteSpace(rawAvatar))
+        {
+            rawAvatar = GetNullableString(item, VideoAttributes.UploaderAvatar);
+        }
+        var uploaderAvatar = !string.IsNullOrWhiteSpace(rawAvatar)
+            ? rawAvatar
+            : $"https://api.dicebear.com/7.x/initials/svg?seed={Uri.EscapeDataString(uploaderName)}";
 
         return new VideoFeedItemDto(
             Id: videoId,
@@ -36,7 +51,8 @@ public static class VideoMappingHelper
         string videoId,
         Dictionary<string, AttributeValue> metaItem,
         int likesCount,
-        IReadOnlyList<VideoCommentDto> comments)
+        IReadOnlyList<VideoCommentDto> comments,
+        (string Name, string? Avatar)? profile = null)
     {
         var title = GetString(metaItem, VideoAttributes.Title, string.Empty);
         var description = GetString(metaItem, VideoAttributes.Description, string.Empty);
@@ -48,9 +64,22 @@ public static class VideoMappingHelper
         var createdAt = GetString(metaItem, VideoAttributes.CreatedAt, string.Empty);
         var updatedAt = GetString(metaItem, VideoAttributes.UpdatedAt, string.Empty);
 
-        var uploaderId = GetString(metaItem, VideoAttributes.UploaderId, string.Empty);
-        var uploaderName = GetString(metaItem, VideoAttributes.UploaderName, string.Empty);
-        var uploaderAvatar = GetNullableString(metaItem, VideoAttributes.UploaderAvatar);
+        var uploaderId = GetString(metaItem, VideoAttributes.UploaderId, "channel-default");
+        var rawUploaderName = profile?.Name;
+        if (string.IsNullOrWhiteSpace(rawUploaderName))
+        {
+            rawUploaderName = GetString(metaItem, VideoAttributes.UploaderName, string.Empty);
+        }
+        var uploaderName = !string.IsNullOrWhiteSpace(rawUploaderName) ? rawUploaderName : "Creator";
+
+        var rawAvatar = profile?.Avatar;
+        if (string.IsNullOrWhiteSpace(rawAvatar))
+        {
+            rawAvatar = GetNullableString(metaItem, VideoAttributes.UploaderAvatar);
+        }
+        var uploaderAvatar = !string.IsNullOrWhiteSpace(rawAvatar)
+            ? rawAvatar
+            : $"https://api.dicebear.com/7.x/initials/svg?seed={Uri.EscapeDataString(uploaderName)}";
 
         return new VideoDetailResponse(
             Id: videoId,

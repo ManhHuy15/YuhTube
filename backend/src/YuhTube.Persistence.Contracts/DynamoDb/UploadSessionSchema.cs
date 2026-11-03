@@ -23,6 +23,9 @@ public static class UploadSessionAttributes
     public const string TranscodeErrorMessage = "TranscodeErrorMessage";
     public const string PlaybackUrl = "PlaybackUrl";
     public const string DurationMs = "DurationMs";
+    public const string UploaderId = "UploaderId";
+    public const string UploaderName = "UploaderName";
+    public const string UploaderAvatar = "UploaderAvatar";
 }
 
 public static class UploadSessionKeys

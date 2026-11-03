@@ -1,11 +1,22 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { StudioVideoRow } from '../types/studio.types'
+import { EditVideoModal } from './EditVideoModal'
+import { DeleteConfirmModal } from './DeleteConfirmModal'
 
 interface RecentVideosTableProps {
   videos: StudioVideoRow[]
+  onVideoDeleted?: (id: string) => void
+  onVideoUpdated?: (updated: StudioVideoRow) => void
 }
 
-export function RecentVideosTable({ videos }: RecentVideosTableProps) {
+export function RecentVideosTable({
+  videos,
+  onVideoDeleted,
+  onVideoUpdated,
+}: RecentVideosTableProps) {
+  const [editingVideo, setEditingVideo] = useState<StudioVideoRow | null>(null)
+  const [deletingVideo, setDeletingVideo] = useState<StudioVideoRow | null>(null)
   return (
     <div className="rounded-2xl bg-[#1e1e24]/70 backdrop-blur-xl border border-white/[0.08] overflow-hidden shadow-xl transition-all">
       <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08]">
@@ -42,6 +53,7 @@ export function RecentVideosTable({ videos }: RecentVideosTableProps) {
               <th className="py-3.5 px-5 font-semibold text-right">Lượt xem</th>
               <th className="py-3.5 px-5 font-semibold text-right">Bình luận</th>
               <th className="py-3.5 px-5 font-semibold text-right">Tỷ lệ thích</th>
+              <th className="py-3.5 px-5 font-semibold text-center">Hành động</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.05] text-[#f1f1f1]">
@@ -72,8 +84,14 @@ export function RecentVideosTable({ videos }: RecentVideosTableProps) {
                   </div>
                 </td>
                 <td className="py-3.5 px-5 whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-                    <span className="material-symbols-outlined text-[15px]">public</span>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                    video.visibility === 'Riêng tư'
+                      ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
+                      : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                  }`}>
+                    <span className="material-symbols-outlined text-[15px]">
+                      {video.visibility === 'Riêng tư' ? 'lock' : 'public'}
+                    </span>
                     <span>{video.visibility}</span>
                   </span>
                 </td>
@@ -88,11 +106,65 @@ export function RecentVideosTable({ videos }: RecentVideosTableProps) {
                 <td className="py-3.5 px-5 text-right font-bold text-emerald-400 font-mono">
                   {video.likePercentage}
                 </td>
+                <td className="py-3.5 px-5 text-center whitespace-nowrap">
+                  <div className="flex items-center justify-center gap-1">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setEditingVideo(video)
+                      }}
+                      title="Chỉnh sửa thông tin video"
+                      className="p-1.5 rounded-lg hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setDeletingVideo(video)
+                      }}
+                      title="Xóa vĩnh viễn video"
+                      className="p-1.5 rounded-lg hover:bg-red-500/20 text-white/70 hover:text-red-400 transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Edit Video Modal */}
+      {editingVideo && (
+        <EditVideoModal
+          key={editingVideo.id}
+          video={editingVideo}
+          isOpen={!!editingVideo}
+          onClose={() => setEditingVideo(null)}
+          onSuccess={(updated) => {
+            onVideoUpdated?.(updated)
+            setEditingVideo(null)
+          }}
+        />
+      )}
+
+      {/* Hard Delete Video Confirm Modal */}
+      {deletingVideo && (
+        <DeleteConfirmModal
+          key={deletingVideo.id}
+          video={deletingVideo}
+          isOpen={!!deletingVideo}
+          onClose={() => setDeletingVideo(null)}
+          onSuccess={(deletedId) => {
+            onVideoDeleted?.(deletedId)
+            setDeletingVideo(null)
+          }}
+        />
+      )}
 
       <div className="px-5 sm:px-6 py-3.5 bg-white/[0.02] border-t border-white/[0.08] flex items-center justify-between text-xs text-white/50">
         <div>Hiển thị 1–{videos.length} trong tổng số 48 video</div>

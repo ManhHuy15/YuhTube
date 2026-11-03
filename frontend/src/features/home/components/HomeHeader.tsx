@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { UserNavButton } from '../../auth/components/UserNavButton'
 
 interface HomeHeaderProps {
   onToggleSidebar: () => void
@@ -70,12 +71,7 @@ export function HomeHeader({ onToggleSidebar }: HomeHeaderProps) {
           </span>
         </button>
 
-        <Link
-          to="/studio"
-          className="w-9 h-9 rounded-full bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white font-bold text-sm shadow-md ring-2 ring-white/10"
-        >
-          Y
-        </Link>
+        <UserNavButton />
       </div>
     </header>
   )

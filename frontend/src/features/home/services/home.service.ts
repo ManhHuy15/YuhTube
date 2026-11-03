@@ -1,4 +1,5 @@
 import { apiClient } from '../../../common/api/apiClient'
+import { formatRelativeTime } from '../../../common/utils/timeAgo'
 import type { VideoFeedItem } from '../types/home.types'
 
 interface PagedVideoFeedResponse {
@@ -19,13 +20,13 @@ function mapRawFeedItem(item: any): VideoFeedItem {
     title: item.title || 'Untitled Video',
     thumbnailUrl: item.thumbnailUrl || '',
     duration: durationFormatted,
-    views: item.views || '0 views',
-    createdAt: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US') : 'Just now',
+    views: item.views ? String(item.views).replace(/\s*(views|lượt xem)/gi, '').trim() : '0',
+    createdAt: formatRelativeTime(item.createdAt),
     badge: item.badge,
     uploader: {
       id: item.uploader?.id || 'channel-default',
       name: item.uploader?.name || 'Creator',
-      avatar: item.uploader?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
+      avatar: item.uploader?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(item.uploader?.name || 'Creator')}`,
       isVerified: item.uploader?.isVerified ?? false,
     },
   }

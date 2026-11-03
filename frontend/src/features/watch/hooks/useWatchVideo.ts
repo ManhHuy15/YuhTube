@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { fetchVideoComments, fetchVideoDetail } from '../services/watch.service'
+import { useAuthStore } from '../../auth/hooks/useAuthStore'
 import type { WatchComment, WatchVideoDetail } from '../types/watch.types'
 
 export function useWatchVideo(videoId: string) {
@@ -32,11 +33,12 @@ export function useWatchVideo(videoId: string) {
   }, [videoId])
 
   function addComment(content: string) {
+    const user = useAuthStore.getState().user
+    const authorName = user?.name || user?.email?.split('@')[0] || 'You'
     const newComment: WatchComment = {
       id: `c_${Date.now()}`,
-      authorName: 'You (Creator)',
-      authorAvatar:
-        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80',
+      authorName,
+      authorAvatar: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(authorName)}`,
       content,
       createdAt: 'Just now',
       likes: 0,

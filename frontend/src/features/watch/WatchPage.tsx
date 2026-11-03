@@ -4,6 +4,7 @@ import { VideoPlayer } from './components/VideoPlayer'
 import { CommentSection } from './components/CommentSection'
 import { RelatedVideos } from './components/RelatedVideos'
 import { useWatchVideo } from './hooks/useWatchVideo'
+import { UserNavButton } from '../auth/components/UserNavButton'
 
 export function WatchPage() {
   const { videoId = 'v1' } = useParams<{ videoId: string }>()
@@ -98,9 +99,7 @@ export function WatchPage() {
             <span className="material-symbols-outlined text-[18px] text-red-500">video_call</span>
             <span>Studio</span>
           </Link>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-xs font-bold text-white shadow-md">
-            Y
-          </div>
+          <UserNavButton />
         </div>
       </header>
 

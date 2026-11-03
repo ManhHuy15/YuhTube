@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { UserNavButton } from '../../auth/components/UserNavButton'
 
 interface StudioHeaderProps {
   onOpenUpload?: () => void
@@ -58,14 +59,7 @@ export function StudioHeader({ onOpenUpload }: StudioHeaderProps) {
           <span>TẠO</span>
         </Link>
 
-        <div className="relative cursor-pointer group">
-          <img
-            alt="Avatar"
-            src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=160&auto=format&fit=crop&q=80"
-            className="w-8 h-8 rounded-full object-cover ring-2 ring-red-500/80 group-hover:scale-105 transition-all"
-          />
-          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-[#161616]"></span>
-        </div>
+        <UserNavButton />
       </div>
     </header>
   )

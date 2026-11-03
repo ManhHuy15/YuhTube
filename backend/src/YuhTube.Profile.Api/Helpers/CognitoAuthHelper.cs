@@ -1,0 +1,168 @@
+using System.Security.Claims;
+using System.Text.Json;
+using Amazon.Lambda.APIGatewayEvents;
+
+namespace YuhTube.Profile.Api.Helpers;
+
+public sealed record CognitoUserIdentity(
+    string UserId,
+    string UserName,
+    string? UserAvatar
+);
+
+public static class CognitoAuthHelper
+{
+    public static CognitoUserIdentity? ExtractUser(HttpContext httpContext)
+    {
+        // 1. Try APIGatewayHttpApiV2ProxyRequest from Lambda context
+        if (httpContext.Items.TryGetValue("LambdaRequestObject", out var lambdaObj) &&
+            lambdaObj is APIGatewayHttpApiV2ProxyRequest proxyRequest &&
+            proxyRequest.RequestContext?.Authorizer?.Jwt?.Claims != null)
+        {
+            var claims = proxyRequest.RequestContext.Authorizer.Jwt.Claims;
+            var id = GetClaim(claims, "sub")
+                ?? GetClaim(claims, "cognito:username")
+                ?? GetClaim(claims, "username");
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                var name = ResolveName(
+                    GetClaim(claims, "name"),
+                    GetClaim(claims, "cognito:username"),
+                    GetClaim(claims, "email"));
+
+                var picture = GetClaim(claims, "picture");
+                var avatar = !string.IsNullOrWhiteSpace(picture) ? picture : BuildDicebearAvatar(name);
+
+                return new CognitoUserIdentity(
+                    UserId: id,
+                    UserName: name,
+                    UserAvatar: avatar);
+            }
+        }
+
+        // 2. Try ClaimsPrincipal (HttpContext.User)
+        if (httpContext.User?.Identity?.IsAuthenticated == true || (httpContext.User?.Claims != null && httpContext.User.Claims.Any()))
+        {
+            var id = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? httpContext.User.FindFirstValue("sub")
+                ?? httpContext.User.FindFirstValue("cognito:username");
+
+            if (!string.IsNullOrWhiteSpace(id))
+            {
+                var name = ResolveName(
+                    httpContext.User.FindFirstValue("name"),
+                    httpContext.User.FindFirstValue("cognito:username"),
+                    httpContext.User.FindFirstValue(ClaimTypes.Email) ?? httpContext.User.FindFirstValue("email"));
+
+                var picture = httpContext.User.FindFirstValue("picture");
+                var avatar = !string.IsNullOrWhiteSpace(picture) ? picture : BuildDicebearAvatar(name);
+
+                return new CognitoUserIdentity(
+                    UserId: id,
+                    UserName: name,
+                    UserAvatar: avatar);
+            }
+        }
+
+        // 3. Fallback: Parse Bearer JWT from Authorization header directly
+        var authHeader = httpContext.Request.Headers.Authorization.ToString();
+        if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            var token = authHeader["Bearer ".Length..].Trim();
+            var claims = ParseJwtPayload(token);
+            if (claims != null)
+            {
+                var id = claims.GetValueOrDefault("sub")
+                    ?? claims.GetValueOrDefault("cognito:username")
+                    ?? claims.GetValueOrDefault("username");
+
+                if (!string.IsNullOrWhiteSpace(id))
+                {
+                    var name = ResolveName(
+                        claims.GetValueOrDefault("name"),
+                        claims.GetValueOrDefault("cognito:username"),
+                        claims.GetValueOrDefault("email"));
+
+                    var picture = claims.GetValueOrDefault("picture");
+                    var avatar = !string.IsNullOrWhiteSpace(picture) ? picture : BuildDicebearAvatar(name);
+
+                    return new CognitoUserIdentity(
+                        UserId: id,
+                        UserName: name,
+                        UserAvatar: avatar);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static string? GetClaim(IDictionary<string, string> claims, string key) =>
+        claims.TryGetValue(key, out var val) && !string.IsNullOrWhiteSpace(val) ? val : null;
+
+    private static string ResolveName(string? explicitName, string? username, string? email)
+    {
+        if (!string.IsNullOrWhiteSpace(explicitName))
+        {
+            return explicitName.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(username) && !IsGuid(username))
+        {
+            return username.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            var atIndex = email.IndexOf('@');
+            return atIndex > 0 ? email[..atIndex] : email;
+        }
+
+        return "Creator";
+    }
+
+    private static bool IsGuid(string value) => Guid.TryParse(value, out _);
+
+    private static string BuildDicebearAvatar(string seed) =>
+        $"https://api.dicebear.com/7.x/initials/svg?seed={Uri.EscapeDataString(seed)}";
+
+    private static Dictionary<string, string>? ParseJwtPayload(string jwt)
+    {
+        try
+        {
+            var parts = jwt.Split('.');
+            if (parts.Length < 2) return null;
+
+            var payload = parts[1];
+            payload = payload.Replace('-', '+').Replace('_', '/');
+            switch (payload.Length % 4)
+            {
+                case 2: payload += "=="; break;
+                case 3: payload += "="; break;
+            }
+
+            var bytes = Convert.FromBase64String(payload);
+            using var doc = JsonDocument.Parse(bytes);
+            var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var prop in doc.RootElement.EnumerateObject())
+            {
+                if (prop.Value.ValueKind == JsonValueKind.String)
+                {
+                    result[prop.Name] = prop.Value.GetString() ?? string.Empty;
+                }
+                else
+                {
+                    result[prop.Name] = prop.Value.ToString();
+                }
+            }
+
+            return result;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+}
