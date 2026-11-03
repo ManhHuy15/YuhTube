@@ -410,9 +410,10 @@ public sealed class VideosController : ControllerBase
             await DeleteS3PrefixAsync(_storageOptions.RawBucketName, $"raw/{id}/", cancellationToken);
         }
 
-        // 3. Delete S3 objects in Processed bucket (videos/{id}/* and thumbnails/{id}/*)
+        // 3. Delete S3 objects in Processed bucket (hls/{id}/*, videos/{id}/* and thumbnails/{id}/*)
         if (!string.IsNullOrWhiteSpace(_storageOptions.ProcessedBucketName))
         {
+            await DeleteS3PrefixAsync(_storageOptions.ProcessedBucketName, $"hls/{id}/", cancellationToken);
             await DeleteS3PrefixAsync(_storageOptions.ProcessedBucketName, $"videos/{id}/", cancellationToken);
             await DeleteS3PrefixAsync(_storageOptions.ProcessedBucketName, $"thumbnails/{id}/", cancellationToken);
         }

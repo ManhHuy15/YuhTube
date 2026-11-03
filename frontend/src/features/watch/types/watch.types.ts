@@ -35,3 +35,10 @@ export interface RelatedVideo {
   duration: string
   thumbnail: string
 }
+
+export interface QualityLevel {
+  id: number
+  height: number
+  bitrate: number
+  label: string
+}

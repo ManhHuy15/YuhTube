@@ -34,9 +34,9 @@ export function UploadFooter({
             </span>
             <span>
               {isUploading
-                ? `Đang truyền tải dữ liệu đa luồng lên S3 (${progress}%)...`
+                ? `Đang tải video lên (${progress}%)...`
                 : result
-                ? 'Dữ liệu video đã tải lên S3 an toàn, sẵn sàng xuất bản.'
+                ? 'Video đã tải lên hoàn tất, sẵn sàng xuất bản.'
                 : 'Tất cả thay đổi được tự động cập nhật.'}
             </span>
           </div>
@@ -64,7 +64,7 @@ export function UploadFooter({
             <span className="w-2 h-2 rounded-full bg-[#69d8d4]"></span>
             <span className="text-white font-medium">
               {result
-                ? 'Video đã tải lên S3 hoàn tất, sẵn sàng phát hành trên toàn cầu.'
+                ? 'Video đã tải lên hoàn tất, sẵn sàng phát hành.'
                 : 'Video đang được xử lý trong nền.'}
             </span>
             <span className="hidden sm:inline text-white/50">Không còn thiết lập nào còn thiếu.</span>
@@ -81,14 +81,19 @@ export function UploadFooter({
             </button>
             <button
               type="button"
-              disabled={isPublishing}
+              disabled={isPublishing || isUploading}
               onClick={onPublish}
-              className="bg-red-600 hover:bg-red-500 disabled:bg-red-800 text-white text-xs font-bold px-6 py-2 rounded-xl tracking-wider uppercase flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer active:scale-95"
+              className="bg-red-600 hover:bg-red-500 disabled:bg-zinc-800 disabled:text-white/40 text-white text-xs font-bold px-6 py-2 rounded-xl tracking-wider uppercase flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer disabled:cursor-not-allowed active:scale-95"
             >
               {isPublishing ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>ĐANG PHÁT HÀNH...</span>
+                </>
+              ) : isUploading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/50 border-t-transparent rounded-full animate-spin"></div>
+                  <span>ĐANG TẢI LÊN ({progress}%)...</span>
                 </>
               ) : (
                 <>

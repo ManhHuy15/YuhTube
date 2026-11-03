@@ -11,12 +11,14 @@ import type { CompletedPart, VideoUploadResult } from '../types/upload.types'
 export function useVideoUpload() {
   const [progress, setProgress] = useState(0)
   const [result, setResult] = useState<VideoUploadResult | null>(null)
+  const [videoId, setVideoId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
   function reset() {
     setProgress(0)
     setResult(null)
+    setVideoId(null)
     setError(null)
   }
 
@@ -30,6 +32,7 @@ export function useVideoUpload() {
         contentType: file.type || 'video/octet-stream',
         fileSizeBytes: file.size,
       })
+      setVideoId(session.videoId)
       const completedParts: CompletedPart[] = []
       const loadedByPart = new Map<number, number>()
       let uploadedBytes = 0
@@ -76,5 +79,5 @@ export function useVideoUpload() {
     }
   }
 
-  return { error, isUploading, progress, reset, result, upload }
+  return { error, isUploading, progress, reset, result, upload, videoId }
 }

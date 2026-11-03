@@ -6,7 +6,7 @@ stack_name = "yuhtube-stacks"
 region = "ap-southeast-1"
 
 [default.build.parameters]
-cached = true
+cached = false
 parallel = false
 
 [default.validate.parameters]

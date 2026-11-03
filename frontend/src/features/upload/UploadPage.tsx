@@ -86,7 +86,7 @@ export function UploadPage() {
                 <div className="px-6 py-3 bg-red-950/80 border-b border-red-800 text-red-200 text-xs flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-[18px]">error</span>
-                    <span>Lỗi tải lên AWS S3: {error}</span>
+                    <span>Lỗi tải video lên: {error}</span>
                   </div>
                   <button
                     type="button"

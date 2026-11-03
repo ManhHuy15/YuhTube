@@ -115,6 +115,7 @@ public sealed class MediaConvertJobService
 
     private JobSettings CreateHlsJobSettings(string videoId, string objectKey) => new()
     {
+        TimecodeConfig = new TimecodeConfig { Source = TimecodeSource.ZEROBASED },
         Inputs = new List<Input>
         {
             new()
@@ -130,55 +131,27 @@ public sealed class MediaConvertJobService
         {
             new()
             {
+                Name = "HLS Group",
                 OutputGroupSettings = new OutputGroupSettings
                 {
                     Type = OutputGroupType.HLS_GROUP_SETTINGS,
                     HlsGroupSettings = new HlsGroupSettings
                     {
                         Destination = $"s3://{_storageOptions.ProcessedBucketName}/hls/{videoId}/index",
+                        DirectoryStructure = HlsDirectoryStructure.SUBDIRECTORY_PER_STREAM,
+                        SegmentsPerSubdirectory = 10_000,
                         SegmentLength = 6,
                         MinSegmentLength = 0
                     }
                 },
                 Outputs = new List<Output>
                 {
-                    new()
-                    {
-                        NameModifier = "_720p",
-                        ContainerSettings = new ContainerSettings { Container = ContainerType.M3U8 },
-                        VideoDescription = new VideoDescription
-                        {
-                            Width = 1280,
-                            Height = 720,
-                            CodecSettings = new VideoCodecSettings
-                            {
-                                Codec = VideoCodec.H_264,
-                                H264Settings = new H264Settings
-                                {
-                                    RateControlMode = H264RateControlMode.QVBR,
-                                    MaxBitrate = 2_500_000,
-                                    QvbrSettings = new H264QvbrSettings { QvbrQualityLevel = 7 }
-                                }
-                            }
-                        },
-                        AudioDescriptions = new List<AudioDescription>
-                        {
-                            new()
-                            {
-                                AudioSourceName = "Default",
-                                CodecSettings = new AudioCodecSettings
-                                {
-                                    Codec = AudioCodec.AAC,
-                                    AacSettings = new AacSettings
-                                    {
-                                        Bitrate = 96_000,
-                                        CodingMode = AacCodingMode.CODING_MODE_2_0,
-                                        SampleRate = 48_000
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    CreateHlsOutput("_2k", 2560, 1440, 8_000_000, 8),
+                    CreateHlsOutput("_1080p", 1920, 1080, 5_000_000, 8),
+                    CreateHlsOutput("_720p", 1280, 720, 3_000_000, 8),
+                    CreateHlsOutput("_480p", 854, 480, 1_500_000, 7),
+                    CreateHlsOutput("_360p", 640, 360, 800_000, 7),
+                    CreateHlsOutput("_240p", 426, 240, 400_000, 7)
                 }
             },
             new()
@@ -217,6 +190,51 @@ public sealed class MediaConvertJobService
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    };
+
+    private static Output CreateHlsOutput(
+        string nameModifier,
+        int width,
+        int height,
+        int maxBitrate,
+        int qvbrQualityLevel) => new()
+    {
+        NameModifier = nameModifier,
+        ContainerSettings = new ContainerSettings { Container = ContainerType.M3U8 },
+        VideoDescription = new VideoDescription
+        {
+            Width = width,
+            Height = height,
+            ScalingBehavior = ScalingBehavior.FIT_NO_UPSCALE,
+            CodecSettings = new VideoCodecSettings
+            {
+                Codec = VideoCodec.H_264,
+                H264Settings = new H264Settings
+                {
+                    RateControlMode = H264RateControlMode.QVBR,
+                    MaxBitrate = maxBitrate,
+                    QualityTuningLevel = H264QualityTuningLevel.MULTI_PASS_HQ,
+                    QvbrSettings = new H264QvbrSettings { QvbrQualityLevel = qvbrQualityLevel }
+                }
+            }
+        },
+        AudioDescriptions = new List<AudioDescription>
+        {
+            new()
+            {
+                AudioSourceName = "Default",
+                CodecSettings = new AudioCodecSettings
+                {
+                    Codec = AudioCodec.AAC,
+                    AacSettings = new AacSettings
+                    {
+                        Bitrate = 96_000,
+                        CodingMode = AacCodingMode.CODING_MODE_2_0,
+                        SampleRate = 48_000
                     }
                 }
             }

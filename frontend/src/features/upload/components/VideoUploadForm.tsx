@@ -18,7 +18,7 @@ export function VideoUploadForm() {
   return (
     <section className="w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
       <h1 className="text-3xl font-bold tracking-tight">Upload video</h1>
-      <p className="mt-2 text-sm text-zinc-400">Multipart upload trực tiếp từ trình duyệt lên S3.</p>
+      <p className="mt-2 text-sm text-zinc-400">Tải video chất lượng cao lên YuhTube.</p>
 
       <label className="mt-6 block text-sm font-medium" htmlFor="video-file">
         Video
@@ -58,7 +58,7 @@ export function VideoUploadForm() {
       {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
       {result && (
         <p className="mt-4 text-sm text-emerald-400">
-          Đã hoàn tất {result.parts.length}/{result.partCount} parts tại {result.completion.objectKey}.
+          Tải video lên thành công.
         </p>
       )}
     </section>

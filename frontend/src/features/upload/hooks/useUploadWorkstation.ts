@@ -23,10 +23,10 @@ export function useUploadWorkstation() {
   const [isDragOver, setIsDragOver] = useState(false)
 
   // Real AWS S3 Multipart Upload Hook
-  const { error, isUploading, progress, reset, result, upload } = useVideoUpload()
+  const { error, isUploading, progress, reset, result, upload, videoId: uploadVideoId } = useVideoUpload()
 
-  const videoId = result?.videoId || 's3-stream-99'
-  const videoShareUrl = `https://yuhtube.vn/watch?v=${videoId}`
+  const videoId = result?.videoId || uploadVideoId || ''
+  const videoShareUrl = videoId ? `https://yuhtube.vn/watch?v=${videoId}` : 'Đang tạo liên kết...'
 
   // Cleanup object URL on unmount or when replaced
   useEffect(() => {

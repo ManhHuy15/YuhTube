@@ -253,60 +253,56 @@ export function UploadStepOne({
             </div>
           </div>
 
-          {/* Real AWS S3 Multipart Pipeline Status Bar */}
-          <div className="bg-[#0e0e10] border border-white/10 rounded-xl p-3 space-y-2">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-white flex items-center gap-2">
+          {/* Upload & Processing Status Bar */}
+          <div className="bg-[#0e0e10] border border-white/10 rounded-xl p-3.5 space-y-2.5">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full ${
+                  className={`w-2.5 h-2.5 rounded-full ${
                     isUploading
-                      ? 'bg-amber-400 animate-ping'
+                      ? 'bg-amber-400 animate-pulse'
                       : result
                       ? 'bg-emerald-400'
                       : 'bg-white/40'
                   }`}
                 ></span>
-                <span>
+                <span className="text-white font-medium">
                   {isUploading
-                    ? `Đang tải lên S3 (${progress}%)...`
+                    ? `Đang tải video lên... ${progress}%`
                     : result
-                    ? `Đã tải lên S3 100% (${result.parts.length}/${result.partCount} parts)`
-                    : 'Sẵn sàng tải lên'}
+                    ? 'Tải lên hoàn tất 100%'
+                    : 'Chờ tải lên'}
                 </span>
-              </span>
-              <span className="text-[#69d8d4] text-[11px]">
-                {result ? 'MediaConvert Sẵn sàng' : 'S3 Chunks'}
+              </div>
+              <span className="text-[11px]">
+                {result ? (
+                  <span className="text-emerald-400 flex items-center gap-1 font-medium">
+                    <span className="material-symbols-outlined text-[15px]">check_circle</span>
+                    Sẵn sàng xử lý
+                  </span>
+                ) : isUploading ? (
+                  <span className="text-amber-400">Đang truyền tải</span>
+                ) : (
+                  <span className="text-white/40">Đang chờ</span>
+                )}
               </span>
             </div>
 
-            {/* Hairline Progress Bar */}
+            {/* Progress Bar */}
             <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-300 ${
-                  result ? 'bg-[#69d8d4]' : 'bg-gradient-to-r from-red-500 to-amber-400'
+                  result ? 'bg-emerald-500' : 'bg-gradient-to-r from-red-500 to-amber-400'
                 }`}
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
 
-            <div className="flex items-center justify-between text-[10px] font-mono text-white/50">
-              <span>{result ? `Object: ${result.objectKey}` : 'AWS Multi-Part 5MB Chunks'}</span>
-              <span>{isUploading ? 'Đang truyền...' : '0.00s trễ xử lý'}</span>
-            </div>
-          </div>
-
-          {/* Background Checks Indicator */}
-          <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#0e0e10] border border-white/10 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#69d8d4] text-[18px]">verified</span>
-              <span className="text-white">
-                Kiểm tra tự động ngầm:{' '}
-                <span className="text-[#69d8d4] font-semibold">
-                  {result ? 'Hoàn tất' : isUploading ? 'Đang kiểm tra' : 'Sẵn sàng'}
-                </span>
-              </span>
-            </div>
-            <span className="text-[10px] font-mono text-white/50">Hệ thống sẵn sàng</span>
+            <p className="text-[11px] text-white/50 leading-relaxed">
+              {result
+                ? 'Video đã tải lên thành công. Hệ thống đang tiến hành xử lý các độ phân giải tối ưu trong nền.'
+                : 'Đang tải tệp lên hệ thống. Bạn có thể tiếp tục chỉnh sửa tiêu đề và mô tả trong lúc chờ.'}
+            </p>
           </div>
         </div>
       </div>

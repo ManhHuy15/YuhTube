@@ -51,8 +51,7 @@ export function UploadDropzone({
         </div>
         <h3 className="text-lg font-bold text-white">Kéo và thả tệp video để tải lên</h3>
         <p className="text-xs text-white/50 mt-1.5 max-w-md">
-          Hệ thống hỗ trợ tải lên đa luồng trực tiếp (AWS S3 Multipart Upload). Các video sẽ ở chế độ
-          riêng tư cho đến khi bạn xuất bản.
+          Video của bạn sẽ ở chế độ riêng tư cho đến khi bạn chọn xuất bản.
         </p>
 
         <button

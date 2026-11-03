@@ -121,27 +121,26 @@ export function UploadStepTwo({
           </div>
         </div>
 
-        {/* Technical Telemetry Specs */}
+        {/* Real File & Publishing Checks */}
         <div className="bg-[#201f21] border border-white/10 p-5 rounded-2xl flex flex-col gap-3">
-          <span className="text-[10px] uppercase font-mono tracking-wider text-white/50 font-semibold">
-            Thông số kỹ thuật tệp phát
-          </span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
-            <div className="bg-[#0e0e10] p-3 rounded-xl border border-white/5 flex flex-col">
-              <span className="text-white/40 text-[10px]">Độ phân giải</span>
-              <span className="text-white font-medium mt-0.5">4K 2160p @ 60fps</span>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-emerald-400 text-[18px]">verified</span>
+            <span className="text-xs uppercase font-mono tracking-wider text-white font-semibold">
+              Kiểm tra bản quyền &amp; tính tương thích
+            </span>
+          </div>
+          <div className="bg-[#0e0e10] p-3.5 rounded-xl border border-white/5 space-y-2 text-xs">
+            <div className="flex items-center justify-between text-white/70">
+              <span>Bản quyền nội dung:</span>
+              <span className="text-emerald-400 font-medium">Không tìm thấy vấn đề</span>
             </div>
-            <div className="bg-[#0e0e10] p-3 rounded-xl border border-white/5 flex flex-col">
-              <span className="text-white/40 text-[10px]">Mã hóa (Codec)</span>
-              <span className="text-white font-medium mt-0.5">AV1 / HEVC Main10</span>
+            <div className="flex items-center justify-between text-white/70">
+              <span>Định dạng tệp:</span>
+              <span className="text-white font-mono">{file.type || 'video/mp4'}</span>
             </div>
-            <div className="bg-[#0e0e10] p-3 rounded-xl border border-white/5 flex flex-col">
-              <span className="text-white/40 text-[10px]">Âm thanh</span>
-              <span className="text-white font-medium mt-0.5">Stereo 384kbps AAC</span>
-            </div>
-            <div className="bg-[#0e0e10] p-3 rounded-xl border border-white/5 flex flex-col">
-              <span className="text-white/40 text-[10px]">Kích thước gốc</span>
-              <span className="text-white font-medium mt-0.5">{formatFileSize(file.size)}</span>
+            <div className="flex items-center justify-between text-white/70">
+              <span>Dung lượng gốc:</span>
+              <span className="text-white font-mono">{formatFileSize(file.size)}</span>
             </div>
           </div>
         </div>
@@ -171,14 +170,6 @@ export function UploadStepTwo({
                 <span>Chờ tải video</span>
               </div>
             )}
-            <div className="absolute top-3 left-3 flex items-center gap-1.5 pointer-events-none">
-              <span className="px-2 py-0.5 rounded bg-black/80 text-white font-mono text-[10px] font-bold border border-white/15">
-                4K UHD
-              </span>
-              <span className="px-2 py-0.5 rounded bg-black/80 text-[#69d8d4] font-mono text-[10px] font-semibold border border-[#69d8d4]/30">
-                60 FPS
-              </span>
-            </div>
           </div>
 
           <div className="p-4 flex flex-col gap-1 text-xs">

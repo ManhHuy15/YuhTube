@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { formatRelativeTime, formatViewCount } from '../../../common/utils/timeAgo'
 import type { VideoFeedItem } from '../types/home.types'
 
 interface VideoCardProps {
@@ -42,10 +43,10 @@ export function VideoCard({ video }: VideoCardProps) {
               <span className="material-symbols-outlined text-[14px]">check_circle</span>
             )}
           </div>
-          <div className="text-xs text-white/40">
-            <span>{video.views} lượt xem</span>
+          <div className="text-xs text-white/40 flex items-center">
+            <span>{formatViewCount(video.views)}</span>
             <span className="mx-1">•</span>
-            <span>{video.createdAt}</span>
+            <span>{formatRelativeTime(video.createdAt)}</span>
           </div>
         </div>
       </div>

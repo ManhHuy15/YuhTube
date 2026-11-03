@@ -20,7 +20,7 @@ function mapRawFeedItem(item: any): VideoFeedItem {
     title: item.title || 'Untitled Video',
     thumbnailUrl: item.thumbnailUrl || '',
     duration: durationFormatted,
-    views: item.views ? String(item.views).replace(/\s*(views|lượt xem)/gi, '').trim() : '0',
+    views: item.views ? String(item.views).replace(/\s*(views|view|lượt xem)/gi, '').trim() : '0',
     createdAt: formatRelativeTime(item.createdAt),
     badge: item.badge,
     uploader: {

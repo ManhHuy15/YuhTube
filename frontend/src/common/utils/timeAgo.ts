@@ -5,6 +5,15 @@
 export function formatRelativeTime(dateInput?: string | number | Date | null): string {
   if (!dateInput) return 'Vừa xong'
 
+  if (typeof dateInput === 'string') {
+    const trimmed = dateInput.trim()
+    if (!trimmed) return 'Vừa xong'
+    if (trimmed.toLowerCase() === 'just now') return 'Vừa xong'
+    if (trimmed.includes('trước') || trimmed === 'Vừa xong') {
+      return trimmed
+    }
+  }
+
   const date = typeof dateInput === 'string' || typeof dateInput === 'number'
     ? new Date(dateInput)
     : dateInput
@@ -43,4 +52,27 @@ export function formatRelativeTime(dateInput?: string | number | Date | null): s
 
   const diffInYears = Math.floor(diffInDays / 365)
   return `${diffInYears} năm trước`
+}
+
+/**
+ * Normalizes view count into a clean display string without redundant "views" or "lượt xem".
+ * Example:
+ * formatViewCount('0 views') => '0 lượt xem'
+ * formatViewCount('142.500') => '142.500 lượt xem'
+ * formatViewCount('89.4K lượt xem') => '89.4K lượt xem'
+ * formatViewCount(1500) => '1.500 lượt xem'
+ */
+export function formatViewCount(views?: string | number | null): string {
+  if (views === undefined || views === null || views === '') {
+    return '0 lượt xem'
+  }
+
+  const str = String(views).trim()
+  if (str.includes('lượt xem')) {
+    return str.replace(/\s*(views|view)\s*/gi, ' ').replace(/\s+/g, ' ').trim()
+  }
+
+  const cleaned = str.replace(/\s*(views|view)/gi, '').trim()
+  const finalNum = cleaned || '0'
+  return `${finalNum} lượt xem`
 }
