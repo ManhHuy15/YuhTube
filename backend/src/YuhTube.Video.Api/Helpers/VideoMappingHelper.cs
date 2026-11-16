@@ -52,7 +52,8 @@ public static class VideoMappingHelper
         Dictionary<string, AttributeValue> metaItem,
         int likesCount,
         IReadOnlyList<VideoCommentDto> comments,
-        (string Name, string? Avatar)? profile = null)
+        (string Name, string? Avatar)? profile = null,
+        bool isLiked = false)
     {
         var title = GetString(metaItem, VideoAttributes.Title, string.Empty);
         var description = GetString(metaItem, VideoAttributes.Description, string.Empty);
@@ -94,7 +95,8 @@ public static class VideoMappingHelper
             UpdatedAt: updatedAt,
             LikesCount: likesCount,
             Uploader: new UploaderDto(uploaderId, uploaderName, uploaderAvatar),
-            Comments: comments
+            Comments: comments,
+            IsLiked: isLiked
         );
     }
 

@@ -16,11 +16,28 @@ public static class CommentKeys
     public static string SortKey(string commentId) => $"{SortKeyPrefix}{commentId}";
 }
 
+public static class CommentAttributes
+{
+    public const string CommentId = "CommentId";
+    public const string Content = "Content";
+    public const string UserId = "UserID";
+    public const string UserName = "UserName";
+    public const string UserAvatar = "UserAvatar";
+    public const string CreatedAt = "CreatedAt";
+}
+
 public static class LikeKeys
 {
     public const string SortKeyPrefix = "LIKE#";
 
     public static string SortKey(string userId) => $"{SortKeyPrefix}{userId}";
+}
+
+public static class LikeAttributes
+{
+    public const string UserId = "UserID";
+    public const string VideoId = "VideoId";
+    public const string CreatedAt = "CreatedAt";
 }
 
 public static class VideoAttributes

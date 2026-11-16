@@ -144,6 +144,10 @@ public sealed class VideosController : ControllerBase
             return NotFound();
         }
 
+        var identity = CognitoAuthHelper.ExtractUser(HttpContext);
+        var currentUserId = identity?.UserId;
+        var isLiked = false;
+
         var targetMetaSk = VideoKeys.SortKey(id);
         Dictionary<string, AttributeValue>? metaItem = null;
         var comments = new List<VideoCommentDto>();
@@ -164,6 +168,10 @@ public sealed class VideosController : ControllerBase
             else if (sk.StartsWith(LikeKeys.SortKeyPrefix, StringComparison.Ordinal))
             {
                 likesCount++;
+                if (!string.IsNullOrEmpty(currentUserId) && sk == LikeKeys.SortKey(currentUserId))
+                {
+                    isLiked = true;
+                }
             }
             else if (sk.StartsWith(CommentKeys.SortKeyPrefix, StringComparison.Ordinal))
             {
@@ -188,7 +196,7 @@ public sealed class VideosController : ControllerBase
         var profiles = await GetUserProfilesAsync([uploaderId], cancellationToken);
         var profile = profiles.TryGetValue(uploaderId, out var p) ? p : ((string Name, string? Avatar)?)null;
 
-        var detail = VideoMappingHelper.MapDetail(id, metaItem, likesCount, comments, profile);
+        var detail = VideoMappingHelper.MapDetail(id, metaItem, likesCount, comments, profile, isLiked);
         return Ok(detail);
     }
 

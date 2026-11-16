@@ -521,7 +521,62 @@ Resources:
             Auth:
               Authorizer: CognitoAuthorizer
 
-  # --- 6.4. MediaConvert Coordinator Lambda ---
+  # --- 6.4. Social API Lambda ---
+  SocialApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: YuhTube-Social-Lambda
+      CodeUri: ../backend/src/YuhTube.Social.Api/
+      Handler: YuhTube.Social.Api
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:DeleteItem, dynamodb:Query]
+              Resource:
+                - !GetAtt DynamoDbTable.Arn
+                - !Sub "${DynamoDbTable.Arn}/index/*"
+            - Effect: Allow
+              Action: [ssm:GetParametersByPath, ssm:GetParameter, ssm:GetParameters]
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
+      Events:
+        GetComments:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{videoId}/comments
+            Method: get
+        AddComment:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{videoId}/comments
+            Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
+        DeleteComment:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{videoId}/comments/{commentId}
+            Method: delete
+            Auth:
+              Authorizer: CognitoAuthorizer
+        GetLikeStatus:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{videoId}/like
+            Method: get
+        ToggleLike:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /videos/{videoId}/like
+            Method: post
+            Auth:
+              Authorizer: CognitoAuthorizer
+
+  # --- 6.5. MediaConvert Coordinator Lambda ---
   MediaConvertCoordinatorFunction:
     Type: AWS::Serverless::Function
     Properties:

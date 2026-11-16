@@ -8,18 +8,21 @@ import { UserNavButton } from '../auth/components/UserNavButton'
 
 export function WatchPage() {
   const { videoId = 'v1' } = useParams<{ videoId: string }>()
-  const { video, comments, isLoading, addComment } = useWatchVideo(videoId)
+  const {
+    video,
+    comments,
+    isLoading,
+    isLiking,
+    isSubmittingComment,
+    hasLiked,
+    likesCount,
+    toggleLike,
+    addComment,
+    deleteComment,
+  } = useWatchVideo(videoId)
 
   const [isSubscribed, setIsSubscribed] = useState(false)
-  const [userLikedDelta, setUserLikedDelta] = useState(0)
   const [isDescExpanded, setIsDescExpanded] = useState(false)
-
-  const likesCount = (video?.likesCount ?? 0) + userLikedDelta
-  const hasLiked = userLikedDelta > 0
-
-  function handleLike() {
-    setUserLikedDelta((prev) => (prev > 0 ? 0 : 1))
-  }
 
   if (isLoading) {
     return (
@@ -152,16 +155,26 @@ export function WatchPage() {
               <div className="flex items-center gap-2">
                 <div className="flex items-center bg-white/10 rounded-full overflow-hidden">
                   <button
-                    onClick={handleLike}
+                    onClick={toggleLike}
+                    disabled={isLiking}
+                    aria-label={hasLiked ? 'Bỏ thích video' : 'Thích video'}
                     className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium hover:bg-white/10 transition-colors cursor-pointer ${
                       hasLiked ? 'text-red-400 font-bold' : 'text-white'
                     }`}
                   >
-                    <span className="material-symbols-outlined text-[18px]">thumb_up</span>
+                    <span
+                      className="material-symbols-outlined text-[18px]"
+                      style={hasLiked ? { fontVariationSettings: "'FILL' 1" } : undefined}
+                    >
+                      thumb_up
+                    </span>
                     <span>{likesCount.toLocaleString()}</span>
                   </button>
                   <div className="w-[1px] h-5 bg-white/20"></div>
-                  <button className="px-3 py-2 text-xs font-medium hover:bg-white/10 transition-colors text-white cursor-pointer">
+                  <button
+                    aria-label="Không thích video"
+                    className="px-3 py-2 text-xs font-medium hover:bg-white/10 transition-colors text-white cursor-pointer"
+                  >
                     <span className="material-symbols-outlined text-[18px]">thumb_down</span>
                   </button>
                 </div>
@@ -197,7 +210,12 @@ export function WatchPage() {
             </div>
 
             {/* Comments Section */}
-            <CommentSection comments={comments} onAddComment={addComment} />
+            <CommentSection
+              comments={comments}
+              onAddComment={addComment}
+              onDeleteComment={deleteComment}
+              isSubmitting={isSubmittingComment}
+            />
           </section>
 
           {/* Right Column: Related Videos */}

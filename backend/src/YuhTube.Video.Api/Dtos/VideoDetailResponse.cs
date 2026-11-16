@@ -22,5 +22,6 @@ public sealed record VideoDetailResponse(
     string UpdatedAt,
     int LikesCount,
     UploaderDto Uploader,
-    IReadOnlyList<VideoCommentDto> Comments
+    IReadOnlyList<VideoCommentDto> Comments,
+    bool IsLiked = false
 );

@@ -8,6 +8,7 @@ export interface WatchVideoDetail {
   publishedAt: string
   duration: string
   likesCount: number
+  isLiked?: boolean
   uploader: {
     id: string
     name: string
@@ -24,6 +25,13 @@ export interface WatchComment {
   content: string
   createdAt: string
   likes: number
+  userId?: string
+}
+
+export interface LikeResponse {
+  videoId: string
+  isLiked: boolean
+  likesCount: number
 }
 
 export interface RelatedVideo {
