@@ -8,5 +8,6 @@ public sealed record VideoFeedItemDto(
     bool IsPrivate,
     string Status,
     string CreatedAt,
-    UploaderDto Uploader
+    UploaderDto Uploader,
+    long Views = 0
 );

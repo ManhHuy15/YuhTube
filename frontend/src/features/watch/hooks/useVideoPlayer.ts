@@ -4,12 +4,18 @@ import type { QualityLevel } from '../types/watch.types'
 
 interface UseVideoPlayerOptions {
   playbackUrl?: string
+  onViewQualified?: () => void
 }
 
-export function useVideoPlayer({ playbackUrl }: UseVideoPlayerOptions) {
+export function useVideoPlayer({ playbackUrl, onViewQualified }: UseVideoPlayerOptions) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerContainerRef = useRef<HTMLDivElement>(null)
   const hlsRef = useRef<Hls | null>(null)
+
+  // Watch time tracking for YouTube view qualification (30s or 30% duration)
+  const watchedTimeRef = useRef(0)
+  const lastTimeRef = useRef(0)
+  const hasRecordedViewRef = useRef(false)
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [isBuffering, setIsBuffering] = useState(false)
@@ -44,6 +50,13 @@ export function useVideoPlayer({ playbackUrl }: UseVideoPlayerOptions) {
     }
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isSettingsOpen])
+
+  // Reset view qualification tracker on video source change
+  useEffect(() => {
+    watchedTimeRef.current = 0
+    lastTimeRef.current = 0
+    hasRecordedViewRef.current = false
+  }, [playbackUrl])
 
   // Setup HLS or Native Video Source
   useEffect(() => {
@@ -227,6 +240,26 @@ export function useVideoPlayer({ playbackUrl }: UseVideoPlayerOptions) {
         const bufferedEnd = video.buffered.end(video.buffered.length - 1)
         setBufferedPercent(Math.min(100, (bufferedEnd / video.duration) * 100))
       }
+
+      // View Qualification Rule:
+      // A view is recorded only when actual accumulated playback reaches 30s
+      // OR 30% of total duration for shorter videos (< 30s).
+      if (!hasRecordedViewRef.current && !video.paused) {
+        const delta = Math.abs(video.currentTime - lastTimeRef.current)
+        // Count only natural progressive playback (delta < 2s), exclude jumps/seeks
+        if (delta > 0 && delta < 2.0) {
+          watchedTimeRef.current += delta
+        }
+        lastTimeRef.current = video.currentTime
+
+        const viewThreshold = video.duration >= 30 ? 30 : Math.max(1, video.duration * 0.3)
+        if (watchedTimeRef.current >= viewThreshold) {
+          hasRecordedViewRef.current = true
+          onViewQualified?.()
+        }
+      } else {
+        lastTimeRef.current = video.currentTime
+      }
     }
   }
 
@@ -235,8 +268,10 @@ export function useVideoPlayer({ playbackUrl }: UseVideoPlayerOptions) {
     if (!video || !duration) return
     const rect = event.currentTarget.getBoundingClientRect()
     const pos = (event.clientX - rect.left) / rect.width
-    video.currentTime = pos * duration
-    setCurrentTime(pos * duration)
+    const targetTime = pos * duration
+    video.currentTime = targetTime
+    setCurrentTime(targetTime)
+    lastTimeRef.current = targetTime
   }
 
   function toggleMute() {

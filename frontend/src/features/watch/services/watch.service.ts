@@ -93,3 +93,14 @@ export async function fetchVideoLikeStatus(videoId: string): Promise<LikeRespons
   const { data } = await apiClient.get<LikeResponse>(`/videos/${videoId}/like`)
   return data
 }
+
+export async function recordVideoView(videoId: string): Promise<void> {
+  try {
+    await apiClient.post(`/videos/${videoId}/views`, {
+      videoId,
+      timestamp: new Date().toISOString(),
+    })
+  } catch {
+    // Fire-and-forget: view metrics should never disrupt user experience
+  }
+}

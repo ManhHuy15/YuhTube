@@ -17,6 +17,7 @@ public static class VideoMappingHelper
         var isPrivate = GetBool(item, VideoAttributes.IsPrivate, false);
         var status = GetString(item, VideoAttributes.Status, VideoStatuses.Processing);
         var createdAt = GetString(item, VideoAttributes.CreatedAt, string.Empty);
+        var views = GetLong(item, VideoAttributes.Views, 0L);
 
         var uploaderId = GetString(item, VideoAttributes.UploaderId, "channel-default");
         var rawUploaderName = profile?.Name;
@@ -43,7 +44,8 @@ public static class VideoMappingHelper
             IsPrivate: isPrivate,
             Status: status,
             CreatedAt: createdAt,
-            Uploader: new UploaderDto(uploaderId, uploaderName, uploaderAvatar)
+            Uploader: new UploaderDto(uploaderId, uploaderName, uploaderAvatar),
+            Views: views
         );
     }
 
@@ -64,6 +66,7 @@ public static class VideoMappingHelper
         var status = GetString(metaItem, VideoAttributes.Status, VideoStatuses.Processing);
         var createdAt = GetString(metaItem, VideoAttributes.CreatedAt, string.Empty);
         var updatedAt = GetString(metaItem, VideoAttributes.UpdatedAt, string.Empty);
+        var views = GetLong(metaItem, VideoAttributes.Views, 0L);
 
         var uploaderId = GetString(metaItem, VideoAttributes.UploaderId, "channel-default");
         var rawUploaderName = profile?.Name;
@@ -96,7 +99,8 @@ public static class VideoMappingHelper
             LikesCount: likesCount,
             Uploader: new UploaderDto(uploaderId, uploaderName, uploaderAvatar),
             Comments: comments,
-            IsLiked: isLiked
+            IsLiked: isLiked,
+            Views: views
         );
     }
 

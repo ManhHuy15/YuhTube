@@ -34,8 +34,11 @@ yuhtube() {
     Transcode|transcode|TranscodeStatusUpdater)
       project_name="YuhTube.TranscodeStatusUpdater"
       ;;
+    Aggregator|aggregator|ViewCountAggregator)
+      project_name="YuhTube.ViewCountAggregator"
+      ;;
     *)
-      printf 'Unknown project: %s (use MediaConvert, Video, Upload, Social, or Transcode)\n' "$1" >&2
+      printf 'Unknown project: %s (use MediaConvert, Video, Upload, Social, Transcode, or Aggregator)\n' "$1" >&2
       return 2
       ;;
   esac

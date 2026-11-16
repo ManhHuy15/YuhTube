@@ -53,6 +53,7 @@ public static class VideoAttributes
     public const string UploaderId = "UploaderId";
     public const string UploaderName = "UploaderName";
     public const string UploaderAvatar = "UploaderAvatar";
+    public const string Views = "Views";
     public const string CreatedAt = "CreatedAt";
     public const string UpdatedAt = "UpdatedAt";
 

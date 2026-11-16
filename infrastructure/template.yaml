@@ -617,7 +617,7 @@ Resources:
                   - Name: prefix
                     Value: raw/
 
-  # --- 6.4. Transcode Status Updater Lambda ---
+  # --- 6.6. Transcode Status Updater Lambda ---
   TranscodeStatusUpdaterFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -643,6 +643,94 @@ Resources:
               detail-type: ["MediaConvert Job State Change"]
               detail:
                 status: ["COMPLETE", "ERROR"]
+
+  # ----------------------------------------------------------------------------
+  # 7. SQS VIEW COUNT AGGREGATION PIPELINE
+  # ----------------------------------------------------------------------------
+  ViewCountDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "YuhTube-ViewCountDLQ-${AWS::StackName}"
+      MessageRetentionPeriod: 1209600 # 14 days
+
+  ViewCountQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "YuhTube-ViewCountQueue-${AWS::StackName}"
+      VisibilityTimeout: 180
+      MessageRetentionPeriod: 86400 # 1 day
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ViewCountDeadLetterQueue.Arn
+        maxReceiveCount: 5
+
+  # IAM Role for API Gateway to publish directly to SQS
+  ApiGatewaySqsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "YuhTube-ApiGatewaySqsRole-${AWS::Region}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: SendViewEventsToSqs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: sqs:SendMessage
+                Resource: !GetAtt ViewCountQueue.Arn
+
+  # Direct HTTP API (v2) Integration with SQS-SendMessage
+  RecordViewIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref YuhTubeHttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationSubtype: SQS-SendMessage
+      CredentialsArn: !GetAtt ApiGatewaySqsRole.Arn
+      PayloadFormatVersion: "1.0"
+      RequestParameters:
+        QueueUrl: !Ref ViewCountQueue
+        MessageBody: "$request.body"
+
+  # Route: POST /videos/{videoId}/views
+  RecordViewRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref YuhTubeHttpApi
+      RouteKey: "POST /videos/{videoId}/views"
+      Target: !Sub "integrations/${RecordViewIntegration}"
+
+  # --- 6.7. View Count Batch Aggregator Lambda ---
+  ViewCountAggregatorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: YuhTube-ViewCountAggregator-Lambda
+      CodeUri: ../backend/src/YuhTube.ViewCountAggregator/
+      Handler: YuhTube.ViewCountAggregator::YuhTube.ViewCountAggregator.Function::FunctionHandler
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: [dynamodb:UpdateItem, dynamodb:GetItem]
+              Resource:
+                - !GetAtt DynamoDbTable.Arn
+                - !Sub "${DynamoDbTable.Arn}/index/*"
+            - Effect: Allow
+              Action: [ssm:GetParametersByPath, ssm:GetParameter, ssm:GetParameters]
+              Resource: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/yuhtube/*"
+      Events:
+        ViewCountBatch:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ViewCountQueue.Arn
+            BatchSize: 100
+            MaximumBatchingWindowInSeconds: 20
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
 
 # ==============================================================================
 # OUTPUTS
@@ -687,3 +775,11 @@ Outputs:
   CognitoUserPoolArn:
     Description: Managed Cognito User Pool ARN
     Value: !GetAtt CognitoUserPool.Arn
+
+  ViewCountQueueUrl:
+    Description: SQS View Count Queue URL
+    Value: !Ref ViewCountQueue
+
+  ViewCountQueueArn:
+    Description: SQS View Count Queue ARN
+    Value: !GetAtt ViewCountQueue.Arn

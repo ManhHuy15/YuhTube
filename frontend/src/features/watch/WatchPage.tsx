@@ -4,6 +4,7 @@ import { VideoPlayer } from './components/VideoPlayer'
 import { CommentSection } from './components/CommentSection'
 import { RelatedVideos } from './components/RelatedVideos'
 import { useWatchVideo } from './hooks/useWatchVideo'
+import { recordVideoView } from './services/watch.service'
 import { UserNavButton } from '../auth/components/UserNavButton'
 
 export function WatchPage() {
@@ -115,6 +116,7 @@ export function WatchPage() {
               title={video.title}
               posterUrl={video.posterUrl}
               playbackUrl={video.playbackUrl}
+              onViewQualified={() => recordVideoView(video.id)}
             />
 
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white leading-snug">

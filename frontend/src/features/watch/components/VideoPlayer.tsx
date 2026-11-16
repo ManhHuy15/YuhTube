@@ -5,9 +5,10 @@ interface VideoPlayerProps {
   playbackUrl?: string
   posterUrl?: string
   title?: string
+  onViewQualified?: () => void
 }
 
-export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps) {
+export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: VideoPlayerProps) {
   const {
     videoRef,
     playerContainerRef,
@@ -38,7 +39,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title }: VideoPlayerProps)
     toggleFullscreen,
     handleSelectQuality,
     formatTime,
-  } = useVideoPlayer({ playbackUrl })
+  } = useVideoPlayer({ playbackUrl, onViewQualified })
 
   return (
     <div

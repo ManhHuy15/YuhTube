@@ -7,5 +7,6 @@
     <Project Path="src/YuhTube.TranscodeStatusUpdater/YuhTube.TranscodeStatusUpdater.csproj" />
     <Project Path="src/YuhTube.Upload.Api/YuhTube.Upload.Api.csproj" />
     <Project Path="src/YuhTube.Video.Api/YuhTube.Video.Api.csproj" />
+    <Project Path="src/YuhTube.ViewCountAggregator/YuhTube.ViewCountAggregator.csproj" />
   </Folder>
 </Solution>
