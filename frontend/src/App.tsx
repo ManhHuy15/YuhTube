@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { AppRoutes } from './routes/AppRoutes'
 import { AuthModal } from './features/auth/components/AuthModal'
 import { AvatarModal } from './features/auth/components/AvatarModal'
+import { FloatingUploadTray } from './features/upload/components/FloatingUploadTray'
 import { useAuthStore } from './features/auth/hooks/useAuthStore'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <AppRoutes />
       <AuthModal />
       <AvatarModal />
+      <FloatingUploadTray />
     </BrowserRouter>
   )
 }

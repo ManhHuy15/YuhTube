@@ -27,16 +27,17 @@ export function WatchPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0f0f0f] text-white flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-[#0e0e10] text-white flex flex-col items-center justify-center space-y-3">
+        <div className="w-10 h-10 border-3 border-red-600 border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs text-white/50 font-mono tracking-wider">Đang tải video HLS...</span>
       </div>
     )
   }
 
   if (!video) {
     return (
-      <div className="min-h-screen bg-[#0f0f0f] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
-        <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/10 z-50 flex items-center px-4 sm:px-6">
+      <div className="min-h-screen bg-[#0e0e10] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
+        <header className="fixed top-0 left-0 right-0 h-14 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 z-50 flex items-center px-4 sm:px-6">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-8 h-6 bg-gradient-to-tr from-red-600 to-rose-500 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30">
               <span className="material-symbols-outlined text-[16px] text-white">play_arrow</span>
@@ -48,19 +49,19 @@ export function WatchPage() {
         </header>
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 text-center pt-14">
-          <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/40">
+          <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/30">
             <span className="material-symbols-outlined text-4xl">video_library</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Video Not Found</h1>
-          <p className="text-white/60 max-w-md mb-8 text-sm leading-relaxed">
-            This video is not available or does not exist. It may have been removed or the link might be incorrect.
+          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Không tìm thấy video</h1>
+          <p className="text-white/60 max-w-md mb-8 text-xs leading-relaxed">
+            Video này hiện không khả dụng hoặc chưa hoàn tất xử lý chuyển mã trên AWS MediaConvert. Vui lòng thử lại sau.
           </p>
           <Link
             to="/"
-            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium text-sm rounded-full transition-colors inline-flex items-center gap-2 shadow-lg shadow-red-600/20"
+            className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-semibold text-xs rounded-xl transition-all inline-flex items-center gap-2 shadow-lg shadow-red-600/20 active:scale-95"
           >
             <span className="material-symbols-outlined text-[18px]">home</span>
-            <span>Back to Home</span>
+            <span>Về trang chủ</span>
           </Link>
         </main>
       </div>
@@ -68,9 +69,9 @@ export function WatchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
+    <div className="min-h-screen bg-[#0e0e10] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
       {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/10 z-50 flex items-center justify-between px-4 sm:px-6">
+      <header className="fixed top-0 left-0 right-0 h-14 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-8 h-6 bg-gradient-to-tr from-red-600 to-rose-500 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30">
@@ -221,7 +222,7 @@ export function WatchPage() {
           </section>
 
           {/* Right Column: Related Videos */}
-          <RelatedVideos />
+          <RelatedVideos currentVideoId={videoId} />
         </div>
       </main>
     </div>

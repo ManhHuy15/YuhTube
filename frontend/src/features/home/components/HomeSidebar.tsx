@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 
 export function HomeSidebar() {
   return (
-    <aside className="w-60 bg-[#0f0f0f] border-r border-white/10 flex flex-col justify-between flex-shrink-0 select-none overflow-y-auto fixed top-14 bottom-0 left-0 z-40 hidden md:flex p-3 space-y-4">
+    <aside className="w-60 bg-[#0e0e10] border-r border-white/10 flex flex-col justify-between flex-shrink-0 select-none overflow-y-auto fixed top-14 bottom-0 left-0 z-40 hidden md:flex p-3 space-y-4">
       <div className="space-y-1">
         <Link
           to="/"

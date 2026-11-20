@@ -20,16 +20,17 @@ export function StudioPage() {
     setVideos((prev) => prev.map((v) => (v.id === updated.id ? updated : v)))
   }
 
-  if (isLoading || !latestVideo || !analytics) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#161616] text-white flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-[#0e0e10] text-white flex flex-col items-center justify-center space-y-3">
+        <div className="w-10 h-10 border-3 border-red-600 border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs text-white/50 font-mono tracking-wider">Đang tải dữ liệu Studio từ AWS...</span>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#161616] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
+    <div className="min-h-screen bg-[#0e0e10] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
       {/* Top Header */}
       <StudioHeader onOpenUpload={() => navigate('/upload')} />
 
@@ -38,7 +39,7 @@ export function StudioPage() {
         <StudioSidebar />
 
         {/* Main Studio Dashboard Content */}
-        <main className="flex-1 overflow-y-auto bg-[#161616] p-4 sm:p-6 lg:p-8 lg:ml-64">
+        <main className="flex-1 overflow-y-auto bg-[#0e0e10] p-4 sm:p-6 lg:p-8 lg:ml-64">
           <div className="max-w-[1440px] mx-auto space-y-6">
             {/* Page Title */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -48,13 +49,13 @@ export function StudioPage() {
                     Bảng điều khiển Studio
                   </span>
                   <span className="text-white/20">•</span>
-                  <span className="text-xs text-white/50">v2.5 Pro Reimagined</span>
+                  <span className="text-xs text-white/50 font-mono">Dữ liệu thời gian thực</span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                   Trang tổng quan của kênh
                 </h1>
                 <p className="text-xs text-white/60 mt-1">
-                  Tổng quan hiệu suất kênh và hoạt động phân phối video thời gian thực
+                  Tổng quan hiệu suất kênh và quản lý video từ cơ sở dữ liệu AWS DynamoDB
                 </p>
               </div>
 
@@ -73,7 +74,7 @@ export function StudioPage() {
               <LatestVideoPerformanceCard stats={latestVideo} />
 
               {/* Card 2: Channel Analytics */}
-              <ChannelAnalyticsCard analytics={analytics} />
+              {analytics && <ChannelAnalyticsCard analytics={analytics} />}
 
               {/* Card 3: Recent Comments & Creator News */}
               <RecentCommentsCard />

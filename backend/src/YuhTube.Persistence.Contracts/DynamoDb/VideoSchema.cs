@@ -69,6 +69,8 @@ public static class VideoAttributes
 
 public static class VideoStatuses
 {
+    public const string Draft = "DRAFT";
+    public const string Uploading = "UPLOADING";
     public const string Processing = "PROCESSING";
     public const string Ready = "READY";
     public const string Error = "ERROR";

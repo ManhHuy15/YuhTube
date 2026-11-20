@@ -32,6 +32,12 @@ export function UploadPage() {
     isCopied,
     isPublishing,
     isDragOver,
+    resumedFromParts,
+    totalPartCount,
+    savedSessionInfo,
+    clearSavedSession,
+    handleMinimize,
+    saveStatus,
     onFileInputChange,
     onCustomThumbChange,
     onDropFile,
@@ -64,13 +70,49 @@ export function UploadPage() {
 
           {/* STATE 1: Initial Dropzone Landing (When no file is selected yet) */}
           {!file ? (
-            <UploadDropzone
-              isDragOver={isDragOver}
-              onDragOver={onDragOver}
-              onDragLeave={onDragLeave}
-              onDrop={onDropFile}
-              onSelectFile={triggerFileSelect}
-            />
+            <div className="flex flex-col items-center w-full max-w-4xl gap-4">
+              {savedSessionInfo && (
+                <div className="w-full bg-[#1e1e24] border border-[#69d8d4]/30 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#69d8d4]/10 border border-[#69d8d4]/20 flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[#69d8d4] text-[22px]">history</span>
+                    </div>
+                    <div>
+                      <p className="text-white text-sm font-semibold">
+                        Tìm thấy phiên tải dở trước đó
+                      </p>
+                      <p className="text-[#c6c6cb] text-xs">
+                        Tệp: <span className="text-white font-mono">{savedSessionInfo.fileName}</span>{savedSessionInfo.fileSizeBytes ? ` (${(savedSessionInfo.fileSizeBytes / (1024 * 1024)).toFixed(1)} MB)` : ''}. Bạn có thể chọn lại tệp này để tiếp tục tải từ các phần đã có trên S3!
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={clearSavedSession}
+                      className="px-3 py-1.5 rounded-lg text-[#c6c6cb] hover:text-white hover:bg-white/5 text-xs font-medium transition-colors cursor-pointer"
+                    >
+                      Bỏ qua
+                    </button>
+                    <button
+                      type="button"
+                      onClick={triggerFileSelect}
+                      className="px-4 py-1.5 rounded-lg bg-[#69d8d4] hover:bg-[#52beba] text-[#003735] text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                      <span>Chọn lại để tiếp tục</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+              <UploadDropzone
+                isDragOver={isDragOver}
+                onDragOver={onDragOver}
+                onDragLeave={onDragLeave}
+                onDrop={onDropFile}
+                onSelectFile={triggerFileSelect}
+              />
+            </div>
           ) : (
             /* STATE 2: 2-Step Workstation (When file is chosen and AWS S3 Upload is active) */
             <div className="relative z-10 w-full max-w-6xl bg-[#1c1b1d] rounded-2xl border border-white/10 shadow-2xl flex flex-col overflow-hidden animate-in fade-in duration-300">
@@ -79,7 +121,21 @@ export function UploadPage() {
                 currentStep={currentStep}
                 onSelectStep={setCurrentStep}
                 onChangeFile={triggerFileSelect}
+                onMinimize={handleMinimize}
+                saveStatus={saveStatus}
+                progress={progress}
+                isUploading={isUploading}
               />
+
+              {/* Resumed Parts Info Badge */}
+              {resumedFromParts > 0 && (
+                <div className="px-6 py-2.5 bg-[#69d8d4]/10 border-b border-[#69d8d4]/20 text-[#69d8d4] text-xs flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">cloud_sync</span>
+                  <span>
+                    <strong>Tải tiếp tục (Resumed):</strong> Đã khôi phục thành công {resumedFromParts}/{totalPartCount} phần từ AWS S3. Đang tải tiếp các phần còn thiếu.
+                  </span>
+                </div>
+              )}
 
               {/* Error Notification Banner */}
               {error && (
@@ -131,6 +187,9 @@ export function UploadPage() {
                   copyVideoLink={copyVideoLink}
                   isCopied={isCopied}
                   onBackToStepOne={() => setCurrentStep(1)}
+                  isUploading={isUploading}
+                  progress={progress}
+                  result={result}
                 />
               )}
 

@@ -1,5 +1,5 @@
 import { formatFileSize } from '../constants/upload.constants'
-import type { VisibilityMode } from '../types/upload.types'
+import type { VideoUploadResult, VisibilityMode } from '../types/upload.types'
 
 interface UploadStepTwoProps {
   file: File
@@ -13,6 +13,9 @@ interface UploadStepTwoProps {
   copyVideoLink: () => void
   isCopied: boolean
   onBackToStepOne: () => void
+  isUploading?: boolean
+  progress?: number
+  result?: VideoUploadResult | null
 }
 
 export function UploadStepTwo({
@@ -27,6 +30,9 @@ export function UploadStepTwo({
   copyVideoLink,
   isCopied,
   onBackToStepOne,
+  isUploading = false,
+  progress = 0,
+  result = null,
 }: UploadStepTwoProps) {
   return (
     <div className="p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -182,6 +188,35 @@ export function UploadStepTwo({
             <span className="text-white/50 font-mono">
               Kích thước: <span className="text-[#69d8d4]">{formatFileSize(file.size)}</span>
             </span>
+          </div>
+
+          {/* Upload Progress Status Card */}
+          <div className="p-4 border-t border-white/10 bg-[#161517] space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="flex items-center gap-2 text-white font-medium">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    isUploading
+                      ? 'bg-amber-400 animate-pulse'
+                      : result
+                        ? 'bg-emerald-400'
+                        : 'bg-white/40'
+                  }`}
+                />
+                {isUploading ? `Đang tải lên (${progress}%)` : result ? 'Đã tải xong 100%' : 'Chờ tải'}
+              </span>
+              <span className="font-mono text-[11px] text-[#69d8d4] font-bold">
+                {isUploading ? `${progress}%` : result ? '100%' : '0%'}
+              </span>
+            </div>
+            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all duration-300 ${
+                  result ? 'bg-emerald-500' : 'bg-gradient-to-r from-red-500 to-[#69d8d4]'
+                }`}
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
         </div>
 

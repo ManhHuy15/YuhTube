@@ -154,6 +154,43 @@ public sealed class UploadsController : ControllerBase
                     [":now"] = new() { S = now }
                 }
             }, cancellationToken);
+
+            var defaultTitle = !string.IsNullOrWhiteSpace(request.Title)
+                ? request.Title.Trim()
+                : Path.GetFileNameWithoutExtension(request.FileName);
+
+            if (string.IsNullOrWhiteSpace(defaultTitle))
+            {
+                defaultTitle = $"Video {videoId}";
+            }
+
+            var defaultDescription = request.Description ?? string.Empty;
+
+            // Pre-create Video metadata record like YouTube (Auto-saved initial draft)
+            var videoItem = new Dictionary<string, AttributeValue>
+            {
+                [DynamoAttributes.PartitionKey] = new() { S = VideoKeys.PartitionKey(videoId) },
+                [DynamoAttributes.SortKey] = new() { S = VideoKeys.SortKey(videoId) },
+                [VideoAttributes.VideoId] = new() { S = videoId },
+                [VideoAttributes.Title] = new() { S = defaultTitle },
+                [VideoAttributes.Description] = new() { S = defaultDescription },
+                [VideoAttributes.Status] = new() { S = VideoStatuses.Uploading },
+                [VideoAttributes.IsPrivate] = new() { BOOL = true },
+                [VideoAttributes.CreatedAt] = new() { S = now },
+                [VideoAttributes.UpdatedAt] = new() { S = now },
+                [VideoAttributes.UploaderId] = new() { S = uploaderId },
+                [VideoAttributes.UploaderName] = new() { S = uploaderName },
+                [VideoAttributes.UploaderAvatar] = new() { S = uploaderAvatar },
+                [VideoAttributes.Views] = new() { N = "0" },
+                [VideoAttributes.Gsi1PartitionKey] = new() { S = uploaderId },
+                [VideoAttributes.Gsi1SortKey] = new() { S = now }
+            };
+
+            await _dynamoDb.PutItemAsync(new PutItemRequest
+            {
+                TableName = _dynamoDbOptions.TableName,
+                Item = videoItem
+            }, cancellationToken);
         }
         catch
         {
@@ -234,6 +271,99 @@ public sealed class UploadsController : ControllerBase
         return Ok(new CreateUploadPartUrlsResponse(expiresAt, urls));
     }
 
+    [HttpGet("{videoId}/parts")]
+    [ProducesResponseType<UploadedPartsResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UploadedPartsResponse>> GetUploadedParts(
+        string videoId,
+        CancellationToken cancellationToken)
+    {
+        var identity = CognitoAuthHelper.ExtractUser(HttpContext);
+        if (identity == null)
+        {
+            return Unauthorized(new ProblemDetails
+            {
+                Title = "Unauthorized",
+                Detail = "Authentication required to query upload session parts.",
+                Status = StatusCodes.Status401Unauthorized
+            });
+        }
+
+        var sessionResult = await GetUploadSession(videoId, cancellationToken);
+        if (sessionResult.Item == null || sessionResult.Item.Count == 0)
+        {
+            return NotFound(new ProblemDetails
+            {
+                Title = "Not Found",
+                Detail = "Upload session not found.",
+                Status = StatusCodes.Status404NotFound
+            });
+        }
+
+        var sessionUploaderId = sessionResult.Item.TryGetValue(UploadSessionAttributes.UploaderId, out var uploaderVal)
+            ? uploaderVal.S
+            : string.Empty;
+
+        if (!string.Equals(sessionUploaderId, identity.UserId, StringComparison.Ordinal))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new ProblemDetails
+            {
+                Title = "Forbidden",
+                Detail = "You are not authorized to query this upload session.",
+                Status = StatusCodes.Status403Forbidden
+            });
+        }
+
+        var status = sessionResult.Item[UploadSessionAttributes.Status].S;
+        var partSizeBytes = long.Parse(sessionResult.Item[UploadSessionAttributes.PartSizeBytes].N);
+        var partCount = int.Parse(sessionResult.Item[UploadSessionAttributes.PartCount].N);
+        var objectKey = sessionResult.Item[UploadSessionAttributes.ObjectKey].S;
+        var s3UploadId = sessionResult.Item[UploadSessionAttributes.S3UploadId].S;
+
+        var uploadedParts = new List<CompleteUploadPart>();
+
+        if (status == UploadSessionStatuses.Initiated)
+        {
+            try
+            {
+                var listPartsRequest = new ListPartsRequest
+                {
+                    BucketName = _storageOptions.RawBucketName,
+                    Key = objectKey,
+                    UploadId = s3UploadId
+                };
+
+                ListPartsResponse listPartsResponse;
+                do
+                {
+                    listPartsResponse = await _s3.ListPartsAsync(listPartsRequest, cancellationToken);
+                    foreach (var part in listPartsResponse.Parts)
+                    {
+                        if (part.PartNumber.HasValue && !string.IsNullOrEmpty(part.ETag))
+                        {
+                            uploadedParts.Add(new CompleteUploadPart(part.PartNumber.Value, part.ETag));
+                        }
+                    }
+                    listPartsRequest.PartNumberMarker = listPartsResponse.NextPartNumberMarker.ToString();
+                } while (listPartsResponse.IsTruncated == true);
+            }
+            catch (AmazonS3Exception ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                _logger.LogWarning(ex, "S3 multipart upload {UploadId} not found for video {VideoId}.", s3UploadId, videoId);
+            }
+        }
+
+        return Ok(new UploadedPartsResponse(
+            videoId,
+            status,
+            partSizeBytes,
+            partCount,
+            uploadedParts
+        ));
+    }
+
     [HttpPost("{videoId}/complete")]
     [ProducesResponseType<CompleteUploadResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
@@ -309,6 +439,34 @@ public sealed class UploadsController : ControllerBase
                 [":objectETag"] = new() { S = result.ETag }
             }
         }, cancellationToken);
+
+        try
+        {
+            await _dynamoDb.UpdateItemAsync(new UpdateItemRequest
+            {
+                TableName = _dynamoDbOptions.TableName,
+                Key = new Dictionary<string, AttributeValue>
+                {
+                    [DynamoAttributes.PartitionKey] = new() { S = VideoKeys.PartitionKey(videoId) },
+                    [DynamoAttributes.SortKey] = new() { S = VideoKeys.SortKey(videoId) }
+                },
+                UpdateExpression = "SET #status = :processing, #updatedAt = :now",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                    ["#status"] = VideoAttributes.Status,
+                    ["#updatedAt"] = VideoAttributes.UpdatedAt
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    [":processing"] = new() { S = VideoStatuses.Processing },
+                    [":now"] = new() { S = DateTimeOffset.UtcNow.ToString("O") }
+                }
+            }, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to update video status to PROCESSING for video {VideoId}.", videoId);
+        }
 
         return Ok(new CompleteUploadResponse(videoId, objectKey, result.ETag));
     }

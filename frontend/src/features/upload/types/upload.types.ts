@@ -2,6 +2,8 @@ export interface InitiateUploadRequest {
   fileName: string
   contentType: string
   fileSizeBytes: number
+  title?: string
+  description?: string
 }
 
 export interface InitiateUploadResponse {
@@ -44,6 +46,24 @@ export interface CompleteUploadResponse {
 export interface VideoUploadResult extends InitiateUploadResponse {
   parts: CompletedPart[]
   completion: CompleteUploadResponse
+}
+
+export interface UploadedPartsResponse {
+  videoId: string
+  status: string
+  partSizeBytes: number
+  partCount: number
+  uploadedParts: CompletedPart[]
+}
+
+export interface ResumableSessionInfo {
+  videoId: string
+  fileName: string
+  fileSizeBytes: number
+  lastModified: number
+  partSizeBytes: number
+  partCount: number
+  uploadedParts: CompletedPart[]
 }
 
 export type UploadStep = 1 | 2

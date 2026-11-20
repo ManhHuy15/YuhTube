@@ -7,7 +7,7 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ onToggleSidebar }: HomeHeaderProps) {
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/10 z-50 flex items-center justify-between px-4 select-none">
+    <header className="fixed top-0 left-0 right-0 h-14 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4 select-none">
       {/* Left: Menu & Brand */}
       <div className="flex items-center gap-4">
         <button

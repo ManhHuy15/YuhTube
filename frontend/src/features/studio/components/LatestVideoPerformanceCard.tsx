@@ -2,32 +2,70 @@ import { Link } from 'react-router-dom'
 import type { LatestVideoStats } from '../types/studio.types'
 
 interface LatestVideoPerformanceCardProps {
-  stats: LatestVideoStats
+  stats: LatestVideoStats | null
 }
 
 export function LatestVideoPerformanceCard({ stats }: LatestVideoPerformanceCardProps) {
-  return (
-    <div className="relative group rounded-2xl bg-[#1e1e24]/70 backdrop-blur-xl border border-white/[0.08] p-5 sm:p-6 flex flex-col justify-between shadow-xl transition-all hover:shadow-2xl hover:shadow-red-500/5">
-      <div>
-        <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08]">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500"></div>
-            <h3 className="text-[15px] font-bold text-white tracking-tight">Hiệu suất video mới nhất</h3>
+  if (!stats) {
+    return (
+      <div className="rounded-2xl bg-[#1c1b1d] border border-white/10 p-6 flex flex-col justify-between shadow-xl">
+        <div className="flex items-center gap-2 pb-3.5 border-b border-white/10">
+          <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500" />
+          <h3 className="text-sm font-bold text-white tracking-tight">Hiệu suất video mới nhất</h3>
+        </div>
+
+        <div className="my-8 flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30">
+            <span className="material-symbols-outlined text-[28px]">video_call</span>
           </div>
-          <button className="p-1 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors">
-            <span className="material-symbols-outlined text-[19px]">more_vert</span>
-          </button>
+          <div>
+            <h4 className="text-sm font-bold text-white">Bạn chưa có video nào</h4>
+            <p className="text-xs text-white/50 max-w-xs mt-1">
+              Hãy tải lên video đầu tiên để bắt đầu theo dõi lượt xem, tỷ lệ nhấp và tương tác của khán giả.
+            </p>
+          </div>
+          <Link
+            to="/upload"
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-red-600/30 transition-all cursor-pointer active:scale-95"
+          >
+            <span className="material-symbols-outlined text-[16px]">upload</span>
+            <span>TẢI VIDEO ĐẦU TIÊN</span>
+          </Link>
+        </div>
+
+        <div className="pt-3 border-t border-white/10 text-center">
+          <span className="text-[11px] text-white/40">Dữ liệu thời gian thực từ AWS DynamoDB</span>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative group rounded-2xl bg-[#1c1b1d] border border-white/10 p-5 sm:p-6 flex flex-col justify-between shadow-xl transition-all hover:border-white/20">
+      <div>
+        <div className="flex items-center justify-between pb-3.5 border-b border-white/10">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-red-500 shadow-sm shadow-red-500" />
+            <h3 className="text-sm font-bold text-white tracking-tight">Hiệu suất video mới nhất</h3>
+          </div>
+          <span className="text-[11px] text-[#69d8d4] font-mono font-medium">Thời gian thực</span>
         </div>
 
         {/* Video Preview */}
-        <Link to="/watch/v1" className="block mt-4 group/thumb cursor-pointer">
+        <div className="block mt-4 group/thumb">
           <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black/60 border border-white/10 shadow-lg">
-            <img
-              alt="Latest video thumbnail"
-              className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-500"
-              src={stats.thumbnailUrl}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            {stats.thumbnailUrl ? (
+              <img
+                alt="Latest video thumbnail"
+                className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-500"
+                src={stats.thumbnailUrl}
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-[#131315] text-white/20">
+                <span className="material-symbols-outlined text-[32px]">movie</span>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
             <span className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md text-white font-mono text-[11px] px-2 py-0.5 rounded-md font-semibold border border-white/10">
               {stats.duration}
             </span>
@@ -35,64 +73,46 @@ export function LatestVideoPerformanceCard({ stats }: LatestVideoPerformanceCard
               MỚI ĐĂNG
             </div>
           </div>
-          <h4 className="text-[14px] font-semibold text-white line-clamp-2 mt-3 leading-snug group-hover/thumb:text-[#3ea6ff] transition-colors">
+          <h4 className="text-sm font-semibold text-white line-clamp-2 mt-3 leading-snug">
             {stats.title}
           </h4>
-        </Link>
+        </div>
 
         {/* Metrics List */}
-        <div className="mt-4 space-y-2.5 pt-3.5 border-t border-white/[0.08]">
-          <div className="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
+        <div className="mt-4 space-y-2.5 pt-3.5 border-t border-white/10">
+          <div className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-lg bg-white/[0.03]">
             <span className="text-white/60">Xếp hạng theo lượt xem:</span>
             <span className="font-medium text-white flex items-center gap-1.5">
-              <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-mono">
                 {stats.rank}
               </span>
-              <span className="text-[11px] text-white/40">(24 giờ đầu)</span>
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
-            <span className="text-white/60">Lượt xem:</span>
-            <div className="flex items-center gap-1.5 font-medium text-white">
-              <span className="text-[14px] font-bold text-white tracking-tight">{stats.views}</span>
-              <span className="inline-flex items-center text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                <span className="material-symbols-outlined text-[14px]">arrow_upward</span> {stats.viewsGrowth}
-              </span>
-            </div>
+          <div className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-lg bg-white/[0.03]">
+            <span className="text-white/60">Số lượt xem:</span>
+            <span className="font-bold text-white font-mono">{stats.views}</span>
           </div>
 
-          <div className="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
+          <div className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-lg bg-white/[0.03]">
             <span className="text-white/60">Tỷ lệ nhấp (CTR):</span>
-            <div className="flex items-center gap-1.5 font-medium text-white">
-              <span className="text-[14px] font-bold text-white">{stats.ctr}</span>
-              <span className="inline-flex items-center text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                <span className="material-symbols-outlined text-[14px]">arrow_upward</span> {stats.ctrGrowth}
-              </span>
-            </div>
+            <span className="font-bold text-[#69d8d4] font-mono">{stats.ctr}</span>
           </div>
 
-          <div className="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-white/[0.02]">
+          <div className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-lg bg-white/[0.03]">
             <span className="text-white/60">Thời lượng xem trung bình:</span>
-            <div className="flex items-center gap-1.5 font-medium text-white">
-              <span className="text-[14px] font-bold text-white">{stats.avgDuration}</span>
-              <span className="inline-flex items-center text-emerald-400 font-semibold text-[11px] bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                <span className="material-symbols-outlined text-[14px]">arrow_upward</span>
-              </span>
-            </div>
+            <span className="font-bold text-white font-mono">{stats.avgDuration}</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-5 pt-3 border-t border-white/[0.08]">
+      <div className="pt-3.5 border-t border-white/10 mt-4 flex items-center justify-between">
         <Link
-          to="/watch/v1"
-          className="inline-flex items-center justify-between w-full text-[#3ea6ff] hover:text-[#70beff] text-xs font-bold tracking-wider uppercase transition-colors group/btn"
+          to="/upload"
+          className="text-red-400 hover:text-red-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-colors cursor-pointer"
         >
-          <span>CHUYỂN ĐẾN SỐ LIỆU PHÂN TÍCH VIDEO</span>
-          <span className="material-symbols-outlined text-[18px] group-hover/btn:translate-x-1 transition-transform">
-            arrow_forward
-          </span>
+          <span>TẢI VIDEO MỚI</span>
+          <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
         </Link>
       </div>
     </div>

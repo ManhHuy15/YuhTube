@@ -6,6 +6,10 @@ interface UploadHeaderProps {
   currentStep: UploadStep
   onSelectStep: (step: UploadStep) => void
   onChangeFile: () => void
+  onMinimize?: () => void
+  saveStatus?: 'saved' | 'saving' | 'idle'
+  progress?: number
+  isUploading?: boolean
 }
 
 export function UploadHeader({
@@ -13,13 +17,53 @@ export function UploadHeader({
   currentStep,
   onSelectStep,
   onChangeFile,
+  onMinimize,
+  saveStatus = 'idle',
+  progress = 0,
+  isUploading = false,
 }: UploadHeaderProps) {
   return (
-    <header className="px-6 py-4 bg-[#201f21] border-b border-white/10 flex flex-wrap items-center justify-between gap-4">
+    <header className="relative px-6 py-4 bg-[#201f21] border-b border-white/10 flex flex-wrap items-center justify-between gap-4">
+      {/* Top/Bottom Micro Progress Bar on Header */}
+      {isUploading && (
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-red-600 to-[#69d8d4] transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
+
       <div className="flex items-center gap-6 flex-wrap">
-        <h1 className="text-lg sm:text-xl text-white font-bold tracking-tight truncate max-w-[280px] sm:max-w-md">
-          {title || 'Tải video lên'}
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg sm:text-xl text-white font-bold tracking-tight truncate max-w-[240px] sm:max-w-xs">
+            {title || 'Tải video lên'}
+          </h1>
+
+          {/* Upload Progress Badge */}
+          {isUploading && (
+            <span className="flex items-center gap-1 text-[11px] font-mono font-bold text-white bg-red-600/20 border border-red-500/30 px-2 py-0.5 rounded-full">
+              <span className="material-symbols-outlined text-[13px] animate-spin text-red-400">
+                progress_activity
+              </span>
+              <span>{progress}%</span>
+            </span>
+          )}
+
+          {/* Auto-save Draft Status Badge (YouTube Studio Style) */}
+          {saveStatus === 'saving' && (
+            <span className="flex items-center gap-1 text-[11px] font-medium text-[#69d8d4] bg-[#69d8d4]/10 border border-[#69d8d4]/20 px-2.5 py-0.5 rounded-full animate-pulse">
+              <span className="material-symbols-outlined text-[14px] animate-spin">sync</span>
+              <span>Đang lưu...</span>
+            </span>
+          )}
+          {saveStatus === 'saved' && (
+            <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+              <span className="material-symbols-outlined text-[14px]">cloud_done</span>
+              <span>Đã lưu bản nháp</span>
+            </span>
+          )}
+        </div>
 
         <nav aria-label="Tiến trình tải lên" className="flex items-center gap-3 text-xs font-mono">
           {/* Step 1 Tab */}
@@ -79,6 +123,16 @@ export function UploadHeader({
           <span className="material-symbols-outlined text-[15px]">swap_horiz</span>
           <span>Đổi tệp</span>
         </button>
+        {onMinimize && (
+          <button
+            type="button"
+            onClick={onMinimize}
+            className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            title="Thu nhỏ cửa sổ tải lên"
+          >
+            <span className="material-symbols-outlined text-[20px]">minimize</span>
+          </button>
+        )}
         <Link
           to="/studio"
           className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"

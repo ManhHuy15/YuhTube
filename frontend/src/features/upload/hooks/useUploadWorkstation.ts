@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, type ChangeEvent, type DragEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useVideoUpload } from './useVideoUpload'
+import { useUploadStore } from './useUploadStore'
 import { updateVideoMetadata, uploadThumbnail } from '../services/upload.service'
 import type { UploadStep, VisibilityMode } from '../types/upload.types'
 
@@ -9,11 +10,17 @@ export function useUploadWorkstation() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const thumbInputRef = useRef<HTMLInputElement>(null)
 
+  const storeFile = useUploadStore((s) => s.file)
+  const storeTitle = useUploadStore((s) => s.title)
+  const storeDescription = useUploadStore((s) => s.description)
+
   const [currentStep, setCurrentStep] = useState<UploadStep>(1)
-  const [file, setFile] = useState<File | null>(null)
-  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null)
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const [file, setFile] = useState<File | null>(() => storeFile)
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(() =>
+    storeFile ? URL.createObjectURL(storeFile) : null
+  )
+  const [title, setTitle] = useState(() => storeTitle || '')
+  const [description, setDescription] = useState(() => storeDescription || '')
   const [selectedThumbnail, setSelectedThumbnail] = useState<string>('')
   const [customThumbnail, setCustomThumbnail] = useState<string | null>(null)
   const [customThumbFile, setCustomThumbFile] = useState<File | null>(null)
@@ -21,12 +28,93 @@ export function useUploadWorkstation() {
   const [isCopied, setIsCopied] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
+  const [savedSessionInfo, setSavedSessionInfo] = useState<{
+    fileName: string
+    videoId: string
+    fileSizeBytes?: number
+  } | null>(() => {
+    try {
+      const raw = localStorage.getItem('yuhtube_active_upload_session')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed?.fileName && parsed?.videoId) {
+          return {
+            fileName: parsed.fileName,
+            videoId: parsed.videoId,
+            fileSizeBytes: parsed.fileSizeBytes,
+          }
+        }
+      }
+    } catch {
+      // Ignore
+    }
+    return null
+  })
 
-  // Real AWS S3 Multipart Upload Hook
-  const { error, isUploading, progress, reset, result, upload, videoId: uploadVideoId } = useVideoUpload()
+  // Real AWS S3 Multipart Upload Hook (Zustand-backed)
+  const {
+    error,
+    isUploading,
+    isCompleted,
+    progress,
+    reset,
+    result,
+    upload,
+    videoId: uploadVideoId,
+    resumedFromParts,
+    totalPartCount,
+  } = useVideoUpload()
+
+  function clearSavedSession() {
+    try {
+      localStorage.removeItem('yuhtube_active_upload_session')
+    } catch {
+      // Ignore
+    }
+    setSavedSessionInfo(null)
+  }
 
   const videoId = result?.videoId || uploadVideoId || ''
   const videoShareUrl = videoId ? `https://yuhtube.vn/watch?v=${videoId}` : 'Đang tạo liên kết...'
+
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle')
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isInitialMount = useRef(true)
+
+  // YouTube-style auto-save draft metadata (Title, Description, Visibility)
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+
+    if (!videoId || !title.trim()) return
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      setSaveStatus('saving')
+      try {
+        await updateVideoMetadata(videoId, {
+          title: title.trim(),
+          description: description.trim(),
+          isPrivate: visibility === 'private',
+        })
+        setSaveStatus('saved')
+      } catch (err) {
+        console.warn('Auto-save video metadata draft failed:', err)
+        setSaveStatus('idle')
+      }
+    }, 1000)
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
+  }, [title, description, visibility, videoId])
 
   // Cleanup object URL on unmount or when replaced
   useEffect(() => {
@@ -51,8 +139,8 @@ export function useUploadWorkstation() {
     const rawTitle = selected.name.replace(/\.[^/.]+$/, '')
     setTitle(rawTitle)
 
-    // Execute real multipart upload to AWS S3
-    upload(selected)
+    // Execute real multipart upload to AWS S3 (with Resumable S3 Check)
+    upload(selected, rawTitle)
   }
 
   function onFileInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -62,13 +150,30 @@ export function useUploadWorkstation() {
     }
   }
 
-  function onCustomThumbChange(event: ChangeEvent<HTMLInputElement>) {
+  async function onCustomThumbChange(event: ChangeEvent<HTMLInputElement>) {
     const selected = event.target.files?.[0]
     if (selected) {
       setCustomThumbFile(selected)
       const url = URL.createObjectURL(selected)
       setCustomThumbnail(url)
       setSelectedThumbnail(url)
+
+      if (videoId) {
+        setSaveStatus('saving')
+        try {
+          const uploadedUrl = await uploadThumbnail(videoId, selected)
+          await updateVideoMetadata(videoId, {
+            title: title || 'Untitled Video',
+            description,
+            thumbnailUrl: uploadedUrl,
+            isPrivate: visibility === 'private',
+          })
+          setSaveStatus('saved')
+        } catch (err) {
+          console.warn('Auto-save custom thumbnail failed:', err)
+          setSaveStatus('idle')
+        }
+      }
     }
   }
 
@@ -125,6 +230,11 @@ export function useUploadWorkstation() {
     }
   }
 
+  function handleMinimize() {
+    useUploadStore.getState().minimize()
+    navigate('/studio')
+  }
+
   function triggerFileSelect() {
     fileInputRef.current?.click()
   }
@@ -155,13 +265,19 @@ export function useUploadWorkstation() {
     customThumbnail,
     visibility,
     setVisibility,
+    saveStatus,
 
     // Upload & Network State
     error,
     isUploading,
+    isCompleted,
     progress,
     result,
     upload,
+    resumedFromParts,
+    totalPartCount,
+    savedSessionInfo,
+    clearSavedSession,
 
     // Video Identifiers & Sharing
     videoId,
@@ -179,6 +295,7 @@ export function useUploadWorkstation() {
     onDragLeave,
     copyVideoLink,
     handlePublish,
+    handleMinimize,
     triggerFileSelect,
     triggerThumbSelect,
   }

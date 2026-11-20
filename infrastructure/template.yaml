@@ -407,6 +407,14 @@ Resources:
             Method: post
             Auth:
               Authorizer: CognitoAuthorizer
+        GetParts:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref YuhTubeHttpApi
+            Path: /uploads/{videoId}/parts
+            Method: get
+            Auth:
+              Authorizer: CognitoAuthorizer
         Complete:
           Type: HttpApi
           Properties:

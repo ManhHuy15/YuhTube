@@ -31,6 +31,7 @@ export function useVideoPlayer({ playbackUrl, onViewQualified }: UseVideoPlayerO
   const [qualityLevels, setQualityLevels] = useState<QualityLevel[]>([])
   const [selectedLevel, setSelectedLevel] = useState<number>(-1) // -1 is Auto
   const [currentPlayingLevel, setCurrentPlayingLevel] = useState<number>(-1)
+  const [currentPlayingHeight, setCurrentPlayingHeight] = useState<number | null>(null)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
 
   // Close quality settings menu when clicking outside
@@ -80,13 +81,25 @@ export function useVideoPlayer({ playbackUrl, onViewQualified }: UseVideoPlayerO
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
           if (hls && hls.levels && hls.levels.length > 0) {
-            const levels: QualityLevel[] = hls.levels.map((lvl, index) => ({
-              id: index,
-              height: lvl.height,
-              bitrate: lvl.bitrate,
-              label: lvl.height ? `${lvl.height}p` : `${Math.round(lvl.bitrate / 1000)}k`,
-            }))
-            // Sort from highest resolution to lowest resolution
+            // Deduplicate levels by resolution (height)
+            // AWS MediaConvert outputs multiple streams with identical height when source <= 720p
+            // due to FIT_NO_UPSCALE on 2k/1080p outputs. We keep the optimal bitrate stream for each distinct height.
+            const uniqueLevelsMap = new Map<number, QualityLevel>()
+
+            hls.levels.forEach((lvl, index) => {
+              const height = lvl.height || 0
+              const existing = uniqueLevelsMap.get(height)
+              if (!existing || lvl.bitrate > existing.bitrate) {
+                uniqueLevelsMap.set(height, {
+                  id: index,
+                  height: lvl.height,
+                  bitrate: lvl.bitrate,
+                  label: lvl.height ? `${lvl.height}p` : `${Math.round(lvl.bitrate / 1000)}k`,
+                })
+              }
+            })
+
+            const levels = Array.from(uniqueLevelsMap.values())
             levels.sort((a, b) => b.height - a.height || b.bitrate - a.bitrate)
             setQualityLevels(levels)
           }
@@ -98,6 +111,10 @@ export function useVideoPlayer({ playbackUrl, onViewQualified }: UseVideoPlayerO
 
         hls.on(Hls.Events.LEVEL_SWITCHED, (_event, data) => {
           setCurrentPlayingLevel(data.level)
+          const switchedLevel = hls?.levels?.[data.level]
+          if (switchedLevel?.height) {
+            setCurrentPlayingHeight(switchedLevel.height)
+          }
           setIsBuffering(false)
         })
 
@@ -312,8 +329,9 @@ export function useVideoPlayer({ playbackUrl, onViewQualified }: UseVideoPlayerO
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
 
-  const activePlayingLevelLabel =
-    currentPlayingLevel >= 0
+  const activePlayingLevelLabel = currentPlayingHeight
+    ? `${currentPlayingHeight}p`
+    : currentPlayingLevel >= 0
       ? qualityLevels.find((q) => q.id === currentPlayingLevel)?.label
       : undefined
 
@@ -347,6 +365,7 @@ export function useVideoPlayer({ playbackUrl, onViewQualified }: UseVideoPlayerO
     isSettingsOpen,
     setIsSettingsOpen,
     activeQualityBadge,
+    activePlayingLevelLabel,
     selectedQualityLabel,
     togglePlay,
     handleTimeUpdate,

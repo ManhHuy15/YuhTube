@@ -7,6 +7,7 @@ import type {
   CreateUploadPartUrlsResponse,
   InitiateUploadRequest,
   InitiateUploadResponse,
+  UploadedPartsResponse,
 } from '../types/upload.types'
 
 export async function initiateUpload(
@@ -25,6 +26,17 @@ export async function createUploadPartUrls(
     request,
   )
   return data
+}
+
+export async function fetchUploadedParts(
+  videoId: string,
+): Promise<UploadedPartsResponse | null> {
+  try {
+    const { data } = await apiClient.get<UploadedPartsResponse>(`/uploads/${videoId}/parts`)
+    return data
+  } catch {
+    return null
+  }
 }
 
 export async function uploadPart(

@@ -26,10 +26,10 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
     setShowControls,
     qualityLevels,
     selectedLevel,
-    currentPlayingLevel,
     isSettingsOpen,
     setIsSettingsOpen,
     activeQualityBadge,
+    activePlayingLevelLabel,
     selectedQualityLabel,
     togglePlay,
     handleTimeUpdate,
@@ -171,7 +171,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
             {/* Quality Settings Dropdown Menu */}
             {isSettingsOpen && (
               <div
-                className="quality-settings-menu absolute right-0 bottom-12 bg-[#18181c]/95 backdrop-blur-xl rounded-2xl p-3 border border-white/15 shadow-2xl z-40 min-w-[200px] text-xs text-white"
+                className="quality-settings-menu absolute right-0 bottom-12 bg-[#18181c]/95 backdrop-blur-2xl rounded-2xl p-3 border border-white/15 shadow-2xl z-40 min-w-[210px] text-xs text-white animate-in fade-in zoom-in-95 duration-150 select-none"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center gap-2 pb-2 mb-2 border-b border-white/10 font-bold text-white/90">
@@ -184,7 +184,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
                   <button
                     type="button"
                     onClick={() => handleSelectQuality(-1)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors cursor-pointer text-left ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-150 active:scale-[0.98] cursor-pointer text-left ${
                       selectedLevel === -1
                         ? 'bg-red-500/20 text-red-400 font-bold border border-red-500/30'
                         : 'text-white/80 hover:bg-white/10'
@@ -192,9 +192,9 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
                   >
                     <div className="flex items-center gap-2">
                       <span>Tự động</span>
-                      {currentPlayingLevel >= 0 && (
+                      {activePlayingLevelLabel && (
                         <span className="text-[10px] text-white/40 font-mono">
-                          ({qualityLevels.find((q) => q.id === currentPlayingLevel)?.label || ''})
+                          ({activePlayingLevelLabel})
                         </span>
                       )}
                     </div>
@@ -211,7 +211,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
                         key={lvl.id}
                         type="button"
                         onClick={() => handleSelectQuality(lvl.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-colors cursor-pointer text-left ${
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-150 active:scale-[0.98] cursor-pointer text-left ${
                           isSelected
                             ? 'bg-red-500/20 text-red-400 font-bold border border-red-500/30'
                             : 'text-white/80 hover:bg-white/10'
@@ -256,7 +256,7 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
                 e.stopPropagation()
                 setIsSettingsOpen((prev) => !prev)
               }}
-              className="quality-settings-toggle p-1 hover:text-white transition-colors text-xs font-mono px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 flex items-center gap-1.5 cursor-pointer"
+              className="quality-settings-toggle p-1 hover:text-white transition-all duration-150 active:scale-95 text-xs font-mono px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 flex items-center gap-1.5 cursor-pointer shadow-sm"
               title="Cài đặt chất lượng video"
             >
               <span className="material-symbols-outlined text-[16px] text-red-400">tune</span>
