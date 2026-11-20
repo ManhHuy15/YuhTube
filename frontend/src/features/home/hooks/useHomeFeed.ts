@@ -1,24 +1,25 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { fetchHomeFeed } from '../services/home.service'
 import type { VideoFeedItem } from '../types/home.types'
+import { extractCategoriesFromVideos, filterVideosByCategory } from '../utils/categoryHelper'
 
-export function useHomeFeed(category: string) {
-  const [videos, setVideos] = useState<VideoFeedItem[]>([])
+export function useHomeFeed(selectedCategory: string = 'Tất cả') {
+  const [allVideos, setAllVideos] = useState<VideoFeedItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     let isCancelled = false
 
-    fetchHomeFeed(category)
+    fetchHomeFeed()
       .then((data) => {
         if (!isCancelled) {
-          setVideos(data)
+          setAllVideos(data)
           setIsLoading(false)
         }
       })
       .catch(() => {
         if (!isCancelled) {
-          setVideos([])
+          setAllVideos([])
           setIsLoading(false)
         }
       })
@@ -26,7 +27,22 @@ export function useHomeFeed(category: string) {
     return () => {
       isCancelled = true
     }
-  }, [category])
+  }, [])
 
-  return { videos, isLoading }
+  // Dynamically extract categories that actually exist in real video data
+  const categories = useMemo(() => {
+    return extractCategoriesFromVideos(allVideos)
+  }, [allVideos])
+
+  // Filter/sort videos strictly according to the selected category
+  const filteredVideos = useMemo(() => {
+    return filterVideosByCategory(allVideos, selectedCategory)
+  }, [allVideos, selectedCategory])
+
+  return {
+    allVideos,
+    videos: filteredVideos,
+    categories,
+    isLoading,
+  }
 }

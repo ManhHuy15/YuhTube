@@ -39,7 +39,7 @@ export function UploadStepTwo({
       {/* Left Column: Release Review & Settings (7 Cols) */}
       <div className="lg:col-span-7 flex flex-col gap-6">
         {/* Video Title Banner */}
-        <div className="bg-[#201f21] border border-white/10 p-5 rounded-2xl flex flex-col gap-2">
+        <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-2xl p-5 sm:p-6 rounded-3xl flex flex-col gap-2.5 shadow-xl">
           <span className="text-[10px] uppercase font-mono tracking-wider text-white/50 font-semibold">
             Tiêu đề phát hành
           </span>
@@ -48,7 +48,7 @@ export function UploadStepTwo({
             <button
               type="button"
               onClick={onBackToStepOne}
-              className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 cursor-pointer"
+              className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0 cursor-pointer"
               title="Chỉnh sửa ở Bước 1"
             >
               <span className="material-symbols-outlined text-[18px]">edit</span>
@@ -60,13 +60,13 @@ export function UploadStepTwo({
         </div>
 
         {/* Release Mode & Visibility Config */}
-        <div className="bg-[#201f21] border border-white/10 p-5 rounded-2xl flex flex-col gap-4">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-2xl p-5 sm:p-6 rounded-3xl flex flex-col gap-4 shadow-xl">
+          <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-red-500 text-[20px]">visibility</span>
+              <span className="material-symbols-outlined text-rose-500 text-[20px]">visibility</span>
               <span className="text-sm font-bold text-white">Chế độ hiển thị &amp; Xuất bản</span>
             </div>
-            <span className="text-[10px] font-mono bg-[#0e0e10] text-[#69d8d4] px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-[#69d8d4]/30">
+            <span className="text-[10px] font-mono bg-white/5 text-[#69d8d4] px-2.5 py-0.5 rounded-full uppercase tracking-wider border border-[#69d8d4]/30">
               Bước hoàn tất
             </span>
           </div>
@@ -74,10 +74,10 @@ export function UploadStepTwo({
           <div className="flex flex-col gap-3">
             {/* Option: Private */}
             <label
-              className={`flex items-start gap-3 p-3.5 rounded-xl cursor-pointer transition-all border ${
+              className={`flex items-start gap-3.5 p-4 rounded-2xl cursor-pointer transition-all border ${
                 visibility === 'private'
-                  ? 'bg-[#2a2a2c] border-red-500/50'
-                  : 'bg-[#1c1b1d] border-white/5 hover:bg-[#2a2a2c]'
+                  ? 'bg-rose-500/10 border-rose-500/40 shadow-md shadow-rose-950/20'
+                  : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.05]'
               }`}
             >
               <input
@@ -86,22 +86,22 @@ export function UploadStepTwo({
                 value="private"
                 checked={visibility === 'private'}
                 onChange={() => setVisibility('private')}
-                className="mt-1 text-red-600 focus:ring-0 cursor-pointer"
+                className="mt-1 text-rose-600 focus:ring-0 cursor-pointer"
               />
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-white">Riêng tư (Private)</span>
                 <span className="text-xs text-white/50 mt-0.5">
-                  Chỉ bạn mới có thể xem video này. Video sẽ không xuất hiện trên bảng tin chung.
+                  Chỉ bạn mới có thể xem video này. Video sẽ không xuất hiện trên nguồn cấp dữ liệu chung.
                 </span>
               </div>
             </label>
 
             {/* Option: Public */}
             <label
-              className={`flex items-start gap-3 p-3.5 rounded-xl cursor-pointer transition-all border ${
+              className={`flex items-start gap-3.5 p-4 rounded-2xl cursor-pointer transition-all border ${
                 visibility === 'public'
-                  ? 'bg-[#2a2a2c] border-red-500/50 shadow-md shadow-red-950/20'
-                  : 'bg-[#1c1b1d] border-white/5 hover:bg-[#2a2a2c]'
+                  ? 'bg-rose-500/10 border-rose-500/40 shadow-md shadow-rose-950/20'
+                  : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.05]'
               }`}
             >
               <input
@@ -110,17 +110,17 @@ export function UploadStepTwo({
                 value="public"
                 checked={visibility === 'public'}
                 onChange={() => setVisibility('public')}
-                className="mt-1 text-red-600 focus:ring-0 cursor-pointer"
+                className="mt-1 text-rose-600 focus:ring-0 cursor-pointer"
               />
               <div className="flex flex-col w-full">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-white">Công khai (Public)</span>
-                  <span className="text-[10px] bg-[#69d8d4]/15 text-[#69d8d4] px-2 py-0.5 rounded-full font-mono uppercase tracking-wider">
+                  <span className="text-[10px] bg-[#69d8d4]/15 text-[#69d8d4] px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider">
                     Khuyên dùng
                   </span>
                 </div>
                 <span className="text-xs text-white/50 mt-0.5">
-                  Mọi người đều có thể tìm kiếm và xem video của bạn trên YuhTube.
+                  Mọi người đều có thể tìm kiếm và xem video của bạn trên YuhTube chuẩn 4K HDR.
                 </span>
               </div>
             </label>
@@ -128,25 +128,25 @@ export function UploadStepTwo({
         </div>
 
         {/* Real File & Publishing Checks */}
-        <div className="bg-[#201f21] border border-white/10 p-5 rounded-2xl flex flex-col gap-3">
+        <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-2xl p-5 sm:p-6 rounded-3xl flex flex-col gap-3 shadow-xl">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-emerald-400 text-[18px]">verified</span>
             <span className="text-xs uppercase font-mono tracking-wider text-white font-semibold">
               Kiểm tra bản quyền &amp; tính tương thích
             </span>
           </div>
-          <div className="bg-[#0e0e10] p-3.5 rounded-xl border border-white/5 space-y-2 text-xs">
+          <div className="bg-white/[0.02] p-4 rounded-2xl border border-white/5 space-y-2.5 text-xs font-mono">
             <div className="flex items-center justify-between text-white/70">
               <span>Bản quyền nội dung:</span>
-              <span className="text-emerald-400 font-medium">Không tìm thấy vấn đề</span>
+              <span className="text-emerald-400 font-semibold">Không tìm thấy vấn đề</span>
             </div>
             <div className="flex items-center justify-between text-white/70">
               <span>Định dạng tệp:</span>
-              <span className="text-white font-mono">{file.type || 'video/mp4'}</span>
+              <span className="text-white">{file.type || 'video/mp4'}</span>
             </div>
             <div className="flex items-center justify-between text-white/70">
               <span>Dung lượng gốc:</span>
-              <span className="text-white font-mono">{formatFileSize(file.size)}</span>
+              <span className="text-white">{formatFileSize(file.size)}</span>
             </div>
           </div>
         </div>
@@ -155,8 +155,8 @@ export function UploadStepTwo({
       {/* Right Column: Player Canvas & Global Distribution (5 Cols) */}
       <div className="lg:col-span-5 flex flex-col gap-6">
         {/* Video Player Canvas */}
-        <div className="bg-[#201f21] border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-xl">
-          <div className="relative w-full aspect-video bg-[#0e0e10] overflow-hidden group">
+        <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-2xl rounded-3xl overflow-hidden flex flex-col shadow-xl">
+          <div className="relative w-full aspect-video bg-black overflow-hidden group">
             {videoPreviewUrl ? (
               <video
                 src={videoPreviewUrl}
@@ -191,7 +191,7 @@ export function UploadStepTwo({
           </div>
 
           {/* Upload Progress Status Card */}
-          <div className="p-4 border-t border-white/10 bg-[#161517] space-y-2">
+          <div className="p-4 border-t border-white/[0.08] bg-white/[0.02] space-y-2.5">
             <div className="flex items-center justify-between text-xs">
               <span className="flex items-center gap-2 text-white font-medium">
                 <span
@@ -212,7 +212,7 @@ export function UploadStepTwo({
             <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-300 ${
-                  result ? 'bg-emerald-500' : 'bg-gradient-to-r from-red-500 to-[#69d8d4]'
+                  result ? 'bg-emerald-500' : 'bg-gradient-to-r from-rose-500 to-[#69d8d4]'
                 }`}
                 style={{ width: `${progress}%` }}
               />
@@ -221,7 +221,7 @@ export function UploadStepTwo({
         </div>
 
         {/* Official Share Link & Quick Actions */}
-        <div className="bg-[#201f21] border border-white/10 p-5 rounded-2xl flex flex-col gap-4 shadow-xl">
+        <div className="bg-white/[0.03] border border-white/[0.08] backdrop-blur-2xl p-5 sm:p-6 rounded-3xl flex flex-col gap-4 shadow-xl">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase font-mono tracking-wider text-white/50 font-semibold">
               Đường liên kết phát hành
@@ -229,41 +229,22 @@ export function UploadStepTwo({
             <span className="text-xs text-[#69d8d4] font-mono">Trực tiếp toàn cầu</span>
           </div>
 
-          <div className="flex items-center gap-2 bg-[#0e0e10] border border-white/10 rounded-xl p-1.5">
+          <div className="flex items-center gap-2 bg-white/[0.02] border border-white/[0.08] rounded-2xl p-1.5">
             <input
               type="text"
               readOnly
               value={videoShareUrl}
-              className="bg-transparent text-xs text-white font-mono flex-1 px-2.5 focus:outline-none"
+              className="bg-transparent text-xs text-white font-mono flex-1 px-3 focus:outline-none"
             />
             <button
               type="button"
               onClick={copyVideoLink}
-              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             >
               <span className="material-symbols-outlined text-[15px]">
                 {isCopied ? 'check' : 'content_copy'}
               </span>
               <span>{isCopied ? 'Đã chép!' : 'Sao chép'}</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2 pt-1">
-            <button
-              type="button"
-              onClick={copyVideoLink}
-              className="flex-1 py-2 px-2 rounded-xl bg-[#1c1b1d] hover:bg-[#2a2a2c] text-white/70 hover:text-white text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-white/5"
-            >
-              <span className="material-symbols-outlined text-[15px]">share</span>
-              <span>Chia sẻ X</span>
-            </button>
-            <button
-              type="button"
-              onClick={copyVideoLink}
-              className="flex-1 py-2 px-2 rounded-xl bg-[#1c1b1d] hover:bg-[#2a2a2c] text-white/70 hover:text-white text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-white/5"
-            >
-              <span className="material-symbols-outlined text-[15px]">code</span>
-              <span>Mã nhúng</span>
             </button>
           </div>
         </div>

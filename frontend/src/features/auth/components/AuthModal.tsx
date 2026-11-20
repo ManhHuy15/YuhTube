@@ -52,19 +52,19 @@ export function AuthModal() {
       onCancel={handleCancel}
       onClick={handleBackdropClick}
       aria-labelledby="auth-modal-title"
-      className="m-auto p-0 rounded-2xl bg-[#1e1e1e] text-[#f1f1f1] border border-white/10 shadow-2xl backdrop:bg-black/75 max-w-md w-full overflow-hidden"
+      className="m-auto p-0 rounded-[32px] bg-[#121217]/95 text-[#f1f1f1] border border-white/15 backdrop-blur-3xl shadow-2xl backdrop:bg-black/80 max-w-md w-full overflow-hidden"
     >
       <div className="p-6 sm:p-8 flex flex-col space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-5 bg-gradient-to-tr from-red-600 to-rose-500 rounded flex items-center justify-center shadow-md">
-              <span className="material-symbols-outlined text-[14px] text-white">play_arrow</span>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-gradient-to-tr from-rose-600 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-rose-600/30">
+              <span className="material-symbols-outlined text-[17px] text-white">play_arrow</span>
             </div>
-            <h2 id="auth-modal-title" className="text-xl font-bold tracking-tight text-white">
-              {modalTab === 'signin' && 'Sign in to YuhTube'}
-              {modalTab === 'signup' && 'Create your account'}
-              {modalTab === 'confirm' && 'Verify your email'}
+            <h2 id="auth-modal-title" className="text-xl font-extrabold tracking-tight text-white">
+              {modalTab === 'signin' && 'Đăng nhập YuhTube'}
+              {modalTab === 'signup' && 'Tạo tài khoản'}
+              {modalTab === 'confirm' && 'Xác minh email'}
             </h2>
           </div>
           <button
@@ -79,20 +79,20 @@ export function AuthModal() {
 
         {/* Tab switcher for Sign In / Sign Up */}
         {modalTab !== 'confirm' && (
-          <div className="flex rounded-lg bg-white/5 p-1 border border-white/10 text-sm font-medium">
+          <div className="flex rounded-full bg-white/[0.04] p-1 border border-white/10 text-xs font-semibold">
             <button
               type="button"
               onClick={() => {
                 clearError()
                 setModalTab('signin')
               }}
-              className={`flex-1 py-1.5 rounded-md transition-all text-center cursor-pointer ${
+              className={`flex-1 py-2 rounded-full transition-all text-center cursor-pointer ${
                 modalTab === 'signin'
-                  ? 'bg-red-600 text-white shadow-sm font-semibold'
+                  ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 font-bold'
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              Sign In
+              Đăng nhập
             </button>
             <button
               type="button"
@@ -100,21 +100,21 @@ export function AuthModal() {
                 clearError()
                 setModalTab('signup')
               }}
-              className={`flex-1 py-1.5 rounded-md transition-all text-center cursor-pointer ${
+              className={`flex-1 py-2 rounded-full transition-all text-center cursor-pointer ${
                 modalTab === 'signup'
-                  ? 'bg-red-600 text-white shadow-sm font-semibold'
+                  ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white shadow-md shadow-rose-600/30 font-bold'
                   : 'text-white/60 hover:text-white'
               }`}
             >
-              Create Account
+              Đăng ký mới
             </button>
           </div>
         )}
 
         {/* Error notification */}
         {error && (
-          <div className="p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-300 text-xs flex items-start gap-2">
-            <span className="material-symbols-outlined text-[18px] text-red-400 shrink-0">error</span>
+          <div className="p-3 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2">
+            <span className="material-symbols-outlined text-[18px] text-rose-400 shrink-0">error</span>
             <span>{error}</span>
           </div>
         )}

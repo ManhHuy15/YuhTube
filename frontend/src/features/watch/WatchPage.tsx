@@ -5,7 +5,7 @@ import { CommentSection } from './components/CommentSection'
 import { RelatedVideos } from './components/RelatedVideos'
 import { useWatchVideo } from './hooks/useWatchVideo'
 import { recordVideoView } from './services/watch.service'
-import { UserNavButton } from '../auth/components/UserNavButton'
+import { FloatingNavbar } from '../home/components/FloatingNavbar'
 
 export function WatchPage() {
   const { videoId = 'v1' } = useParams<{ videoId: string }>()
@@ -27,28 +27,19 @@ export function WatchPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0e0e10] text-white flex flex-col items-center justify-center space-y-3">
-        <div className="w-10 h-10 border-3 border-red-600 border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs text-white/50 font-mono tracking-wider">Đang tải video HLS...</span>
+      <div className="min-h-screen bg-[#0b0b0e] text-white flex flex-col items-center justify-center space-y-3">
+        <div className="w-10 h-10 border-3 border-rose-500 border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs text-white/50 font-mono tracking-wider">Đang tải luồng phát trực tuyến HLS...</span>
       </div>
     )
   }
 
   if (!video) {
     return (
-      <div className="min-h-screen bg-[#0e0e10] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
-        <header className="fixed top-0 left-0 right-0 h-14 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 z-50 flex items-center px-4 sm:px-6">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-6 bg-gradient-to-tr from-red-600 to-rose-500 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30">
-              <span className="material-symbols-outlined text-[16px] text-white">play_arrow</span>
-            </div>
-            <span className="font-bold text-lg tracking-tight text-white">
-              Yuh<span className="text-red-500">Tube</span>
-            </span>
-          </Link>
-        </header>
+      <div className="min-h-screen bg-[#0b0b0e] text-[#f1f1f1] flex flex-col selection:bg-rose-600/30">
+        <FloatingNavbar />
 
-        <main className="flex-1 flex flex-col items-center justify-center px-4 text-center pt-14">
+        <main className="flex-1 flex flex-col items-center justify-center px-4 text-center pt-28">
           <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-white/30">
             <span className="material-symbols-outlined text-4xl">video_library</span>
           </div>
@@ -58,7 +49,7 @@ export function WatchPage() {
           </p>
           <Link
             to="/"
-            className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-semibold text-xs rounded-xl transition-all inline-flex items-center gap-2 shadow-lg shadow-red-600/20 active:scale-95"
+            className="px-6 py-2.5 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs rounded-full transition-all inline-flex items-center gap-2 shadow-lg shadow-rose-600/30 active:scale-95"
           >
             <span className="material-symbols-outlined text-[18px]">home</span>
             <span>Về trang chủ</span>
@@ -69,68 +60,44 @@ export function WatchPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0e0e10] text-[#f1f1f1] flex flex-col selection:bg-red-600/30">
-      {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 h-14 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 z-50 flex items-center justify-between px-4 sm:px-6">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-6 bg-gradient-to-tr from-red-600 to-rose-500 rounded-lg flex items-center justify-center shadow-lg shadow-red-600/30">
-              <span className="material-symbols-outlined text-[16px] text-white">play_arrow</span>
-            </div>
-            <span className="font-bold text-lg tracking-tight text-white">
-              Yuh<span className="text-red-500">Tube</span>
-            </span>
-          </Link>
-        </div>
-
-        <div className="flex-1 max-w-xl mx-6 hidden sm:block">
-          <div className="relative flex items-center">
-            <input
-              type="text"
-              placeholder="Tìm kiếm video..."
-              className="w-full bg-[#181818] border border-white/15 focus:border-red-500 rounded-full py-1.5 pl-10 pr-4 text-sm text-white placeholder-white/40 focus:outline-none transition-all"
-            />
-            <span className="material-symbols-outlined absolute left-3.5 text-[18px] text-white/40">
-              search
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Link
-            to="/studio"
-            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white transition-all cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-[18px] text-red-500">video_call</span>
-            <span>Studio</span>
-          </Link>
-          <UserNavButton />
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#0b0b0e] text-[#f1f1f1] flex flex-col selection:bg-rose-600/30">
+      {/* Floating Island Navigation */}
+      <FloatingNavbar />
 
       {/* Main Watch Page Container */}
-      <main className="pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-[1760px] mx-auto w-full">
+      <main className="pt-24 sm:pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-[1760px] mx-auto w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Player & Video Info */}
           <section className="lg:col-span-8 flex flex-col space-y-4">
-            <VideoPlayer
-              title={video.title}
-              posterUrl={video.posterUrl}
-              playbackUrl={video.playbackUrl}
-              onViewQualified={() => recordVideoView(video.id)}
-            />
+            {/* Video Player with Cinema Ambilight Glow */}
+            <div className="relative group">
+              {video.posterUrl && (
+                <div
+                  className="absolute -inset-4 sm:-inset-6 bg-cover bg-center rounded-[36px] blur-3xl opacity-30 pointer-events-none -z-10 transition-opacity duration-700"
+                  style={{ backgroundImage: `url(${video.posterUrl})` }}
+                />
+              )}
+              <div className="rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.8)] border border-white/[0.12]">
+                <VideoPlayer
+                  title={video.title}
+                  posterUrl={video.posterUrl}
+                  playbackUrl={video.playbackUrl}
+                  onViewQualified={() => recordVideoView(video.id)}
+                />
+              </div>
+            </div>
 
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white leading-snug">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white leading-snug">
               {video.title}
             </h1>
 
             {/* Channel Bar & Action Buttons */}
-            <div className="flex flex-wrap items-center justify-between gap-4 py-2 border-b border-white/10">
+            <div className="flex flex-wrap items-center justify-between gap-4 py-2 border-b border-white/[0.08]">
               <div className="flex items-center gap-3">
                 <img
                   src={video.uploader.avatar}
                   alt={video.uploader.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-red-500/40"
+                  className="w-10 h-10 rounded-full object-cover ring-2 ring-rose-500/40 shadow-md"
                 />
                 <div>
                   <div className="flex items-center gap-1">
@@ -147,7 +114,7 @@ export function WatchPage() {
                   className={`ml-3 px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all cursor-pointer ${
                     isSubscribed
                       ? 'bg-white/10 text-white/80 hover:bg-white/20'
-                      : 'bg-white text-black hover:bg-white/90 shadow-md shadow-white/10'
+                      : 'bg-white text-zinc-950 hover:bg-zinc-200 shadow-md shadow-white/10'
                   }`}
                 >
                   {isSubscribed ? 'Đã đăng ký' : 'Đăng ký'}
@@ -156,13 +123,13 @@ export function WatchPage() {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
-                <div className="flex items-center bg-white/10 rounded-full overflow-hidden">
+                <div className="flex items-center bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.09] backdrop-blur-xl rounded-full overflow-hidden shadow-sm transition-all">
                   <button
                     onClick={toggleLike}
                     disabled={isLiking}
                     aria-label={hasLiked ? 'Bỏ thích video' : 'Thích video'}
-                    className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium hover:bg-white/10 transition-colors cursor-pointer ${
-                      hasLiked ? 'text-red-400 font-bold' : 'text-white'
+                    className={`flex items-center gap-1.5 px-4 py-2 text-xs font-semibold hover:bg-white/10 transition-all cursor-pointer active:scale-95 ${
+                      hasLiked ? 'text-rose-400 font-bold' : 'text-white/90'
                     }`}
                   >
                     <span
@@ -173,42 +140,42 @@ export function WatchPage() {
                     </span>
                     <span>{likesCount.toLocaleString()}</span>
                   </button>
-                  <div className="w-[1px] h-5 bg-white/20"></div>
+                  <div className="w-[1px] h-4 bg-white/15" />
                   <button
                     aria-label="Không thích video"
-                    className="px-3 py-2 text-xs font-medium hover:bg-white/10 transition-colors text-white cursor-pointer"
+                    className="px-3 py-2 text-xs font-medium hover:bg-white/10 transition-colors text-white/70 hover:text-white cursor-pointer active:scale-95"
                   >
                     <span className="material-symbols-outlined text-[18px]">thumb_down</span>
                   </button>
                 </div>
 
-                <button className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3.5 py-2 rounded-full text-xs font-medium text-white transition-colors cursor-pointer">
-                  <span className="material-symbols-outlined text-[18px]">share</span>
+                <button className="flex items-center gap-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] backdrop-blur-xl px-4 py-2 rounded-full text-xs font-semibold text-white/90 hover:text-white transition-all cursor-pointer active:scale-95 shadow-sm">
+                  <span className="material-symbols-outlined text-[18px] text-white/70">share</span>
                   <span className="hidden sm:inline">Chia sẻ</span>
                 </button>
 
-                <button className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors cursor-pointer">
+                <button className="p-2 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.09] backdrop-blur-xl rounded-full text-white/80 hover:text-white transition-all cursor-pointer active:scale-95 shadow-sm">
                   <span className="material-symbols-outlined text-[18px]">download</span>
                 </button>
               </div>
             </div>
 
-            {/* Description Card */}
+            {/* Description Card (Frosted Glass luxury) */}
             <div
               onClick={() => setIsDescExpanded(!isDescExpanded)}
-              className="p-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.06] transition-colors cursor-pointer text-xs space-y-2 border border-white/5"
+              className="p-5 rounded-3xl bg-white/[0.03] hover:bg-white/[0.05] transition-all duration-300 cursor-pointer text-xs space-y-2.5 border border-white/[0.08] backdrop-blur-xl shadow-lg"
             >
-              <div className="flex items-center gap-3 font-semibold text-white/90">
+              <div className="flex items-center gap-3 font-semibold text-white/90 font-mono text-[11px]">
                 <span>{video.views}</span>
-                <span>•</span>
+                <span className="text-white/30">•</span>
                 <span>{video.publishedAt}</span>
-                <span className="text-red-400">#Serverless #AWS #HLS #Streaming</span>
+                <span className="text-rose-400 font-sans">#HLS #Serverless #AppleTVStyle</span>
               </div>
-              <p className={`text-white/80 leading-relaxed ${isDescExpanded ? '' : 'line-clamp-2'}`}>
-                {video.description}
+              <p className={`text-white/80 leading-relaxed font-sans ${isDescExpanded ? '' : 'line-clamp-2'}`}>
+                {video.description || 'Chưa có phần mô tả chi tiết cho video này.'}
               </p>
-              <button className="font-semibold text-white/50 hover:text-white cursor-pointer">
-                {isDescExpanded ? 'Thu gọn' : '...thêm'}
+              <button className="font-semibold text-white/50 hover:text-white cursor-pointer pt-0.5">
+                {isDescExpanded ? 'Thu gọn' : '...xem thêm'}
               </button>
             </div>
 

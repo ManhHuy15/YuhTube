@@ -44,14 +44,14 @@ export function UploadStepOne({
       {/* Left Column: Form Details (7 Cols) */}
       <div className="lg:col-span-7 flex flex-col gap-6">
         {/* Section 1: Video Title */}
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-white/60 font-mono uppercase tracking-wider">
-            <label htmlFor="video-title" className="flex items-center gap-1">
-              Tiêu đề video <span className="text-red-500 font-bold">*</span>
+            <label htmlFor="video-title" className="flex items-center gap-1 font-semibold text-white/80">
+              Tiêu đề video <span className="text-rose-500 font-bold">*</span>
             </label>
             <span>{title.length}/100</span>
           </div>
-          <div className="relative bg-[#0e0e10] border border-white/10 focus-within:border-red-500 rounded-xl p-3 transition-colors">
+          <div className="relative bg-white/[0.03] border border-white/[0.1] focus-within:border-rose-500/50 focus-within:ring-2 focus-within:ring-rose-500/10 rounded-2xl p-3.5 transition-all shadow-inner">
             <input
               id="video-title"
               type="text"
@@ -59,52 +59,52 @@ export function UploadStepOne({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Thêm tiêu đề mô tả ngắn gọn nội dung của bạn"
-              className="w-full bg-transparent text-[15px] font-medium text-white focus:outline-none placeholder-white/30"
+              className="w-full bg-transparent text-sm sm:text-base font-semibold text-white focus:outline-none placeholder-white/30 tracking-tight"
             />
           </div>
         </div>
 
         {/* Section 2: Technical Description */}
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex items-center justify-between text-xs text-white/60 font-mono uppercase tracking-wider">
-            <label htmlFor="video-desc">Mô tả tóm tắt</label>
+            <label htmlFor="video-desc" className="font-semibold text-white/80">Mô tả tóm tắt</label>
             <span className="text-[11px] text-white/40 font-mono">
               Hỗ trợ Markdown &amp; Timestamps
             </span>
           </div>
-          <div className="bg-[#0e0e10] border border-white/10 focus-within:border-red-500 rounded-xl flex flex-col overflow-hidden transition-colors">
+          <div className="bg-white/[0.03] border border-white/[0.1] focus-within:border-rose-500/50 focus-within:ring-2 focus-within:ring-rose-500/10 rounded-2xl flex flex-col overflow-hidden transition-all shadow-inner">
             {/* Micro Markdown Toolbar */}
-            <div className="flex items-center gap-1 px-3 py-1.5 bg-[#201f21] border-b border-white/10 text-white/60">
+            <div className="flex items-center gap-1 px-3.5 py-2 bg-white/[0.02] border-b border-white/[0.06] text-white/60">
               <button
                 type="button"
-                className="p-1 rounded hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1 rounded-lg hover:text-white hover:bg-white/10 transition-colors"
                 title="In đậm"
               >
                 <span className="material-symbols-outlined text-[16px]">format_bold</span>
               </button>
               <button
                 type="button"
-                className="p-1 rounded hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1 rounded-lg hover:text-white hover:bg-white/10 transition-colors"
                 title="In nghiêng"
               >
                 <span className="material-symbols-outlined text-[16px]">format_italic</span>
               </button>
               <button
                 type="button"
-                className="p-1 rounded hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1 rounded-lg hover:text-white hover:bg-white/10 transition-colors"
                 title="Chèn liên kết"
               >
                 <span className="material-symbols-outlined text-[16px]">link</span>
               </button>
               <button
                 type="button"
-                className="p-1 rounded hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1 rounded-lg hover:text-white hover:bg-white/10 transition-colors"
                 title="Mã khối"
               >
                 <span className="material-symbols-outlined text-[16px]">code</span>
               </button>
-              <div className="w-px h-3 bg-white/20 mx-1.5"></div>
-              <span className="text-[11px] text-red-400 font-mono">
+              <div className="w-px h-3 bg-white/20 mx-1.5" />
+              <span className="text-[11px] text-rose-400 font-mono">
                 #Serverless #AWS #HLS #MediaConvert
               </span>
             </div>
@@ -114,7 +114,7 @@ export function UploadStepOne({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Mô tả nội dung chi tiết, các mốc thời gian (00:00 Giới thiệu, 05:20 Kiến trúc...)"
-              className="w-full bg-transparent p-3 text-sm text-white focus:outline-none resize-none placeholder-white/30 leading-relaxed font-sans"
+              className="w-full bg-transparent p-3.5 text-xs sm:text-sm text-white focus:outline-none resize-none placeholder-white/30 leading-relaxed font-sans"
             />
           </div>
         </div>
@@ -123,7 +123,7 @@ export function UploadStepOne({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xs text-white/60 font-mono uppercase tracking-wider font-semibold">
+              <span className="text-xs text-white/70 font-mono uppercase tracking-wider font-semibold">
                 Ảnh bìa (Thumbnail)
               </span>
               <p className="text-xs text-white/40 mt-0.5">
@@ -144,30 +144,30 @@ export function UploadStepOne({
             />
             <div
               onClick={() => thumbInputRef.current?.click()}
-              className={`w-full max-w-[240px] aspect-video rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all border ${
+              className={`w-full max-w-[260px] aspect-video rounded-2xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all border ${
                 customThumbnail
-                  ? 'ring-2 ring-red-500 bg-[#201f21] border-transparent'
-                  : 'bg-[#201f21] hover:bg-[#2a2a2c] border-dashed border-white/20'
+                  ? 'ring-2 ring-rose-500 bg-white/[0.04] border-transparent shadow-lg'
+                  : 'bg-white/[0.02] hover:bg-white/[0.05] border-dashed border-white/20 hover:border-white/40'
               }`}
             >
               {customThumbnail ? (
-                <div className="relative w-full h-full rounded-lg overflow-hidden group">
+                <div className="relative w-full h-full rounded-xl overflow-hidden group">
                   <img
                     src={customThumbnail}
                     alt="Custom Thumbnail"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs gap-1">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-xs gap-1 backdrop-blur-sm">
                     <span className="material-symbols-outlined text-[20px]">edit</span>
                     <span>Đổi ảnh bìa</span>
                   </div>
-                  <div className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-red-600 text-white flex items-center justify-center shadow">
-                    <span className="material-symbols-outlined text-[11px]">check</span>
+                  <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-md">
+                    <span className="material-symbols-outlined text-[13px]">check</span>
                   </div>
                 </div>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[24px] text-white/60">
+                  <span className="material-symbols-outlined text-[26px] text-white/60">
                     add_photo_alternate
                   </span>
                   <span className="text-xs text-white font-medium mt-1">Tải ảnh lên</span>
@@ -181,9 +181,9 @@ export function UploadStepOne({
 
       {/* Right Column: Live Video Preview & Real AWS Multipart Upload Specs (5 Cols) */}
       <div className="lg:col-span-5 flex flex-col gap-5">
-        <div className="bg-[#201f21] border border-white/10 rounded-2xl p-5 flex flex-col gap-4 shadow-xl">
+        <div className="bg-white/[0.02] border border-white/[0.08] backdrop-blur-2xl rounded-3xl p-5 sm:p-6 flex flex-col gap-4 shadow-xl">
           {/* Video Player / Preview Canvas */}
-          <div className="w-full aspect-video rounded-xl overflow-hidden relative bg-[#0e0e10] group border border-white/10">
+          <div className="w-full aspect-video rounded-2xl overflow-hidden relative bg-black group border border-white/10 shadow-lg">
             {videoPreviewUrl ? (
               <video
                 src={videoPreviewUrl}
@@ -203,18 +203,18 @@ export function UploadStepOne({
                 <span>Chờ tải video</span>
               </div>
             )}
-            <div className="absolute top-2 left-2 flex items-center gap-1.5 pointer-events-none">
-              <span className="px-2 py-0.5 rounded bg-black/80 font-mono text-[10px] text-[#69d8d4] font-bold border border-[#69d8d4]/30">
+            <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 pointer-events-none">
+              <span className="px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md font-mono text-[10px] text-[#69d8d4] font-bold border border-[#69d8d4]/30">
                 4K HDR
               </span>
-              <span className="px-2 py-0.5 rounded bg-black/80 font-mono text-[10px] text-white/90">
+              <span className="px-2 py-0.5 rounded-full bg-black/80 backdrop-blur-md font-mono text-[10px] text-white/90 border border-white/10">
                 60 FPS
               </span>
             </div>
           </div>
 
           {/* Video Destination Link Box */}
-          <div className="bg-[#0e0e10] border border-white/10 rounded-xl p-3 flex flex-col gap-1">
+          <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-3.5 flex flex-col gap-1">
             <span className="text-[10px] uppercase font-mono tracking-wider text-white/50">
               Đường liên kết của video
             </span>
@@ -225,7 +225,7 @@ export function UploadStepOne({
               <button
                 type="button"
                 onClick={copyVideoLink}
-                className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-colors cursor-pointer flex-shrink-0"
                 title="Sao chép liên kết"
               >
                 <span className="material-symbols-outlined text-[16px]">
@@ -236,25 +236,25 @@ export function UploadStepOne({
           </div>
 
           {/* Real File Metadata Specs */}
-          <div className="space-y-1.5 text-xs font-mono">
-            <div className="flex items-center justify-between">
+          <div className="space-y-2 text-xs font-mono">
+            <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
               <span className="text-white/50">Tên tệp:</span>
               <span className="text-white truncate max-w-[220px]" title={file.name}>
                 {file.name}
               </span>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between py-1 border-b border-white/[0.04]">
               <span className="text-white/50">Kích thước file:</span>
               <span className="text-white">{formatFileSize(file.size)}</span>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between py-1">
               <span className="text-white/50">Định dạng (MIME):</span>
               <span className="text-white">{file.type || 'video/mp4'}</span>
             </div>
           </div>
 
           {/* Upload & Processing Status Bar */}
-          <div className="bg-[#0e0e10] border border-white/10 rounded-xl p-3.5 space-y-2.5">
+          <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-4 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span
@@ -265,7 +265,7 @@ export function UploadStepOne({
                       ? 'bg-emerald-400'
                       : 'bg-white/40'
                   }`}
-                ></span>
+                />
                 <span className="text-white font-medium">
                   {isUploading
                     ? `Đang tải video lên... ${progress}%`
@@ -281,21 +281,21 @@ export function UploadStepOne({
                     Sẵn sàng xử lý
                   </span>
                 ) : isUploading ? (
-                  <span className="text-amber-400">Đang truyền tải</span>
+                  <span className="text-amber-400 font-mono">Đang truyền tải</span>
                 ) : (
-                  <span className="text-white/40">Đang chờ</span>
+                  <span className="text-white/40 font-mono">Đang chờ</span>
                 )}
               </span>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-300 ${
-                  result ? 'bg-emerald-500' : 'bg-gradient-to-r from-red-500 to-amber-400'
+                  result ? 'bg-emerald-500' : 'bg-gradient-to-r from-rose-500 to-amber-400'
                 }`}
                 style={{ width: `${progress}%` }}
-              ></div>
+              />
             </div>
 
             <p className="text-[11px] text-white/50 leading-relaxed">

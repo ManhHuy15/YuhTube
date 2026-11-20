@@ -20,7 +20,7 @@ export function UserNavButton() {
 
   if (isLoading) {
     return (
-      <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse"></div>
+      <div className="w-9 h-9 rounded-full bg-white/10 animate-pulse" />
     )
   }
 
@@ -29,10 +29,10 @@ export function UserNavButton() {
       <button
         type="button"
         onClick={() => openModal('signin')}
-        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/20 hover:bg-white/10 text-white font-semibold text-xs tracking-wide transition-all cursor-pointer shadow-sm active:scale-95"
+        className="flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/20 hover:border-white/40 bg-white/[0.04] hover:bg-white/[0.08] text-white font-bold text-xs tracking-wide transition-all cursor-pointer shadow-sm active:scale-95"
       >
-        <span className="material-symbols-outlined text-[18px] text-red-500">account_circle</span>
-        <span>Sign in</span>
+        <span className="material-symbols-outlined text-[17px] text-rose-400">account_circle</span>
+        <span>Đăng nhập</span>
       </button>
     )
   }
@@ -44,7 +44,7 @@ export function UserNavButton() {
       <button
         type="button"
         onClick={() => setIsDropdownOpen((prev) => !prev)}
-        className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-bold text-sm shadow-md ring-2 ring-white/10 hover:ring-red-500/50 transition-all cursor-pointer bg-gradient-to-tr from-red-600 to-rose-500"
+        className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-white/15 hover:ring-rose-500/50 transition-all cursor-pointer bg-gradient-to-tr from-rose-600 to-red-500 active:scale-95"
         title={user.name || user.email}
       >
         {user.avatar ? (
@@ -55,10 +55,10 @@ export function UserNavButton() {
       </button>
 
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-64 rounded-xl bg-[#212121] border border-white/10 shadow-2xl py-2 z-50 text-white select-none">
+        <div className="absolute right-0 mt-3 w-64 rounded-2xl bg-[#121217]/95 backdrop-blur-3xl border border-white/15 shadow-2xl py-2 z-50 text-white select-none animate-in fade-in zoom-in-95 duration-150">
           {/* User Info Header */}
-          <div className="px-4 py-3 border-b border-white/10 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold text-base shadow-sm bg-gradient-to-tr from-red-600 to-rose-500 flex-shrink-0">
+          <div className="px-4 py-3 border-b border-white/[0.08] flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center text-white font-bold text-base shadow-md bg-gradient-to-tr from-rose-600 to-red-500 flex-shrink-0 ring-1 ring-white/20">
               {user.avatar ? (
                 <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
               ) : (
@@ -66,19 +66,19 @@ export function UserNavButton() {
               )}
             </div>
             <div className="overflow-hidden">
-              <p className="font-semibold text-sm truncate">{user.name}</p>
-              <p className="text-xs text-white/50 truncate">{user.email}</p>
+              <p className="font-bold text-xs sm:text-sm truncate text-white">{user.name}</p>
+              <p className="text-[11px] text-white/50 truncate font-mono">{user.email}</p>
             </div>
           </div>
 
           {/* Menu links */}
-          <div className="py-1">
+          <div className="py-1.5 px-1.5 space-y-0.5">
             <Link
               to="/studio"
               onClick={() => setIsDropdownOpen(false)}
-              className="flex items-center gap-3 px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+              className="flex items-center gap-3 px-3.5 py-2 text-xs font-semibold rounded-xl text-white/80 hover:text-white hover:bg-white/[0.08] transition-colors"
             >
-              <span className="material-symbols-outlined text-[20px]">smart_display</span>
+              <span className="material-symbols-outlined text-[19px] text-rose-400">smart_display</span>
               <span>YuhTube Studio</span>
             </Link>
             <button
@@ -87,25 +87,25 @@ export function UserNavButton() {
                 setIsDropdownOpen(false)
                 openAvatarModal()
               }}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors cursor-pointer text-left"
+              className="w-full flex items-center gap-3 px-3.5 py-2 text-xs font-semibold rounded-xl text-white/80 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer text-left"
             >
-              <span className="material-symbols-outlined text-[20px]">manage_accounts</span>
+              <span className="material-symbols-outlined text-[19px] text-cyan-400">manage_accounts</span>
               <span>Tùy chỉnh kênh</span>
             </button>
           </div>
 
           {/* Logout button */}
-          <div className="pt-1 border-t border-white/10">
+          <div className="pt-1.5 px-1.5 border-t border-white/[0.08]">
             <button
               type="button"
               onClick={async () => {
                 setIsDropdownOpen(false)
                 await logout()
               }}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-white/10 transition-colors cursor-pointer text-left"
+              className="w-full flex items-center gap-3 px-3.5 py-2 text-xs font-semibold rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer text-left"
             >
-              <span className="material-symbols-outlined text-[20px]">logout</span>
-              <span>Sign out</span>
+              <span className="material-symbols-outlined text-[19px]">logout</span>
+              <span>Đăng xuất</span>
             </button>
           </div>
         </div>

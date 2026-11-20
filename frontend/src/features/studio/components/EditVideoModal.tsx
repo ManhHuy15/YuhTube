@@ -71,38 +71,32 @@ export function EditVideoModal({
     setErrorMessage(null)
 
     try {
-      let finalThumbnailUrl = thumbnailUrl
-
-      // If user selected a new thumbnail file, upload it first to S3
+      let finalThumbUrl = thumbnailUrl
       if (thumbnailFile) {
-        try {
-          finalThumbnailUrl = await uploadThumbnail(video.id, thumbnailFile)
-        } catch {
-          setErrorMessage('Không thể tải thumbnail mới lên S3. Vui lòng thử lại.')
-          setIsSaving(false)
-          return
+        const uploadedThumb = await uploadThumbnail(video.id, thumbnailFile)
+        if (uploadedThumb) {
+          finalThumbUrl = uploadedThumb
         }
       }
 
-      const isPrivate = visibility === 'Riêng tư'
       const ok = await updateStudioVideo(video.id, {
         title: trimmedTitle,
-        description,
-        thumbnailUrl: finalThumbnailUrl,
-        isPrivate,
+        description: description.trim(),
+        isPrivate: visibility === 'Riêng tư',
+        thumbnailUrl: finalThumbUrl,
       })
 
       if (ok) {
         onSuccess({
           ...video,
           title: trimmedTitle,
-          subtitle: description,
-          thumbnailUrl: finalThumbnailUrl,
+          subtitle: description.trim(),
           visibility,
+          thumbnailUrl: finalThumbUrl,
         })
         onClose()
       } else {
-        setErrorMessage('Không thể cập nhật video. Vui lòng kiểm tra quyền sở hữu.')
+        setErrorMessage('Không thể cập nhật thông tin video. Vui lòng thử lại sau.')
       }
     } catch (err: any) {
       setErrorMessage(err.message || 'Đã xảy ra lỗi khi lưu thông tin video.')
@@ -118,13 +112,13 @@ export function EditVideoModal({
         e.preventDefault()
         if (!isSaving) onClose()
       }}
-      className="backdrop:bg-black/80 backdrop:backdrop-blur-sm bg-transparent p-0 m-auto rounded-2xl shadow-2xl open:animate-in open:fade-in open:zoom-in-95 duration-200 z-50 max-w-xl w-full"
+      className="backdrop:bg-black/80 backdrop:backdrop-blur-md bg-transparent p-0 m-auto rounded-[32px] shadow-2xl open:animate-in open:fade-in open:zoom-in-95 duration-200 z-50 max-w-xl w-full"
     >
-      <div className="bg-[#1f1f23] border border-white/10 rounded-2xl p-6 text-white shadow-2xl">
-        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-5">
+      <div className="bg-[#121217]/95 border border-white/15 backdrop-blur-3xl rounded-[32px] p-6 sm:p-8 text-white shadow-2xl space-y-5">
+        <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-              <span className="material-symbols-outlined text-[20px]">edit_note</span>
+            <div className="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+              <span className="material-symbols-outlined text-[22px]">edit_note</span>
             </div>
             <div>
               <h3 className="text-base font-bold text-white tracking-tight">
@@ -144,7 +138,7 @@ export function EditVideoModal({
         </div>
 
         {errorMessage && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-xs text-red-200">
+          <div className="p-3.5 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-xs text-rose-200">
             {errorMessage}
           </div>
         )}
@@ -153,7 +147,7 @@ export function EditVideoModal({
           {/* Title */}
           <div>
             <label className="block text-xs font-semibold text-white/70 mb-1.5">
-              Tiêu đề video <span className="text-red-500">*</span>
+              Tiêu đề video <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
@@ -162,7 +156,7 @@ export function EditVideoModal({
               disabled={isSaving}
               maxLength={150}
               placeholder="Nhập tiêu đề video..."
-              className="w-full bg-[#121214] border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-red-500 transition-colors"
+              className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-white/30 focus:outline-none focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/10 transition-all"
             />
           </div>
 
@@ -177,7 +171,7 @@ export function EditVideoModal({
               disabled={isSaving}
               rows={3}
               placeholder="Thêm mô tả cho video của bạn..."
-              className="w-full bg-[#121214] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-red-500 transition-colors resize-none"
+              className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-white/30 focus:outline-none focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/10 transition-all resize-none"
             />
           </div>
 
@@ -191,7 +185,7 @@ export function EditVideoModal({
                 type="button"
                 onClick={() => setVisibility('Công khai')}
                 disabled={isSaving}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                   visibility === 'Công khai'
                     ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400'
                     : 'border-white/10 bg-white/[0.02] text-white/60 hover:border-white/20'
@@ -208,7 +202,7 @@ export function EditVideoModal({
                 type="button"
                 onClick={() => setVisibility('Riêng tư')}
                 disabled={isSaving}
-                className={`flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                className={`flex items-center gap-3 p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                   visibility === 'Riêng tư'
                     ? 'border-amber-500/50 bg-amber-500/10 text-amber-400'
                     : 'border-white/10 bg-white/[0.02] text-white/60 hover:border-white/20'
@@ -229,14 +223,14 @@ export function EditVideoModal({
               Hình thu nhỏ (Thumbnail)
             </label>
             <div className="flex items-center gap-4">
-              <div className="w-28 aspect-video rounded-lg overflow-hidden bg-black border border-white/10 flex-shrink-0 relative">
+              <div className="w-28 aspect-video rounded-xl overflow-hidden bg-black border border-white/10 flex-shrink-0 relative shadow-sm">
                 <img
                   src={previewThumbUrl || thumbnailUrl}
                   alt="Thumbnail Preview"
                   className="w-full h-full object-cover"
                 />
                 {previewThumbUrl && (
-                  <span className="absolute top-1 left-1 bg-blue-600 text-white text-[9px] px-1 rounded font-bold">
+                  <span className="absolute top-1 left-1 bg-rose-600 text-white text-[9px] px-1.5 py-0.2 rounded-full font-bold">
                     MỚI
                   </span>
                 )}
@@ -253,12 +247,12 @@ export function EditVideoModal({
                   type="button"
                   onClick={() => thumbnailInputRef.current?.click()}
                   disabled={isSaving}
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-white/20 hover:bg-white/10 text-xs font-semibold text-white transition-all cursor-pointer shadow-sm"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 hover:bg-white/10 text-xs font-semibold text-white transition-all cursor-pointer shadow-sm active:scale-95"
                 >
                   <span className="material-symbols-outlined text-[16px]">upload_file</span>
                   <span>Thay đổi ảnh thumbnail...</span>
                 </button>
-                <p className="text-[10px] text-white/40 mt-1">
+                <p className="text-[10px] text-white/40 mt-1 font-mono">
                   Định dạng PNG, JPG hoặc WebP (Tối đa 5MB)
                 </p>
               </div>
@@ -266,12 +260,12 @@ export function EditVideoModal({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-5 mt-5 border-t border-white/[0.08]">
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/[0.08]">
           <button
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50 cursor-pointer"
+            className="px-5 py-2 rounded-full text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50 cursor-pointer"
           >
             Hủy bỏ
           </button>
@@ -279,11 +273,11 @@ export function EditVideoModal({
             type="button"
             onClick={handleSave}
             disabled={isSaving || !title.trim()}
-            className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 transition-all shadow-lg shadow-rose-600/30 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer active:scale-95"
           >
             {isSaving ? (
               <>
-                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 <span>Đang lưu...</span>
               </>
             ) : (

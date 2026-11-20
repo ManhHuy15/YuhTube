@@ -19,22 +19,22 @@ export function RecentVideosTable({
   const [deletingVideo, setDeletingVideo] = useState<StudioVideoRow | null>(null)
 
   return (
-    <div className="rounded-2xl bg-[#1c1b1d] border border-white/10 overflow-hidden shadow-xl transition-all">
-      <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10">
+    <div className="rounded-3xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-2xl overflow-hidden shadow-xl transition-all">
+      <div className="p-5 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08]">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-red-500" />
-            <h3 className="text-base font-bold text-white tracking-tight">
-              Video của kênh
+            <span className="w-2 h-2 rounded-full bg-rose-500 shadow-sm shadow-rose-500/50" />
+            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              Quản lý video của kênh
             </h3>
           </div>
           <p className="text-xs text-white/50 mt-1">
-            Danh sách toàn bộ nội dung video thật từ cơ sở dữ liệu AWS DynamoDB
+            Danh sách toàn bộ nội dung video trực tiếp từ AWS DynamoDB &amp; S3
           </p>
         </div>
         <Link
           to="/upload"
-          className="px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider text-[#69d8d4] hover:bg-[#69d8d4]/10 border border-[#69d8d4]/20 hover:border-[#69d8d4]/40 transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+          className="px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-rose-300 hover:text-white bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 hover:border-rose-500/40 transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer active:scale-95"
         >
           <span className="material-symbols-outlined text-[16px]">upload_file</span>
           <span>TẢI THÊM VIDEO</span>
@@ -44,33 +44,33 @@ export function RecentVideosTable({
       <div className="w-full overflow-x-auto">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="bg-white/[0.03] text-white/50 border-b border-white/10 uppercase tracking-wider font-semibold text-[11px]">
-              <th className="py-3.5 px-5 font-semibold">Video</th>
-              <th className="py-3.5 px-5 font-semibold">Chế độ hiển thị</th>
-              <th className="py-3.5 px-5 font-semibold">Ngày tạo</th>
-              <th className="py-3.5 px-5 font-semibold text-right">Lượt xem</th>
-              <th className="py-3.5 px-5 font-semibold text-right">Bình luận</th>
-              <th className="py-3.5 px-5 font-semibold text-center">Hành động</th>
+            <tr className="bg-white/[0.02] text-white/50 border-b border-white/[0.08] uppercase tracking-wider font-semibold text-[11px]">
+              <th className="py-4 px-6 font-semibold">Video</th>
+              <th className="py-4 px-6 font-semibold">Chế độ hiển thị</th>
+              <th className="py-4 px-6 font-semibold">Ngày tạo</th>
+              <th className="py-4 px-6 font-semibold text-right">Lượt xem</th>
+              <th className="py-4 px-6 font-semibold text-right">Bình luận</th>
+              <th className="py-4 px-6 font-semibold text-center">Hành động</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.05] text-[#f1f1f1]">
             {videos.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-12 px-5 text-center text-white/40">
-                  <div className="flex flex-col items-center justify-center space-y-2">
-                    <span className="material-symbols-outlined text-[32px] text-white/20">video_library</span>
-                    <p className="text-sm font-medium text-white/70">Chưa có video nào trong danh sách</p>
-                    <p className="text-xs text-white/40">Tải lên video đầu tiên để bắt đầu xây dựng kênh của bạn</p>
+                <td colSpan={6} className="py-14 px-6 text-center text-white/40">
+                  <div className="flex flex-col items-center justify-center space-y-2.5">
+                    <span className="material-symbols-outlined text-[36px] text-white/20">video_library</span>
+                    <p className="text-sm font-bold text-white/70">Chưa có video nào trong danh sách</p>
+                    <p className="text-xs text-white/40">Tải lên video đầu tiên để bắt đầu xây dựng thư viện nội dung của bạn</p>
                   </div>
                 </td>
               </tr>
             ) : (
               videos.map((video) => (
-                <tr key={video.id} className="hover:bg-white/[0.04] transition-colors group">
-                  <td className="py-3.5 px-5 flex items-center gap-3.5 min-w-[280px]">
+                <tr key={video.id} className="hover:bg-white/[0.03] transition-colors group">
+                  <td className="py-4 px-6 flex items-center gap-4 min-w-[280px]">
                     <Link
                       to={`/watch/${video.id}`}
-                      className="w-24 aspect-video rounded-lg overflow-hidden bg-black flex-shrink-0 relative border border-white/10 group-hover:scale-105 transition-transform"
+                      className="w-24 aspect-video rounded-xl overflow-hidden bg-black flex-shrink-0 relative border border-white/10 group-hover:scale-105 transition-transform shadow-md"
                     >
                       {video.thumbnailUrl ? (
                         <img
@@ -79,12 +79,12 @@ export function RecentVideosTable({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-[#131315] text-white/20">
+                        <div className="w-full h-full flex items-center justify-center bg-[#141418] text-white/20">
                           <span className="material-symbols-outlined text-[20px]">movie</span>
                         </div>
                       )}
                       {video.duration && (
-                        <span className="absolute bottom-1 right-1 bg-black/85 text-white/90 text-[10px] px-1 font-mono rounded font-semibold">
+                        <span className="absolute bottom-1 right-1 bg-black/85 backdrop-blur-md text-white/90 text-[10px] px-1.5 py-0.5 font-mono rounded font-semibold border border-white/10">
                           {video.duration}
                         </span>
                       )}
@@ -92,18 +92,18 @@ export function RecentVideosTable({
                     <div className="min-w-0 flex-1">
                       <Link
                         to={`/watch/${video.id}`}
-                        className="font-semibold text-white group-hover:text-red-400 line-clamp-1 text-[13px] transition-colors"
+                        className="font-bold text-white group-hover:text-rose-400 line-clamp-1 text-[13px] transition-colors"
                       >
                         {video.title}
                       </Link>
                       <p className="text-[11px] text-white/40 mt-0.5 line-clamp-1 font-mono">ID: {video.id}</p>
                     </div>
                   </td>
-                  <td className="py-3.5 px-5 whitespace-nowrap">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  <td className="py-4 px-6 whitespace-nowrap">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
                       video.visibility === 'Riêng tư'
-                        ? 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
-                        : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                        ? 'text-amber-300 bg-amber-500/10 border border-amber-500/20'
+                        : 'text-emerald-300 bg-emerald-500/10 border border-emerald-500/20'
                     }`}>
                       <span className="material-symbols-outlined text-[15px]">
                         {video.visibility === 'Riêng tư' ? 'lock' : 'public'}
@@ -111,20 +111,20 @@ export function RecentVideosTable({
                       <span>{video.visibility}</span>
                     </span>
                   </td>
-                  <td className="py-3.5 px-5 whitespace-nowrap text-white/50 font-mono">
+                  <td className="py-4 px-6 whitespace-nowrap text-white/50 font-mono text-xs">
                     {video.publishedDate}
                   </td>
-                  <td className="py-3.5 px-5 text-right font-bold text-white font-mono text-[13px]">
+                  <td className="py-4 px-6 text-right font-bold text-white font-mono text-[13px]">
                     {video.views}
                   </td>
-                  <td className="py-3.5 px-5 text-right text-white/70 font-mono">{video.comments}</td>
-                  <td className="py-3.5 px-5 text-center whitespace-nowrap">
-                    <div className="flex items-center justify-center gap-1">
+                  <td className="py-4 px-6 text-right text-white/70 font-mono text-xs">{video.comments}</td>
+                  <td className="py-4 px-6 text-center whitespace-nowrap">
+                    <div className="flex items-center justify-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => setEditingVideo(video)}
                         title="Chỉnh sửa thông tin video"
-                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer active:scale-95"
+                        className="p-2 rounded-xl hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer active:scale-95"
                       >
                         <span className="material-symbols-outlined text-[18px]">edit</span>
                       </button>
@@ -132,7 +132,7 @@ export function RecentVideosTable({
                         type="button"
                         onClick={() => setDeletingVideo(video)}
                         title="Xóa vĩnh viễn video"
-                        className="p-1.5 rounded-lg hover:bg-red-500/20 text-white/70 hover:text-red-400 transition-colors cursor-pointer active:scale-95"
+                        className="p-2 rounded-xl hover:bg-rose-500/20 text-white/70 hover:text-rose-400 transition-colors cursor-pointer active:scale-95"
                       >
                         <span className="material-symbols-outlined text-[18px]">delete</span>
                       </button>
@@ -173,7 +173,7 @@ export function RecentVideosTable({
         />
       )}
 
-      <div className="px-5 sm:px-6 py-3.5 bg-white/[0.02] border-t border-white/10 flex items-center justify-between text-xs text-white/50">
+      <div className="px-6 py-4 bg-white/[0.02] border-t border-white/[0.08] flex items-center justify-between text-xs text-white/50">
         <div>Hiển thị {videos.length} video thật của kênh</div>
         <div className="text-[11px] font-mono text-white/40">
           Lọc theo GSI1_PK = UploaderID

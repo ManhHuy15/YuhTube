@@ -46,15 +46,15 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
       ref={playerContainerRef}
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => isPlaying && setShowControls(false)}
-      className="relative w-full aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl group select-none border border-white/10"
+      className="relative w-full aspect-video bg-black rounded-[28px] overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] group select-none border border-white/10"
     >
       {/* Quality Badge Overlay */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-2 pointer-events-none">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-white/90 text-xs font-mono tracking-tight font-medium shadow-lg">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-black/60 backdrop-blur-2xl border border-white/15 text-white/90 text-xs font-mono tracking-tight font-medium shadow-lg">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>{activeQualityBadge}</span>
           <span className="text-white/40">•</span>
-          <span className="text-sky-300 font-semibold">HLS ABR</span>
+          <span className="text-rose-400 font-semibold">HLS ABR</span>
         </div>
       </div>
 
@@ -72,102 +72,105 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
         playsInline
       />
 
-      {/* Center Play/Pause Ripple Button */}
+      {/* Center Play/Pause Frosted Glass Ripple Button */}
       {!isPlaying && !isBuffering && (
         <div
           onClick={togglePlay}
-          className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/30 backdrop-blur-[2px] transition-all"
+          className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/30 backdrop-blur-[2px] transition-all duration-300"
         >
-          <div className="w-20 h-20 rounded-full bg-red-600/90 hover:bg-red-500 hover:scale-110 flex items-center justify-center text-white shadow-2xl shadow-red-600/50 transition-all duration-200">
-            <span className="material-symbols-outlined text-[48px] translate-x-0.5">play_arrow</span>
+          <div className="w-20 h-20 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-2xl border border-white/25 hover:scale-105 flex items-center justify-center text-white shadow-2xl shadow-black/60 transition-all duration-300 active:scale-95 group/btn">
+            <span className="material-symbols-outlined text-[44px] translate-x-0.5 text-white group-hover/btn:text-rose-400 transition-colors">
+              play_arrow
+            </span>
           </div>
         </div>
       )}
 
       {/* Center Buffering Spinner */}
       {isBuffering && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/40 backdrop-blur-[1px] z-10 transition-opacity">
-          <div className="w-12 h-12 border-4 border-white/20 border-t-red-500 rounded-full animate-spin shadow-xl" />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/40 backdrop-blur-[2px] z-10 transition-opacity">
+          <div className="w-12 h-12 border-3 border-white/20 border-t-rose-500 rounded-full animate-spin shadow-2xl" />
         </div>
       )}
 
-      {/* Bottom Controls Bar */}
+      {/* Bottom Floating Glass Controls Bar */}
       <div
-        className={`absolute bottom-0 left-0 right-0 pt-12 pb-3 px-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent flex flex-col justify-end gap-2 transition-opacity duration-300 ${
-          showControls ? 'opacity-100' : 'opacity-0'
+        className={`absolute bottom-0 left-0 right-0 p-3 sm:p-5 flex flex-col justify-end transition-all duration-300 ${
+          showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
         }`}
       >
-        {/* Scrubber Progress Bar */}
-        <div
-          onClick={handleSeek}
-          className="relative w-full h-3 flex items-center cursor-pointer group/scrub"
-        >
-          <div className="w-full h-1 group-hover/scrub:h-1.5 bg-white/20 rounded-full overflow-hidden relative transition-all">
-            <div
-              className="absolute left-0 top-0 h-full bg-white/30 transition-all"
-              style={{ width: `${bufferedPercent}%` }}
-            ></div>
-            <div
-              className="absolute left-0 top-0 h-full bg-red-600 transition-all"
-              style={{ width: `${progressPercent}%` }}
-            ></div>
-          </div>
+        <div className="bg-black/60 backdrop-blur-2xl border border-white/15 rounded-2xl p-2.5 sm:p-3 shadow-2xl space-y-2">
+          {/* Scrubber Progress Bar */}
           <div
-            className="absolute -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-red-500 shadow-md group-hover/scrub:scale-125 transition-transform"
-            style={{ left: `${progressPercent}%` }}
-          ></div>
-        </div>
-
-        {/* Buttons and Time */}
-        <div className="flex items-center justify-between text-white text-sm">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={togglePlay}
-              className="p-1 hover:text-red-400 transition-colors flex items-center cursor-pointer"
-              title={isPlaying ? 'Tạm dừng (k)' : 'Phát (k)'}
-            >
-              <span className="material-symbols-outlined text-[28px]">
-                {isPlaying ? 'pause' : 'play_arrow'}
-              </span>
-            </button>
-            <button
-              className="p-1 hover:text-white/80 transition-colors hidden sm:flex items-center cursor-pointer"
-              title="Video tiếp theo"
-            >
-              <span className="material-symbols-outlined text-[24px]">skip_next</span>
-            </button>
-            <div className="flex items-center gap-2 group/volume">
-              <button
-                onClick={toggleMute}
-                className="p-1 hover:text-white/80 transition-colors cursor-pointer"
-                title="Âm lượng"
-              >
-                <span className="material-symbols-outlined text-[24px]">
-                  {isMuted || volume === 0
-                    ? 'volume_off'
-                    : volume > 0.5
-                      ? 'volume_up'
-                      : 'volume_down'}
-                </span>
-              </button>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={isMuted ? 0 : volume}
-                onChange={handleVolumeChange}
-                className="w-16 h-1 bg-white/30 rounded-lg accent-red-600 cursor-pointer hidden sm:block"
+            onClick={handleSeek}
+            className="relative w-full h-3 flex items-center cursor-pointer group/scrub"
+          >
+            <div className="w-full h-1 group-hover/scrub:h-1.5 bg-white/20 rounded-full overflow-hidden relative transition-all duration-200">
+              <div
+                className="absolute left-0 top-0 h-full bg-white/30 transition-all"
+                style={{ width: `${bufferedPercent}%` }}
+              />
+              <div
+                className="absolute left-0 top-0 h-full bg-gradient-to-r from-rose-500 to-red-600 transition-all"
+                style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <div className="text-xs text-white/80 font-mono">
-              <span>{formatTime(currentTime)}</span>
-              <span className="mx-1 text-white/40">/</span>
-              <span>{duration > 0 ? formatTime(duration) : '0:00'}</span>
-            </div>
+            <div
+              className="absolute -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-lg shadow-black/80 group-hover/scrub:scale-125 transition-transform"
+              style={{ left: `${progressPercent}%` }}
+            />
           </div>
 
-          <div className="flex items-center gap-3 relative">
+          {/* Buttons and Time */}
+          <div className="flex items-center justify-between text-white text-sm">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <button
+                onClick={togglePlay}
+                className="p-1 hover:text-rose-400 transition-colors flex items-center cursor-pointer active:scale-95"
+                title={isPlaying ? 'Tạm dừng (k)' : 'Phát (k)'}
+              >
+                <span className="material-symbols-outlined text-[26px]">
+                  {isPlaying ? 'pause' : 'play_arrow'}
+                </span>
+              </button>
+              <button
+                className="p-1 hover:text-white/80 transition-colors hidden sm:flex items-center cursor-pointer active:scale-95"
+                title="Video tiếp theo"
+              >
+                <span className="material-symbols-outlined text-[22px]">skip_next</span>
+              </button>
+              <div className="flex items-center gap-2 group/volume">
+                <button
+                  onClick={toggleMute}
+                  className="p-1 hover:text-white/80 transition-colors cursor-pointer active:scale-95"
+                  title="Âm lượng"
+                >
+                  <span className="material-symbols-outlined text-[22px]">
+                    {isMuted || volume === 0
+                      ? 'volume_off'
+                      : volume > 0.5
+                        ? 'volume_up'
+                        : 'volume_down'}
+                  </span>
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className="w-16 h-1 bg-white/30 rounded-lg accent-rose-500 cursor-pointer hidden sm:block"
+                />
+              </div>
+              <div className="text-xs text-white/80 font-mono tracking-tight">
+                <span>{formatTime(currentTime)}</span>
+                <span className="mx-1 text-white/40">/</span>
+                <span>{duration > 0 ? formatTime(duration) : '0:00'}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 relative">
             {/* Quality Settings Dropdown Menu */}
             {isSettingsOpen && (
               <div
@@ -276,5 +279,6 @@ export function VideoPlayer({ playbackUrl, posterUrl, title, onViewQualified }: 
         </div>
       </div>
     </div>
+  </div>
   )
 }

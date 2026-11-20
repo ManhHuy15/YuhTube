@@ -23,12 +23,12 @@ export function UploadHeader({
   isUploading = false,
 }: UploadHeaderProps) {
   return (
-    <header className="relative px-6 py-4 bg-[#201f21] border-b border-white/10 flex flex-wrap items-center justify-between gap-4">
-      {/* Top/Bottom Micro Progress Bar on Header */}
+    <header className="relative px-6 py-4 bg-white/[0.03] backdrop-blur-2xl border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-4">
+      {/* Micro Progress Bar on Header */}
       {isUploading && (
         <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-red-600 to-[#69d8d4] transition-all duration-300"
+            className="h-full bg-gradient-to-r from-rose-600 via-red-500 to-[#69d8d4] transition-all duration-300"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -36,21 +36,21 @@ export function UploadHeader({
 
       <div className="flex items-center gap-6 flex-wrap">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg sm:text-xl text-white font-bold tracking-tight truncate max-w-[240px] sm:max-w-xs">
+          <h1 className="text-lg sm:text-xl text-white font-extrabold tracking-tight truncate max-w-[240px] sm:max-w-xs">
             {title || 'Tải video lên'}
           </h1>
 
           {/* Upload Progress Badge */}
           {isUploading && (
-            <span className="flex items-center gap-1 text-[11px] font-mono font-bold text-white bg-red-600/20 border border-red-500/30 px-2 py-0.5 rounded-full">
-              <span className="material-symbols-outlined text-[13px] animate-spin text-red-400">
+            <span className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-white bg-rose-500/10 border border-rose-500/30 px-2.5 py-0.5 rounded-full">
+              <span className="material-symbols-outlined text-[13px] animate-spin text-rose-400">
                 progress_activity
               </span>
               <span>{progress}%</span>
             </span>
           )}
 
-          {/* Auto-save Draft Status Badge (YouTube Studio Style) */}
+          {/* Auto-save Draft Status Badge */}
           {saveStatus === 'saving' && (
             <span className="flex items-center gap-1 text-[11px] font-medium text-[#69d8d4] bg-[#69d8d4]/10 border border-[#69d8d4]/20 px-2.5 py-0.5 rounded-full animate-pulse">
               <span className="material-symbols-outlined text-[14px] animate-spin">sync</span>
@@ -72,12 +72,12 @@ export function UploadHeader({
             className={`flex items-center gap-2 cursor-pointer transition-colors ${
               currentStep === 1
                 ? 'text-white font-bold'
-                : 'text-[#c6c6cb] hover:text-white opacity-80'
+                : 'text-white/60 hover:text-white'
             }`}
           >
             <span
               className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[11px] ${
-                currentStep === 1 ? 'bg-red-600 text-white' : 'bg-[#353437] text-[#69d8d4]'
+                currentStep === 1 ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/10 text-white/60'
               }`}
             >
               {currentStep === 2 ? (
@@ -89,7 +89,7 @@ export function UploadHeader({
             <span>1. Thông tin &amp; Thiết lập</span>
           </button>
 
-          <span className="text-white/30 font-mono">/</span>
+          <span className="text-white/20 font-mono">/</span>
 
           {/* Step 2 Tab */}
           <button
@@ -97,12 +97,12 @@ export function UploadHeader({
             className={`flex items-center gap-2 cursor-pointer transition-colors ${
               currentStep === 2
                 ? 'text-white font-bold'
-                : 'text-[#c6c6cb] hover:text-white opacity-80'
+                : 'text-white/60 hover:text-white'
             }`}
           >
             <span
               className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[11px] ${
-                currentStep === 2 ? 'bg-red-600 text-white' : 'bg-[#353437] text-[#c6c6cb]'
+                currentStep === 2 ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/10 text-white/60'
               }`}
             >
               2
@@ -117,7 +117,7 @@ export function UploadHeader({
         <button
           type="button"
           onClick={onChangeFile}
-          className="text-xs text-white/60 hover:text-white px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 transition-colors flex items-center gap-1 cursor-pointer"
+          className="text-xs text-white/70 hover:text-white px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-1 cursor-pointer"
           title="Chọn tệp khác"
         >
           <span className="material-symbols-outlined text-[15px]">swap_horiz</span>
@@ -127,7 +127,7 @@ export function UploadHeader({
           <button
             type="button"
             onClick={onMinimize}
-            className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             title="Thu nhỏ cửa sổ tải lên"
           >
             <span className="material-symbols-outlined text-[20px]">minimize</span>
@@ -135,7 +135,7 @@ export function UploadHeader({
         )}
         <Link
           to="/studio"
-          className="p-1.5 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          className="p-1.5 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-colors"
           title="Về Studio"
         >
           <span className="material-symbols-outlined text-[20px]">close</span>
